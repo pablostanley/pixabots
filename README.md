@@ -39,3 +39,7 @@ Drop new 32x32 PNGs into the appropriate folder under `public/parts/` (body, eye
 ## Author
 
 Made by [Pablo Stanley](https://x.com/pablostanley) — [Substack](https://pablostanley.substack.com) / [X](https://x.com/pablostanley)
+
+## License
+
+[MIT](LICENSE)
