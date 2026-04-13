@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef } from "react";
 import { parts, layerOrder, layerLabel, type PartCategory } from "@/lib/parts";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +24,7 @@ const SIZES = [240, 480, 960, 1920] as const;
 const DISPLAY = 480;
 const NATIVE = 32;
 const PX = DISPLAY / NATIVE;
+const W = DISPLAY + 24;
 
 type AnimOffsets = Record<"top" | "heads" | "eyes" | "body", number>;
 
@@ -40,16 +41,12 @@ const ANIM_FRAMES: AnimOffsets[] = [
 
 const FRAME_MS = 72;
 
-function randomIndex(max: number) {
-  return Math.floor(Math.random() * max);
-}
-
 function randomSelection(): Record<PartCategory, number> {
   return {
-    eyes: randomIndex(parts.eyes.length),
-    heads: randomIndex(parts.heads.length),
-    body: randomIndex(parts.body.length),
-    top: randomIndex(parts.top.length),
+    eyes: Math.floor(Math.random() * parts.eyes.length),
+    heads: Math.floor(Math.random() * parts.heads.length),
+    body: Math.floor(Math.random() * parts.body.length),
+    top: Math.floor(Math.random() * parts.top.length),
   };
 }
 
@@ -103,31 +100,27 @@ export default function Home() {
   const selRef = useRef(selection);
   const mountedRef = useRef(false);
 
-  // Load images for a selection, draw when done (skips if animation running)
   async function loadAndDraw(sel: Record<PartCategory, number>) {
     const gen = ++genRef.current;
     const loaded: Record<string, HTMLImageElement> = {};
     for (const cat of layerOrder) {
       loaded[cat] = await loadImage(parts[cat][sel[cat]].src);
     }
-    if (gen !== genRef.current) return; // stale — a newer load superseded this one
+    if (gen !== genRef.current) return;
     imagesRef.current = loaded;
     if (canvasRef.current && !intervalRef.current) {
       drawOnCanvas(canvasRef.current, loaded);
     }
   }
 
-  // Ref callback — handles initial draw on mount
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const setCanvasRef = useCallback((node: HTMLCanvasElement | null) => {
+  function setCanvasRef(node: HTMLCanvasElement | null) {
     canvasRef.current = node;
     if (node && !mountedRef.current) {
       mountedRef.current = true;
       loadAndDraw(selRef.current);
     }
-  }, []);
+  }
 
-  // All selection changes go through here — keeps ref + state in sync
   function updateSelection(next: Record<PartCategory, number>) {
     selRef.current = next;
     setSelection(next);
@@ -178,23 +171,10 @@ export default function Home() {
     canvas.height = size;
     const ctx = canvas.getContext("2d")!;
     ctx.imageSmoothingEnabled = false;
-
-    const images = Object.keys(imagesRef.current).length === layerOrder.length
-      ? imagesRef.current
-      : await (async () => {
-          const sel = selRef.current;
-          const loaded: Record<string, HTMLImageElement> = {};
-          for (const cat of layerOrder) {
-            loaded[cat] = await loadImage(parts[cat][sel[cat]].src);
-          }
-          return loaded;
-        })();
-
     for (const category of layerOrder) {
-      const img = images[category];
+      const img = imagesRef.current[category];
       if (img) ctx.drawImage(img, 0, 0, size, size);
     }
-
     const link = document.createElement("a");
     link.download = `pixabot-${size}x${size}.png`;
     link.href = canvas.toDataURL("image/png");
@@ -203,7 +183,7 @@ export default function Home() {
 
   return (
     <main className="flex flex-col items-center justify-center min-h-dvh gap-4 p-6">
-      <div className="flex items-center gap-3" style={{ width: DISPLAY + 24 }}>
+      <div className="flex items-center gap-3" style={{ width: W }}>
         <h1 className="text-2xl font-bold tracking-wide uppercase mr-auto">Pixabots</h1>
         <Button variant="outline" size="icon-lg" onClick={toggleTheme} title={dark ? "Light mode" : "Dark mode"} className="text-2xl">
           {dark ? <span className="translate-y-[0.2em]">*</span> : "•"}
@@ -238,7 +218,7 @@ export default function Home() {
 
       <ContextMenu>
         <ContextMenuTrigger asChild>
-          <div className="border border-border bg-card p-3 cursor-pointer active:scale-95 transition-transform" onClick={shuffle}>
+          <div className="border border-border bg-card p-3 cursor-pointer active:scale-[0.98] transition-transform" onClick={shuffle}>
             <div className="checkerboard">
               <canvas
                 ref={setCanvasRef}
@@ -262,24 +242,15 @@ export default function Home() {
             </ContextMenuSubContent>
           </ContextMenuSub>
           <ContextMenuSeparator />
-          <ContextMenuItem onClick={shuffle} className="text-sm">
-            Shuffle
-          </ContextMenuItem>
-          <ContextMenuItem onClick={toggleAnimation} className="text-sm">
-            {animating ? "Stop" : "Play"}
-          </ContextMenuItem>
+          <ContextMenuItem onClick={shuffle} className="text-sm">Shuffle</ContextMenuItem>
+          <ContextMenuItem onClick={toggleAnimation} className="text-sm">{animating ? "Stop" : "Play"}</ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
 
-      <div className="flex gap-1" style={{ width: DISPLAY + 24 }}>
+      <div className="flex gap-1" style={{ width: W }}>
         {layerOrder.map((category) => (
           <div key={category} className="flex flex-1 min-w-0">
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={() => cycle(category)}
-              className="rounded-none border-r-0 flex-1"
-            >
+            <Button variant="outline" size="lg" onClick={() => cycle(category)} className="rounded-none border-r-0 flex-1">
               {layerLabel[category]}
             </Button>
             <DropdownMenu>
@@ -290,11 +261,7 @@ export default function Home() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 {parts[category].map((option, i) => (
-                  <DropdownMenuItem
-                    key={option.name}
-                    onClick={() => pick(category, i)}
-                    className={`text-sm ${i === selection[category] ? "bg-accent" : ""}`}
-                  >
+                  <DropdownMenuItem key={option.name} onClick={() => pick(category, i)} className={`text-sm ${i === selection[category] ? "bg-accent" : ""}`}>
                     {option.name}
                   </DropdownMenuItem>
                 ))}
@@ -304,7 +271,7 @@ export default function Home() {
         ))}
       </div>
 
-      <div className="text-xs text-center" style={{ width: DISPLAY + 24 }}>
+      <div className="text-xs text-center" style={{ width: W }}>
         <a href="https://github.com/pablostanley/pixabots" target="_blank" rel="noopener noreferrer">github</a>
         {" · "}
         by <a href="https://x.com/pablostanley" target="_blank" rel="noopener noreferrer">pablo stanley</a>
