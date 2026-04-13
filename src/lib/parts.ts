@@ -35,6 +35,7 @@ export const parts: PartsConfig = {
     { name: "tight-visor", src: "/parts/eyes/tight-visor.png" },
     { name: "visor", src: "/parts/eyes/visor.png" },
     { name: "wayfarer", src: "/parts/eyes/wayfarer.png" },
+    { name: "wayfarer-face", src: "/parts/eyes/wayfarer-face.png" },
   ],
   heads: [
     { name: "ac", src: "/parts/heads/ac.png" },
