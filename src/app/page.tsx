@@ -105,22 +105,9 @@ export default function Home() {
     link.click();
   };
 
-  // Preload images when selection changes
-  useEffect(() => {
-    const preload = async () => {
-      const loaded: Record<string, HTMLImageElement> = {};
-      for (const category of layerOrder) {
-        const part = parts[category][selection[category]];
-        loaded[category] = await loadImage(part.src);
-      }
-      imagesRef.current = loaded;
-    };
-    preload();
-  }, [selection]);
-
   // Draw a single frame with optional offsets
   const drawFrame = useCallback(
-    (offsets?: Record<"top" | "heads" | "eyes" | "body", number>) => {
+    (images: Record<string, HTMLImageElement>, offsets?: Record<"top" | "heads" | "eyes" | "body", number>) => {
       const canvas = canvasRef.current;
       if (!canvas) return;
       const ctx = canvas.getContext("2d")!;
@@ -128,16 +115,14 @@ export default function Home() {
       ctx.imageSmoothingEnabled = false;
 
       for (const category of layerOrder) {
-        const img = imagesRef.current[category];
+        const img = images[category];
         if (!img) return;
         const yOffset = offsets
           ? offsets[category as keyof typeof offsets] * PX
           : 0;
 
         if (category === "body" && yOffset > 0) {
-          // Bottom 1px row stays static (feet planted)
           ctx.drawImage(img, 0, NATIVE - 1, NATIVE, 1, 0, DISPLAY - PX, DISPLAY, PX);
-          // Rest of the body shifts down, clipped above the static row
           ctx.save();
           ctx.beginPath();
           ctx.rect(0, 0, DISPLAY, DISPLAY - PX);
@@ -152,11 +137,21 @@ export default function Home() {
     []
   );
 
-  // Static draw when not animating or selection changes
+  // Preload images and draw when selection changes
   useEffect(() => {
-    if (animating) return;
-    const timer = setTimeout(() => drawFrame(), 50); // small delay for image preload
-    return () => clearTimeout(timer);
+    let cancelled = false;
+    const preloadAndDraw = async () => {
+      const loaded: Record<string, HTMLImageElement> = {};
+      for (const category of layerOrder) {
+        const part = parts[category][selection[category]];
+        loaded[category] = await loadImage(part.src);
+      }
+      if (cancelled) return;
+      imagesRef.current = loaded;
+      if (!animating) drawFrame(loaded);
+    };
+    preloadAndDraw();
+    return () => { cancelled = true; };
   }, [selection, animating, drawFrame]);
 
   // Animation loop
@@ -168,7 +163,7 @@ export default function Home() {
 
     const interval = setInterval(() => {
       const frame = ANIM_FRAMES[frameRef.current];
-      drawFrame(frame);
+      drawFrame(imagesRef.current, frame);
       frameRef.current = (frameRef.current + 1) % ANIM_FRAMES.length;
     }, FRAME_MS);
 
@@ -256,6 +251,12 @@ export default function Home() {
             </DropdownMenu>
           </div>
         ))}
+      </div>
+
+      <div className="text-xs text-center" style={{ width: DISPLAY + 24 }}>
+        <a href="https://github.com/pablostanley/pixabots" target="_blank" rel="noopener noreferrer">github</a>
+        {" · "}
+        by <a href="https://x.com/pablostanley" target="_blank" rel="noopener noreferrer">pablo stanley</a>
       </div>
     </main>
   );
