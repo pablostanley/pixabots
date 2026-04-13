@@ -21,15 +21,20 @@ export const layerLabel: Record<PartCategory, string> = {
 
 export const parts: PartsConfig = {
   eyes: [
+    { name: "big-face", src: "/parts/eyes/big-face.png" },
     { name: "glasses", src: "/parts/eyes/glasses.png" },
     { name: "human", src: "/parts/eyes/human.png" },
     { name: "human-2", src: "/parts/eyes/human-2.png" },
     { name: "monitor", src: "/parts/eyes/monitor.png" },
     { name: "monitor-round", src: "/parts/eyes/monitor-round.png" },
+    { name: "mustache", src: "/parts/eyes/mustache.png" },
     { name: "terminal", src: "/parts/eyes/terminal.png" },
+    { name: "terminal-green", src: "/parts/eyes/terminal-green.png" },
     { name: "terminal-light", src: "/parts/eyes/terminal-light.png" },
     { name: "terminal-round", src: "/parts/eyes/terminal-round.png" },
+    { name: "tight-visor", src: "/parts/eyes/tight-visor.png" },
     { name: "visor", src: "/parts/eyes/visor.png" },
+    { name: "wayfarer", src: "/parts/eyes/wayfarer.png" },
   ],
   heads: [
     { name: "ac", src: "/parts/heads/ac.png" },
@@ -48,6 +53,7 @@ export const parts: PartsConfig = {
     { name: "swag", src: "/parts/body/swag.png" },
     { name: "tank", src: "/parts/body/tank.png" },
     { name: "wings", src: "/parts/body/wings.png" },
+    { name: "fire", src: "/parts/body/fire.png" },
   ],
   top: [
     { name: "antenna", src: "/parts/top/antenna.png" },
@@ -56,5 +62,7 @@ export const parts: PartsConfig = {
     { name: "leaf", src: "/parts/top/leaf.png" },
     { name: "lollypop", src: "/parts/top/lollypop.png" },
     { name: "mohawk", src: "/parts/top/mohawk.png" },
+    { name: "bun", src: "/parts/top/bun.png" },
+    { name: "horns", src: "/parts/top/horns.png" },
   ],
 };
