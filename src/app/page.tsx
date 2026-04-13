@@ -9,6 +9,16 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import {
+  ContextMenu,
+  ContextMenuTrigger,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSub,
+  ContextMenuSubTrigger,
+  ContextMenuSubContent,
+  ContextMenuSeparator,
+} from "@/components/ui/context-menu";
 
 const SIZES = [240, 480, 960, 1920] as const;
 const DISPLAY = 480;
@@ -226,17 +236,40 @@ export default function Home() {
         </DropdownMenu>
       </div>
 
-      <div className="border border-border bg-card p-3">
-        <div className="checkerboard">
-          <canvas
-            ref={setCanvasRef}
-            width={DISPLAY}
-            height={DISPLAY}
-            className="block"
-            style={{ imageRendering: "pixelated" }}
-          />
-        </div>
-      </div>
+      <ContextMenu>
+        <ContextMenuTrigger asChild>
+          <div className="border border-border bg-card p-3 cursor-pointer active:scale-95 transition-transform" onClick={shuffle}>
+            <div className="checkerboard">
+              <canvas
+                ref={setCanvasRef}
+                width={DISPLAY}
+                height={DISPLAY}
+                className="block"
+                style={{ imageRendering: "pixelated" }}
+              />
+            </div>
+          </div>
+        </ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuSub>
+            <ContextMenuSubTrigger className="text-sm">Download</ContextMenuSubTrigger>
+            <ContextMenuSubContent>
+              {SIZES.map((size) => (
+                <ContextMenuItem key={size} onClick={() => download(size)} className="text-sm">
+                  {size} x {size}
+                </ContextMenuItem>
+              ))}
+            </ContextMenuSubContent>
+          </ContextMenuSub>
+          <ContextMenuSeparator />
+          <ContextMenuItem onClick={shuffle} className="text-sm">
+            Shuffle
+          </ContextMenuItem>
+          <ContextMenuItem onClick={toggleAnimation} className="text-sm">
+            {animating ? "Stop" : "Play"}
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
 
       <div className="flex gap-1" style={{ width: DISPLAY + 24 }}>
         {layerOrder.map((category) => (
