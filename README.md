@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Pixabots
 
-## Getting Started
+Pixel character creator. Combine 32x32 pixel art layers to build unique characters.
 
-First, run the development server:
+## Parts
 
-```bash
+Characters are built from 4 layers (bottom to top):
+
+- **Top** — antenna, bulb, bunny ears, leaf, lollypop, mohawk
+- **Body** — backpack, claws, heart, swag, tank, wings
+- **Heads** — ac, blob, blob-blue, bowl, box, commodore, frame, punch-bowl
+- **Face** — glasses, human, human-2, monitor, monitor-round, terminal, terminal-light, terminal-round, visor
+
+## Usage
+
+```
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Click a part button to cycle through options
+- Click the dropdown to pick a specific option
+- Shuffle randomizes everything
+- Download exports at 240, 480, 960, or 1920px with no antialiasing
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Adding new parts
 
-## Learn More
+Drop new 32x32 PNGs into the appropriate folder under `public/parts/` (body, eyes, heads, top), then update `src/lib/parts.ts` with the new entries.
 
-To learn more about Next.js, take a look at the following resources:
+## Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Next.js + TypeScript
+- shadcn/ui (radix-lyra preset)
+- GeistPixel Square font
+- Canvas API for compositing and export
