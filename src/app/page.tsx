@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback } from "react";
 import { parts, layerOrder, layerLabel, type PartCategory } from "@/lib/parts";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,19 +13,19 @@ import {
 const SIZES = [240, 480, 960, 1920] as const;
 const DISPLAY = 480;
 const NATIVE = 32;
-const PX = DISPLAY / NATIVE; // 15 — one native pixel in canvas space
+const PX = DISPLAY / NATIVE;
 
-// Idle animation: y-offsets in native pixels per layer per frame
-// body is clipped to original bounds so bottom pixel stays planted
-const ANIM_FRAMES: Record<"top" | "heads" | "eyes" | "body", number>[] = [
-  { top: 0, heads: 0, eyes: 0, body: 0 }, // rest
-  { top: 0, heads: 0, eyes: 0, body: 0 }, // hold
-  { top: 0, heads: 1, eyes: 1, body: 0 }, // head+face+body down, top stays
-  { top: 1, heads: 2, eyes: 2, body: 1 }, // head+face down more, top follows
-  { top: 2, heads: 2, eyes: 2, body: 1 }, // top catches up
-  { top: 2.5, heads: 2, eyes: 2, body: 1 }, // top overshoots
-  { top: 2, heads: 1, eyes: 1, body: 1 }, // bounce up
-  { top: 1, heads: 0, eyes: 0, body: 0 }, // home, top trailing
+type AnimOffsets = Record<"top" | "heads" | "eyes" | "body", number>;
+
+const ANIM_FRAMES: AnimOffsets[] = [
+  { top: 0, heads: 0, eyes: 0, body: 0 },
+  { top: 0, heads: 0, eyes: 0, body: 0 },
+  { top: 0, heads: 1, eyes: 1, body: 0 },
+  { top: 1, heads: 2, eyes: 2, body: 1 },
+  { top: 2, heads: 2, eyes: 2, body: 1 },
+  { top: 2.5, heads: 2, eyes: 2, body: 1 },
+  { top: 2, heads: 1, eyes: 1, body: 1 },
+  { top: 1, heads: 0, eyes: 0, body: 0 },
 ];
 
 const FRAME_MS = 72;
@@ -52,127 +52,147 @@ function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
+function drawOnCanvas(
+  canvas: HTMLCanvasElement,
+  images: Record<string, HTMLImageElement>,
+  offsets?: AnimOffsets
+) {
+  const ctx = canvas.getContext("2d")!;
+  ctx.clearRect(0, 0, DISPLAY, DISPLAY);
+  ctx.imageSmoothingEnabled = false;
+
+  for (const category of layerOrder) {
+    const img = images[category];
+    if (!img) return;
+    const yOffset = offsets ? offsets[category as keyof AnimOffsets] * PX : 0;
+
+    if (category === "body" && yOffset > 0) {
+      ctx.drawImage(img, 0, NATIVE - 1, NATIVE, 1, 0, DISPLAY - PX, DISPLAY, PX);
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(0, 0, DISPLAY, DISPLAY - PX);
+      ctx.clip();
+      ctx.drawImage(img, 0, 0, NATIVE, NATIVE - 1, 0, yOffset, DISPLAY, (NATIVE - 1) * PX);
+      ctx.restore();
+    } else {
+      ctx.drawImage(img, 0, yOffset, DISPLAY, DISPLAY);
+    }
+  }
+}
+
 export default function Home() {
-  const [selection, setSelection] = useState<Record<PartCategory, number>>(randomSelection);
+  const [selection, setSelection] = useState(randomSelection);
   const [dark, setDark] = useState(true);
   const [animating, setAnimating] = useState(false);
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const frameRef = useRef(0);
   const imagesRef = useRef<Record<string, HTMLImageElement>>({});
+  const intervalRef = useRef<ReturnType<typeof setInterval>>(undefined);
+  const frameRef = useRef(0);
+  const genRef = useRef(0);
+  const selRef = useRef(selection);
+  const mountedRef = useRef(false);
+
+  // Load images for a selection, draw when done (skips if animation running)
+  async function loadAndDraw(sel: Record<PartCategory, number>) {
+    const gen = ++genRef.current;
+    const loaded: Record<string, HTMLImageElement> = {};
+    for (const cat of layerOrder) {
+      loaded[cat] = await loadImage(parts[cat][sel[cat]].src);
+    }
+    if (gen !== genRef.current) return; // stale — a newer load superseded this one
+    imagesRef.current = loaded;
+    if (canvasRef.current && !intervalRef.current) {
+      drawOnCanvas(canvasRef.current, loaded);
+    }
+  }
+
+  // Ref callback — handles initial draw on mount
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const setCanvasRef = useCallback((node: HTMLCanvasElement | null) => {
+    canvasRef.current = node;
+    if (node && !mountedRef.current) {
+      mountedRef.current = true;
+      loadAndDraw(selRef.current);
+    }
+  }, []);
+
+  // All selection changes go through here — keeps ref + state in sync
+  function updateSelection(next: Record<PartCategory, number>) {
+    selRef.current = next;
+    setSelection(next);
+    loadAndDraw(next);
+  }
 
   const cycle = (category: PartCategory) => {
-    setSelection((prev) => ({
+    const prev = selRef.current;
+    updateSelection({
       ...prev,
       [category]: (prev[category] + 1) % parts[category].length,
-    }));
+    });
   };
 
   const pick = (category: PartCategory, index: number) => {
-    setSelection((prev) => ({ ...prev, [category]: index }));
+    updateSelection({ ...selRef.current, [category]: index });
   };
 
-  const shuffle = () => setSelection(randomSelection());
+  const shuffle = () => updateSelection(randomSelection());
 
   const toggleTheme = () => {
     setDark((d) => !d);
     document.documentElement.classList.toggle("dark");
   };
 
-  const renderToCanvas = useCallback(
-    async (size: number): Promise<HTMLCanvasElement> => {
-      const canvas = document.createElement("canvas");
-      canvas.width = size;
-      canvas.height = size;
-      const ctx = canvas.getContext("2d")!;
-      ctx.imageSmoothingEnabled = false;
-
-      for (const category of layerOrder) {
-        const part = parts[category][selection[category]];
-        const img = await loadImage(part.src);
-        ctx.drawImage(img, 0, 0, size, size);
-      }
-
-      return canvas;
-    },
-    [selection]
-  );
+  const toggleAnimation = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = undefined;
+      frameRef.current = 0;
+      if (canvasRef.current) drawOnCanvas(canvasRef.current, imagesRef.current);
+      setAnimating(false);
+    } else {
+      frameRef.current = 0;
+      intervalRef.current = setInterval(() => {
+        if (canvasRef.current) {
+          drawOnCanvas(canvasRef.current, imagesRef.current, ANIM_FRAMES[frameRef.current]);
+          frameRef.current = (frameRef.current + 1) % ANIM_FRAMES.length;
+        }
+      }, FRAME_MS);
+      setAnimating(true);
+    }
+  };
 
   const download = async (size: number) => {
-    const canvas = await renderToCanvas(size);
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext("2d")!;
+    ctx.imageSmoothingEnabled = false;
+
+    const images = Object.keys(imagesRef.current).length === layerOrder.length
+      ? imagesRef.current
+      : await (async () => {
+          const sel = selRef.current;
+          const loaded: Record<string, HTMLImageElement> = {};
+          for (const cat of layerOrder) {
+            loaded[cat] = await loadImage(parts[cat][sel[cat]].src);
+          }
+          return loaded;
+        })();
+
+    for (const category of layerOrder) {
+      const img = images[category];
+      if (img) ctx.drawImage(img, 0, 0, size, size);
+    }
+
     const link = document.createElement("a");
     link.download = `pixabot-${size}x${size}.png`;
     link.href = canvas.toDataURL("image/png");
     link.click();
   };
 
-  // Draw a single frame with optional offsets
-  const drawFrame = useCallback(
-    (images: Record<string, HTMLImageElement>, offsets?: Record<"top" | "heads" | "eyes" | "body", number>) => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const ctx = canvas.getContext("2d")!;
-      ctx.clearRect(0, 0, DISPLAY, DISPLAY);
-      ctx.imageSmoothingEnabled = false;
-
-      for (const category of layerOrder) {
-        const img = images[category];
-        if (!img) return;
-        const yOffset = offsets
-          ? offsets[category as keyof typeof offsets] * PX
-          : 0;
-
-        if (category === "body" && yOffset > 0) {
-          ctx.drawImage(img, 0, NATIVE - 1, NATIVE, 1, 0, DISPLAY - PX, DISPLAY, PX);
-          ctx.save();
-          ctx.beginPath();
-          ctx.rect(0, 0, DISPLAY, DISPLAY - PX);
-          ctx.clip();
-          ctx.drawImage(img, 0, 0, NATIVE, NATIVE - 1, 0, yOffset, DISPLAY, (NATIVE - 1) * PX);
-          ctx.restore();
-        } else {
-          ctx.drawImage(img, 0, yOffset, DISPLAY, DISPLAY);
-        }
-      }
-    },
-    []
-  );
-
-  // Preload images and draw when selection changes
-  useEffect(() => {
-    let cancelled = false;
-    const preloadAndDraw = async () => {
-      const loaded: Record<string, HTMLImageElement> = {};
-      for (const category of layerOrder) {
-        const part = parts[category][selection[category]];
-        loaded[category] = await loadImage(part.src);
-      }
-      if (cancelled) return;
-      imagesRef.current = loaded;
-      if (!animating) drawFrame(loaded);
-    };
-    preloadAndDraw();
-    return () => { cancelled = true; };
-  }, [selection, animating, drawFrame]);
-
-  // Animation loop
-  useEffect(() => {
-    if (!animating) {
-      frameRef.current = 0;
-      return;
-    }
-
-    const interval = setInterval(() => {
-      const frame = ANIM_FRAMES[frameRef.current];
-      drawFrame(imagesRef.current, frame);
-      frameRef.current = (frameRef.current + 1) % ANIM_FRAMES.length;
-    }, FRAME_MS);
-
-    return () => clearInterval(interval);
-  }, [animating, drawFrame]);
-
   return (
     <main className="flex flex-col items-center justify-center min-h-dvh gap-4 p-6">
-      {/* Top bar */}
       <div className="flex items-center gap-3" style={{ width: DISPLAY + 24 }}>
         <h1 className="text-2xl font-bold tracking-wide uppercase mr-auto">Pixabots</h1>
         <Button variant="outline" size="icon-lg" onClick={toggleTheme} title={dark ? "Light mode" : "Dark mode"} className="text-2xl">
@@ -181,7 +201,7 @@ export default function Home() {
         <Button
           variant="outline"
           size="icon-lg"
-          onClick={() => setAnimating((a) => !a)}
+          onClick={toggleAnimation}
           title={animating ? "Stop" : "Play"}
           className={`text-xl ${animating ? "bg-foreground/10" : ""}`}
         >
@@ -206,11 +226,10 @@ export default function Home() {
         </DropdownMenu>
       </div>
 
-      {/* Canvas preview */}
       <div className="border border-border bg-card p-3">
         <div className="checkerboard">
           <canvas
-            ref={canvasRef}
+            ref={setCanvasRef}
             width={DISPLAY}
             height={DISPLAY}
             className="block"
@@ -219,7 +238,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Part combo buttons — full width, label cycles, chevron opens dropdown */}
       <div className="flex gap-1" style={{ width: DISPLAY + 24 }}>
         {layerOrder.map((category) => (
           <div key={category} className="flex flex-1 min-w-0">
