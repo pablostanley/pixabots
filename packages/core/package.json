@@ -1,0 +1,33 @@
+{
+  "name": "@pixabots/core",
+  "version": "0.1.0",
+  "description": "Deterministic pixel character IDs, parts catalog, and random generation for Pixabots",
+  "license": "MIT",
+  "author": "Pablo Stanley (https://pablostanley.substack.com)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pablostanley/pixabots",
+    "directory": "packages/core"
+  },
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "prepublishOnly": "pnpm run build"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0"
+  }
+}
