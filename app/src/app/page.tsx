@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { parts, layerOrder, layerLabel, type PartCategory } from "@/lib/parts";
+import { encode } from "@pixabots/core";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -91,6 +92,10 @@ export default function Home() {
   const [selection, setSelection] = useState(randomSelection);
   const [dark, setDark] = useState(true);
   const [animating, setAnimating] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const pixabotId = encode(selection);
+  const apiUrl = `/api/pixabot/${pixabotId}`;
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imagesRef = useRef<Record<string, HTMLImageElement>>({});
@@ -140,6 +145,12 @@ export default function Home() {
   };
 
   const shuffle = () => updateSelection(randomSelection());
+
+  const copyApiUrl = () => {
+    navigator.clipboard.writeText(window.location.origin + apiUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
 
   const toggleTheme = () => {
     setDark((d) => !d);
@@ -246,6 +257,24 @@ export default function Home() {
           <ContextMenuItem onClick={toggleAnimation} className="text-sm">{animating ? "Stop" : "Play"}</ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
+
+      <div className="flex items-center gap-2 text-xs text-muted-foreground" style={{ width: W }}>
+        <span className="font-bold uppercase tracking-wide">ID</span>
+        <a href={apiUrl} target="_blank" rel="noopener noreferrer" className="font-mono hover:text-foreground transition-colors">
+          {pixabotId}
+        </a>
+        <span className="text-border">|</span>
+        <a href={`${apiUrl}?format=json`} target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
+          json
+        </a>
+        <span className="text-border">|</span>
+        <a href={`${apiUrl}?size=960`} target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
+          960px
+        </a>
+        <button onClick={copyApiUrl} className="ml-auto hover:text-foreground transition-colors cursor-pointer">
+          {copied ? "copied" : "copy url"}
+        </button>
+      </div>
 
       <div className="flex gap-1" style={{ width: W }}>
         {layerOrder.map((category) => (
