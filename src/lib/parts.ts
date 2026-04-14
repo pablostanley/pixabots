@@ -22,6 +22,7 @@ export const layerLabel: Record<PartCategory, string> = {
 export const parts: PartsConfig = {
   eyes: [
     { name: "big-face", src: "/parts/eyes/big-face.png" },
+    { name: "cheeky-terminal", src: "/parts/eyes/cheeky-terminal.png" },
     { name: "glasses", src: "/parts/eyes/glasses.png" },
     { name: "human", src: "/parts/eyes/human.png" },
     { name: "human-2", src: "/parts/eyes/human-2.png" },
@@ -60,9 +61,12 @@ export const parts: PartsConfig = {
     { name: "antenna", src: "/parts/top/antenna.png" },
     { name: "bulb", src: "/parts/top/bulb.png" },
     { name: "bunny-ears", src: "/parts/top/bunny-ears.png" },
+    { name: "disco", src: "/parts/top/disco.png" },
     { name: "leaf", src: "/parts/top/leaf.png" },
     { name: "lollypop", src: "/parts/top/lollypop.png" },
     { name: "mohawk", src: "/parts/top/mohawk.png" },
+    { name: "plant", src: "/parts/top/plant.png" },
+    { name: "radar", src: "/parts/top/radar.png" },
     { name: "bun", src: "/parts/top/bun.png" },
     { name: "horns", src: "/parts/top/horns.png" },
   ],
