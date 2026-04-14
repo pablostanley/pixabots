@@ -1,0 +1,6 @@
+{
+  "framework": "nextjs",
+  "installCommand": "pnpm install",
+  "buildCommand": "pnpm --filter @pixabots/core build && cd app && next build",
+  "outputDirectory": "app/.next"
+}
