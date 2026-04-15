@@ -1,18 +1,11 @@
 import { type NextRequest } from "next/server";
 import { decode, isValidId, resolve } from "@pixabots/core";
 import { renderPixabot, renderAnimatedPixabot } from "@/lib/render";
+import { CORS_HEADERS, optionsResponse, imageResponse } from "@/lib/api";
 
 const VALID_SIZES = new Set([32, 64, 128, 240, 480, 960]);
 
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
-};
-
-export async function OPTIONS() {
-  return new Response(null, { status: 204, headers: CORS_HEADERS });
-}
+export const OPTIONS = optionsResponse;
 
 export async function GET(
   request: NextRequest,
@@ -38,7 +31,6 @@ export async function GET(
   }
 
   const combo = decode(id);
-
   const animated = request.nextUrl.searchParams.get("animated") === "true";
 
   if (format === "json") {
@@ -56,25 +48,8 @@ export async function GET(
   }
 
   if (animated) {
-    const buffer = await renderAnimatedPixabot(combo, size);
-    return new Response(new Uint8Array(buffer), {
-      headers: {
-        "Content-Type": "image/gif",
-        "Cache-Control": "public, max-age=31536000, immutable",
-        "CDN-Cache-Control": "public, max-age=31536000, immutable",
-        ...CORS_HEADERS,
-      },
-    });
+    return imageResponse(await renderAnimatedPixabot(combo, size), "image/gif");
   }
 
-  const buffer = await renderPixabot(combo, size);
-
-  return new Response(new Uint8Array(buffer), {
-    headers: {
-      "Content-Type": "image/png",
-      "Cache-Control": "public, max-age=31536000, immutable",
-      "CDN-Cache-Control": "public, max-age=31536000, immutable",
-      ...CORS_HEADERS,
-    },
-  });
+  return imageResponse(await renderPixabot(combo, size), "image/png");
 }

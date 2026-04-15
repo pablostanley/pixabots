@@ -10,21 +10,24 @@ import {
 } from "@pixabots/core";
 
 const NATIVE_SIZE = 32;
-const ANIM_PAD = 4; // max Y offset is ~3px, pad canvas to avoid clipping
+const ANIM_PAD = 4;
 const PARTS_DIR = path.join(process.cwd(), "public", "parts");
+const FRAME_DELAYS = ANIM_FRAMES.map(() => FRAME_MS);
+const ANIM_MAX_SIZE = 480;
 
-/** Load the 4 layer PNGs for a combo as Sharp buffers. */
 async function loadLayers(combo: PixabotCombo) {
-  const layers: Record<string, Buffer> = {};
-  for (const category of LAYER_ORDER) {
-    const part = PARTS[category][combo[category]];
-    const filePath = path.join(PARTS_DIR, part.path);
-    layers[category] = await sharp(filePath)
-      .resize(NATIVE_SIZE, NATIVE_SIZE, { kernel: sharp.kernel.nearest })
-      .png()
-      .toBuffer();
-  }
-  return layers;
+  const entries = await Promise.all(
+    LAYER_ORDER.map(async (category) => {
+      const part = PARTS[category][combo[category]];
+      const filePath = path.join(PARTS_DIR, part.path);
+      const buf = await sharp(filePath)
+        .resize(NATIVE_SIZE, NATIVE_SIZE, { kernel: sharp.kernel.nearest })
+        .png()
+        .toBuffer();
+      return [category, buf] as const;
+    })
+  );
+  return Object.fromEntries(entries) as Record<string, Buffer>;
 }
 
 /** Render a pixabot combo to a PNG buffer at the specified size. */
@@ -61,7 +64,6 @@ export async function renderPixabot(
     .toBuffer();
 }
 
-/** Render a single animation frame as raw RGBA at the target size. */
 async function renderFrame(
   layers: Record<string, Buffer>,
   offsets: AnimFrame,
@@ -73,7 +75,7 @@ async function renderFrame(
     top: Math.round(offsets[cat as keyof AnimFrame]),
   }));
 
-  // Composite on a padded canvas, then extract to native size
+  // Two-step pipeline: sharp can't chain extract→resize on a created canvas
   const native = await sharp({
     create: {
       width: NATIVE_SIZE,
@@ -87,7 +89,6 @@ async function renderFrame(
     .png()
     .toBuffer();
 
-  // Scale up in a separate step for pixel-perfect nearest-neighbor
   return sharp(native)
     .resize(size, size, { kernel: sharp.kernel.nearest })
     .raw()
@@ -99,28 +100,24 @@ export async function renderAnimatedPixabot(
   combo: PixabotCombo,
   size: number = NATIVE_SIZE
 ): Promise<Buffer> {
+  const cappedSize = Math.min(size, ANIM_MAX_SIZE);
   const layers = await loadLayers(combo);
 
-  const frameBuffers: Buffer[] = [];
-  for (const offsets of ANIM_FRAMES) {
-    frameBuffers.push(await renderFrame(layers, offsets, size));
-  }
+  const frameBuffers = await Promise.all(
+    ANIM_FRAMES.map((offsets) => renderFrame(layers, offsets, cappedSize))
+  );
 
   const stacked = Buffer.concat(frameBuffers);
-  const totalHeight = size * ANIM_FRAMES.length;
+  const totalHeight = cappedSize * ANIM_FRAMES.length;
 
   return sharp(stacked, {
     raw: {
-      width: size,
+      width: cappedSize,
       height: totalHeight,
       channels: 4,
-      pages: ANIM_FRAMES.length,
-      pageHeight: size,
+      pageHeight: cappedSize,
     } as sharp.CreateRaw,
   })
-    .gif({
-      delay: Array(ANIM_FRAMES.length).fill(FRAME_MS),
-      loop: 0,
-    })
+    .gif({ delay: FRAME_DELAYS, loop: 0 })
     .toBuffer();
 }
