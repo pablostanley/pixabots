@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { parts, layerOrder, layerLabel, type PartCategory } from "@/lib/parts";
 import { encode } from "@pixabots/core";
 import { Button } from "@/components/ui/button";
+import { PixelIcon } from "@/components/ui/pixel-icon";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -195,26 +196,26 @@ export default function Home() {
   return (
     <main className="flex flex-col items-center justify-center min-h-dvh gap-4 p-6">
       <div className="flex items-center gap-3" style={{ width: W }}>
-        <h1 className="text-2xl font-bold tracking-wide uppercase mr-auto">Pixabots</h1>
-        <Button variant="outline" size="icon-lg" onClick={toggleTheme} title={dark ? "Light mode" : "Dark mode"} className="text-2xl">
-          {dark ? <span className="translate-y-[0.2em]">*</span> : "•"}
+        <h1 className="text-2xl font-bold tracking-wide mr-auto">Pixabots</h1>
+        <Button variant="outline" size="icon-lg" onClick={toggleTheme} title={dark ? "Light mode" : "Dark mode"}>
+          <PixelIcon name={dark ? "lightbulb" : "moon"} />
         </Button>
         <Button
           variant="outline"
           size="icon-lg"
           onClick={toggleAnimation}
           title={animating ? "Stop" : "Play"}
-          className={`text-xl ${animating ? "bg-foreground/10" : ""}`}
+          className={animating ? "bg-foreground/10" : ""}
         >
-          {animating ? <span className="text-[10px]">■</span> : <span className="rotate-90">▲</span>}
+          <PixelIcon name={animating ? "stop" : "play"} />
         </Button>
-        <Button variant="outline" size="icon-lg" onClick={shuffle} title="Shuffle" className="text-xl">
-          ↔
+        <Button variant="outline" size="icon-lg" onClick={shuffle} title="Shuffle">
+          <PixelIcon name="shuffle" />
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="icon-lg" title="Download" className="text-xl">
-              ↓
+            <Button variant="outline" size="icon-lg" title="Download">
+              <PixelIcon name="download" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -267,7 +268,7 @@ export default function Home() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="icon-lg" className="rounded-none shrink-0 text-muted-foreground">
-                  <span className="rotate-180">▲</span>
+                  <PixelIcon name="chevron-down" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -295,8 +296,8 @@ export default function Home() {
         <a href={`${apiUrl}?size=960`} target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
           960px
         </a>
-        <button onClick={copyApiUrl} className="ml-auto hover:text-foreground transition-colors cursor-pointer">
-          {copied ? "copied" : "copy url"}
+        <button onClick={copyApiUrl} className="ml-auto hover:text-foreground transition-colors cursor-pointer" title="Copy API URL">
+          <PixelIcon name={copied ? "check" : "copy"} className="size-4" />
         </button>
       </div>
 
