@@ -16,6 +16,15 @@
 - [ ] **Animated exports** — GIF/APNG/WebP export of the bounce animation (the idle animation already exists client-side)
 - [ ] **More parts** — new variations for each category (eyes, heads, body, top). Append-only to keep IDs stable.
 
+## Polish
+
+- [ ] **Clearer ID bar UX** — the ID/json/960px/copy row isn't obvious to users. Needs better labels or a more intuitive layout (maybe a "share" or "embed" framing?)
+- [ ] **System theme detection** — default to system preference instead of forced dark mode
+- [ ] **Lighter dark-mode checkerboard** — the transparent grid background needs more contrast with the bots
+- [ ] **Background color picker** — transparent by default, but let users pick a color for exports
+- [ ] **Custom pixel tooltips** — replace native browser tooltips with styled ones using our pixel font at xs size
+- [ ] **Footer polish** — subtler text color, more spacing between links
+
 ## Ideas
 
 - [ ] Color/palette system — tint or recolor layers (expand beyond 9,856 combos)
