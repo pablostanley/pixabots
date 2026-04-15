@@ -13,7 +13,7 @@
 
 - [ ] **Docs site** — Fumadocs at `/docs` with API reference, SDK guide, usage examples, and interactive playground
 - [ ] **Publish `@pixabots/core` to npm** — so anyone can encode/decode IDs, generate random pixabots client-side
-- [ ] **Animated exports** — GIF/APNG/WebP export of the bounce animation (the idle animation already exists client-side)
+- [ ] **Animated API** — `GET /api/pixabot/{id}?animated=true` returns animated GIF/WebP of the bounce animation. Sharp 0.34 supports animated output. Reuse the 8-frame ANIM_FRAMES offsets from page.tsx, render each frame server-side, stitch into animated image.
 - [ ] **More parts** — new variations for each category (eyes, heads, body, top). Append-only to keep IDs stable.
 
 ## Polish
