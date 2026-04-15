@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+import { Pixelify_Sans } from "next/font/google";
 import "./globals.css";
 
-const geistPixel = localFont({
-  src: "./fonts/GeistPixel-Square.woff2",
+const pixelify = Pixelify_Sans({
+  subsets: ["latin"],
   variable: "--font-pixel",
 });
 
@@ -18,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistPixel.variable} dark`}>
+    <html lang="en" className={`${pixelify.variable} dark`}>
       <body className="min-h-dvh flex flex-col font-[family-name:var(--font-pixel)]">
         {children}
       </body>
