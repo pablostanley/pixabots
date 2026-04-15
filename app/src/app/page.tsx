@@ -282,7 +282,7 @@ export default function Home() {
         ))}
       </div>
 
-      <div className="border border-border p-3 flex items-center gap-3 text-sm text-muted-foreground" style={{ width: W }}>
+      <div className="border border-border h-9 px-3 flex items-center gap-3 text-sm text-muted-foreground" style={{ width: W }}>
         <span className="font-bold uppercase tracking-wide">ID</span>
         <a href={apiUrl} target="_blank" rel="noopener noreferrer" className="font-mono hover:text-foreground transition-colors">
           {pixabotId}
