@@ -5,5 +5,8 @@
     "dev": "pnpm --filter pixabots dev",
     "build": "pnpm --filter @pixabots/core build && pnpm --filter pixabots build",
     "generate-grids": "node generate-grids.mjs"
+  },
+  "devDependencies": {
+    "next": "16.2.3"
   }
 }
