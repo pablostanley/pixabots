@@ -261,7 +261,7 @@ export default function Home() {
       <div className="flex gap-1" style={{ width: W }}>
         {layerOrder.map((category) => (
           <div key={category} className="flex flex-1 min-w-0">
-            <Button variant="outline" size="lg" onClick={() => cycle(category)} className="rounded-none border-r-0 flex-1">
+            <Button variant="outline" size="lg" onClick={() => cycle(category)} className="rounded-none border-r-0 flex-1 text-sm">
               {layerLabel[category]}
             </Button>
             <DropdownMenu>
@@ -282,7 +282,7 @@ export default function Home() {
         ))}
       </div>
 
-      <div className="border border-border h-9 px-3 flex items-center gap-3 text-xs text-muted-foreground" style={{ width: W }}>
+      <div className="border border-border h-9 px-3 flex items-center gap-3 text-sm text-muted-foreground" style={{ width: W }}>
         <span className="font-bold uppercase tracking-wide">ID</span>
         <a href={apiUrl} target="_blank" rel="noopener noreferrer" className="font-mono hover:text-foreground transition-colors">
           {pixabotId}
@@ -300,7 +300,7 @@ export default function Home() {
         </button>
       </div>
 
-      <div className="text-xs text-center" style={{ width: W }}>
+      <div className="text-sm text-center" style={{ width: W }}>
         <a href="https://github.com/pablostanley/pixabots" target="_blank" rel="noopener noreferrer">github</a>
         {" · "}
         <a href="/openapi.json" target="_blank" rel="noopener noreferrer">api docs</a>
