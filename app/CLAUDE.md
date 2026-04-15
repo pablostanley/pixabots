@@ -1,28 +1,27 @@
-# Pixabots
+# Pixabots App
 
-Pixel character creator built with Next.js, shadcn/ui, and GeistPixel font.
+Next.js app — creator UI + API routes. Part of the pixabots monorepo.
+
+See root `CLAUDE.md` for project-wide conventions and `ROADMAP.md` for what's next.
 
 @AGENTS.md
 
-## Project structure
+## App structure
 
-- `src/app/page.tsx` — main UI (client component)
-- `src/lib/parts.ts` — character parts config (categories, options, file paths, display labels)
+- `src/app/page.tsx` — main creator UI (client component)
+- `src/app/api/pixabot/[id]/route.ts` — PNG/JSON endpoint
+- `src/app/api/pixabot/random/route.ts` — random pixabot endpoint
+- `src/lib/parts.ts` — re-exports from `@pixabots/core` with app-specific `/parts/` URL prefix
+- `src/lib/render.ts` — Sharp server-side compositing
+- `src/components/ui/pixel-icon.tsx` — inlined pixelarticons SVGs
 - `public/parts/{body,eyes,heads,top}/` — 32x32 PNG sprites
-- `src/app/fonts/GeistPixel-Square.woff2` — pixel font
+- `public/openapi.json` — OpenAPI 3.1 spec
 
 ## Key conventions
 
-- All UI text uses GeistPixel Square font — prefer font glyphs over icon libraries
-- Images are 32x32px pixel art, rendered on canvas with `imageSmoothingEnabled = false` and CSS `image-rendering: pixelated`
-- Z-index layer order (bottom to top): top, body, heads, eyes
-- The "eyes" category displays as "face" in the UI (see `layerLabel` in parts.ts)
-- shadcn preset is `radix-lyra` with phosphor icons (though we use font glyphs instead)
-- Dark mode is the default
-
-## Adding new parts
-
-When the user says they added new images:
-1. Read `png/` subfolders to find new files
-2. Copy new PNGs to `public/parts/`
-3. Update `src/lib/parts.ts` with new entries
+- Font: Pixelify Sans (all weights), via `next/font/google`
+- Icons: pixelarticons via `PixelIcon` component (not font glyphs)
+- Pixel art: `imageSmoothingEnabled = false`, `image-rendering: pixelated`
+- Layer order (bottom to top): top, body, heads, eyes
+- The "eyes" category displays as "face" in the UI (`layerLabel` in parts.ts)
+- Parts source of truth is `@pixabots/core` (`packages/core/src/parts.ts`)
