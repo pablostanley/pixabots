@@ -296,6 +296,10 @@ export default function Home() {
         <a href={`${apiUrl}?size=960`} target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
           960px
         </a>
+        <span className="text-border">|</span>
+        <a href={`${apiUrl}?animated=true`} target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
+          gif
+        </a>
         <button onClick={copyApiUrl} className="ml-auto hover:text-foreground transition-colors cursor-pointer" title="Copy API URL">
           <PixelIcon name={copied ? "check" : "copy"} className="size-4" />
         </button>

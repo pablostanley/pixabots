@@ -1,6 +1,6 @@
 import { type NextRequest } from "next/server";
 import { decode, isValidId, resolve } from "@pixabots/core";
-import { renderPixabot } from "@/lib/render";
+import { renderPixabot, renderAnimatedPixabot } from "@/lib/render";
 
 const VALID_SIZES = new Set([32, 64, 128, 240, 480, 960]);
 
@@ -39,16 +39,32 @@ export async function GET(
 
   const combo = decode(id);
 
+  const animated = request.nextUrl.searchParams.get("animated") === "true";
+
   if (format === "json") {
+    const origin = request.nextUrl.origin;
     return Response.json(
       {
         id,
         combo,
         parts: resolve(combo),
-        png: `${request.nextUrl.origin}/api/pixabot/${id}?size=${size}`,
+        png: `${origin}/api/pixabot/${id}?size=${size}`,
+        gif: `${origin}/api/pixabot/${id}?size=${size}&animated=true`,
       },
       { headers: CORS_HEADERS }
     );
+  }
+
+  if (animated) {
+    const buffer = await renderAnimatedPixabot(combo, size);
+    return new Response(new Uint8Array(buffer), {
+      headers: {
+        "Content-Type": "image/gif",
+        "Cache-Control": "public, max-age=31536000, immutable",
+        "CDN-Cache-Control": "public, max-age=31536000, immutable",
+        ...CORS_HEADERS,
+      },
+    });
   }
 
   const buffer = await renderPixabot(combo, size);

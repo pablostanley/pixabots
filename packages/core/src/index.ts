@@ -25,3 +25,9 @@ export {
   seededCombo,
   seededId,
 } from './random.js'
+
+export {
+  type AnimFrame,
+  FRAME_MS,
+  ANIM_FRAMES,
+} from './animation.js'
