@@ -258,24 +258,6 @@ export default function Home() {
         </ContextMenuContent>
       </ContextMenu>
 
-      <div className="flex items-center gap-2 text-xs text-muted-foreground" style={{ width: W }}>
-        <span className="font-bold uppercase tracking-wide">ID</span>
-        <a href={apiUrl} target="_blank" rel="noopener noreferrer" className="font-mono hover:text-foreground transition-colors">
-          {pixabotId}
-        </a>
-        <span className="text-border">|</span>
-        <a href={`${apiUrl}?format=json`} target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
-          json
-        </a>
-        <span className="text-border">|</span>
-        <a href={`${apiUrl}?size=960`} target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
-          960px
-        </a>
-        <button onClick={copyApiUrl} className="ml-auto hover:text-foreground transition-colors cursor-pointer">
-          {copied ? "copied" : "copy url"}
-        </button>
-      </div>
-
       <div className="flex gap-1" style={{ width: W }}>
         {layerOrder.map((category) => (
           <div key={category} className="flex flex-1 min-w-0">
@@ -300,8 +282,28 @@ export default function Home() {
         ))}
       </div>
 
+      <div className="border border-border p-3 flex items-center gap-3 text-sm text-muted-foreground" style={{ width: W }}>
+        <span className="font-bold uppercase tracking-wide">ID</span>
+        <a href={apiUrl} target="_blank" rel="noopener noreferrer" className="font-mono hover:text-foreground transition-colors">
+          {pixabotId}
+        </a>
+        <span className="text-border">|</span>
+        <a href={`${apiUrl}?format=json`} target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
+          json
+        </a>
+        <span className="text-border">|</span>
+        <a href={`${apiUrl}?size=960`} target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
+          960px
+        </a>
+        <button onClick={copyApiUrl} className="ml-auto hover:text-foreground transition-colors cursor-pointer">
+          {copied ? "copied" : "copy url"}
+        </button>
+      </div>
+
       <div className="text-xs text-center" style={{ width: W }}>
         <a href="https://github.com/pablostanley/pixabots" target="_blank" rel="noopener noreferrer">github</a>
+        {" · "}
+        <a href="/openapi.json" target="_blank" rel="noopener noreferrer">api docs</a>
         {" · "}
         by <a href="https://x.com/pablostanley" target="_blank" rel="noopener noreferrer">pablo stanley</a>
       </div>
