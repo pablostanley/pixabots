@@ -1,0 +1,139 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Pixabots API",
+    "description": "Deterministic pixel character avatars. 9,856 unique combinations, each with a 4-char base36 ID.",
+    "version": "0.1.0",
+    "license": { "name": "MIT" },
+    "contact": { "name": "Pablo Stanley", "url": "https://pablostanley.substack.com" }
+  },
+  "servers": [
+    { "url": "https://pixabots.com", "description": "Production" }
+  ],
+  "paths": {
+    "/api/pixabot/{id}": {
+      "get": {
+        "operationId": "getPixabot",
+        "summary": "Get a pixabot by ID",
+        "description": "Returns a pixel-perfect PNG image by default, or JSON metadata with `?format=json`. PNGs are cached with immutable headers.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "4-char base36 pixabot ID (e.g. `2156`, `f76a`)",
+            "schema": { "type": "string", "pattern": "^[0-9a-z]{4}$", "example": "2156" }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "description": "Image size in pixels",
+            "schema": { "type": "integer", "enum": [32, 64, 128, 240, 480, 960], "default": 128 }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "description": "Response format. Omit for PNG image, use `json` for metadata.",
+            "schema": { "type": "string", "enum": ["json"] }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pixabot image (PNG) or metadata (JSON)",
+            "content": {
+              "image/png": {
+                "schema": { "type": "string", "format": "binary" }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string", "example": "2156" },
+                    "combo": {
+                      "type": "object",
+                      "properties": {
+                        "eyes": { "type": "integer" },
+                        "heads": { "type": "integer" },
+                        "body": { "type": "integer" },
+                        "top": { "type": "integer" }
+                      }
+                    },
+                    "parts": {
+                      "type": "object",
+                      "properties": {
+                        "eyes": { "type": "string", "example": "glasses" },
+                        "heads": { "type": "string", "example": "blob" },
+                        "body": { "type": "string", "example": "wings" },
+                        "top": { "type": "string", "example": "mohawk" }
+                      }
+                    },
+                    "png": { "type": "string", "format": "uri" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID or size",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/pixabot/random": {
+      "get": {
+        "operationId": "getRandomPixabot",
+        "summary": "Get a random pixabot",
+        "description": "Returns a 302 redirect to a random pixabot's canonical URL (for caching). Use `?format=json` to get the random ID and metadata without redirect.",
+        "parameters": [
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "description": "Image size in pixels (forwarded to the redirect target)",
+            "schema": { "type": "integer", "enum": [32, 64, 128, 240, 480, 960], "default": 128 }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "description": "Use `json` to get the random ID and metadata directly (no redirect).",
+            "schema": { "type": "string", "enum": ["json"] }
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Redirect to the random pixabot's canonical PNG URL"
+          },
+          "200": {
+            "description": "Random pixabot metadata (when format=json)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string", "example": "d632" },
+                    "combo": { "type": "object" },
+                    "parts": { "type": "object" },
+                    "png": { "type": "string", "format": "uri" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

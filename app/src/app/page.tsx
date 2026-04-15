@@ -2,7 +2,9 @@
 
 import { useState, useRef } from "react";
 import { parts, layerOrder, layerLabel, type PartCategory } from "@/lib/parts";
+import { encode } from "@pixabots/core";
 import { Button } from "@/components/ui/button";
+import { PixelIcon } from "@/components/ui/pixel-icon";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -91,6 +93,10 @@ export default function Home() {
   const [selection, setSelection] = useState(randomSelection);
   const [dark, setDark] = useState(true);
   const [animating, setAnimating] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const pixabotId = encode(selection);
+  const apiUrl = `/api/pixabot/${pixabotId}`;
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imagesRef = useRef<Record<string, HTMLImageElement>>({});
@@ -141,6 +147,12 @@ export default function Home() {
 
   const shuffle = () => updateSelection(randomSelection());
 
+  const copyApiUrl = () => {
+    navigator.clipboard.writeText(window.location.origin + apiUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+
   const toggleTheme = () => {
     setDark((d) => !d);
     document.documentElement.classList.toggle("dark");
@@ -184,26 +196,26 @@ export default function Home() {
   return (
     <main className="flex flex-col items-center justify-center min-h-dvh gap-4 p-6">
       <div className="flex items-center gap-3" style={{ width: W }}>
-        <h1 className="text-2xl font-bold tracking-wide uppercase mr-auto">Pixabots</h1>
-        <Button variant="outline" size="icon-lg" onClick={toggleTheme} title={dark ? "Light mode" : "Dark mode"} className="text-2xl">
-          {dark ? <span className="translate-y-[0.2em]">*</span> : "•"}
+        <h1 className="text-2xl font-bold tracking-wide mr-auto">Pixabots</h1>
+        <Button variant="outline" size="icon-lg" onClick={toggleTheme} title={dark ? "Light mode" : "Dark mode"}>
+          <PixelIcon name={dark ? "lightbulb" : "moon"} />
         </Button>
         <Button
           variant="outline"
           size="icon-lg"
           onClick={toggleAnimation}
           title={animating ? "Stop" : "Play"}
-          className={`text-xl ${animating ? "bg-foreground/10" : ""}`}
+          className={animating ? "bg-foreground/10" : ""}
         >
-          {animating ? <span className="text-[10px]">■</span> : <span className="rotate-90">▲</span>}
+          <PixelIcon name={animating ? "stop" : "play"} />
         </Button>
-        <Button variant="outline" size="icon-lg" onClick={shuffle} title="Shuffle" className="text-xl">
-          ↔
+        <Button variant="outline" size="icon-lg" onClick={shuffle} title="Shuffle">
+          <PixelIcon name="shuffle" />
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="icon-lg" title="Download" className="text-xl">
-              ↓
+            <Button variant="outline" size="icon-lg" title="Download">
+              <PixelIcon name="download" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -250,13 +262,13 @@ export default function Home() {
       <div className="flex gap-1" style={{ width: W }}>
         {layerOrder.map((category) => (
           <div key={category} className="flex flex-1 min-w-0">
-            <Button variant="outline" size="lg" onClick={() => cycle(category)} className="rounded-none border-r-0 flex-1">
+            <Button variant="outline" size="lg" onClick={() => cycle(category)} className="rounded-none border-r-0 flex-1 text-sm">
               {layerLabel[category]}
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="icon-lg" className="rounded-none shrink-0 text-muted-foreground">
-                  <span className="rotate-180">▲</span>
+                  <PixelIcon name="chevron-down" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -271,8 +283,28 @@ export default function Home() {
         ))}
       </div>
 
-      <div className="text-xs text-center" style={{ width: W }}>
+      <div className="border border-border h-9 px-3 flex items-center gap-3 text-sm text-muted-foreground" style={{ width: W }}>
+        <span className="font-bold uppercase tracking-wide">ID</span>
+        <a href={apiUrl} target="_blank" rel="noopener noreferrer" className="font-mono hover:text-foreground transition-colors">
+          {pixabotId}
+        </a>
+        <span className="text-border">|</span>
+        <a href={`${apiUrl}?format=json`} target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
+          json
+        </a>
+        <span className="text-border">|</span>
+        <a href={`${apiUrl}?size=960`} target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
+          960px
+        </a>
+        <button onClick={copyApiUrl} className="ml-auto hover:text-foreground transition-colors cursor-pointer" title="Copy API URL">
+          <PixelIcon name={copied ? "check" : "copy"} className="size-4" />
+        </button>
+      </div>
+
+      <div className="text-sm text-center" style={{ width: W }}>
         <a href="https://github.com/pablostanley/pixabots" target="_blank" rel="noopener noreferrer">github</a>
+        {" · "}
+        <a href="/openapi.json" target="_blank" rel="noopener noreferrer">api docs</a>
         {" · "}
         by <a href="https://x.com/pablostanley" target="_blank" rel="noopener noreferrer">pablo stanley</a>
       </div>
