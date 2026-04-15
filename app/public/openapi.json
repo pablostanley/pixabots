@@ -37,14 +37,24 @@
             "required": false,
             "description": "Response format. Omit for PNG image, use `json` for metadata.",
             "schema": { "type": "string", "enum": ["json"] }
+          },
+          {
+            "name": "animated",
+            "in": "query",
+            "required": false,
+            "description": "Set to `true` to get an animated GIF of the bounce animation instead of a static PNG.",
+            "schema": { "type": "string", "enum": ["true"] }
           }
         ],
         "responses": {
           "200": {
-            "description": "Pixabot image (PNG) or metadata (JSON)",
+            "description": "Pixabot image (PNG or animated GIF) or metadata (JSON)",
             "content": {
               "image/png": {
                 "schema": { "type": "string", "format": "binary" }
+              },
+              "image/gif": {
+                "schema": { "type": "string", "format": "binary", "description": "Animated GIF (when animated=true)" }
               },
               "application/json": {
                 "schema": {

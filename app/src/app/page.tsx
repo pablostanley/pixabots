@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { parts, layerOrder, layerLabel, type PartCategory } from "@/lib/parts";
-import { encode } from "@pixabots/core";
+import { encode, randomCombo, ANIM_FRAMES, FRAME_MS, type AnimFrame } from "@pixabots/core";
 import { Button } from "@/components/ui/button";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import {
@@ -28,30 +28,6 @@ const NATIVE = 32;
 const PX = DISPLAY / NATIVE;
 const W = DISPLAY + 24;
 
-type AnimOffsets = Record<"top" | "heads" | "eyes" | "body", number>;
-
-const ANIM_FRAMES: AnimOffsets[] = [
-  { top: 0, heads: 0, eyes: 0, body: 0 },
-  { top: 0, heads: 0, eyes: 0, body: 0 },
-  { top: 0, heads: 1, eyes: 1, body: 0 },
-  { top: 1, heads: 2, eyes: 2, body: 1 },
-  { top: 2, heads: 2, eyes: 2, body: 1 },
-  { top: 2.5, heads: 2, eyes: 2, body: 1 },
-  { top: 2, heads: 1, eyes: 1, body: 1 },
-  { top: 1, heads: 0, eyes: 0, body: 0 },
-];
-
-const FRAME_MS = 72;
-
-function randomSelection(): Record<PartCategory, number> {
-  return {
-    eyes: Math.floor(Math.random() * parts.eyes.length),
-    heads: Math.floor(Math.random() * parts.heads.length),
-    body: Math.floor(Math.random() * parts.body.length),
-    top: Math.floor(Math.random() * parts.top.length),
-  };
-}
-
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -64,7 +40,7 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 function drawOnCanvas(
   canvas: HTMLCanvasElement,
   images: Record<string, HTMLImageElement>,
-  offsets?: AnimOffsets
+  offsets?: AnimFrame
 ) {
   const ctx = canvas.getContext("2d")!;
   ctx.clearRect(0, 0, DISPLAY, DISPLAY);
@@ -73,7 +49,7 @@ function drawOnCanvas(
   for (const category of layerOrder) {
     const img = images[category];
     if (!img) return;
-    const yOffset = offsets ? offsets[category as keyof AnimOffsets] * PX : 0;
+    const yOffset = offsets ? offsets[category as keyof AnimFrame] * PX : 0;
 
     if (category === "body" && yOffset > 0) {
       ctx.drawImage(img, 0, NATIVE - 1, NATIVE, 1, 0, DISPLAY - PX, DISPLAY, PX);
@@ -90,7 +66,7 @@ function drawOnCanvas(
 }
 
 export default function Home() {
-  const [selection, setSelection] = useState(randomSelection);
+  const [selection, setSelection] = useState(randomCombo);
   const [dark, setDark] = useState(true);
   const [animating, setAnimating] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -145,7 +121,7 @@ export default function Home() {
     updateSelection({ ...selRef.current, [category]: index });
   };
 
-  const shuffle = () => updateSelection(randomSelection());
+  const shuffle = () => updateSelection(randomCombo());
 
   const copyApiUrl = () => {
     navigator.clipboard.writeText(window.location.origin + apiUrl);
@@ -295,6 +271,10 @@ export default function Home() {
         <span className="text-border">|</span>
         <a href={`${apiUrl}?size=960`} target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
           960px
+        </a>
+        <span className="text-border">|</span>
+        <a href={`${apiUrl}?animated=true`} target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
+          gif
         </a>
         <button onClick={copyApiUrl} className="ml-auto hover:text-foreground transition-colors cursor-pointer" title="Copy API URL">
           <PixelIcon name={copied ? "check" : "copy"} className="size-4" />
