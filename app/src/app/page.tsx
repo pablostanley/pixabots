@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { parts, layerOrder, layerLabel, type PartCategory } from "@/lib/parts";
-import { encode } from "@pixabots/core";
+import { encode, ANIM_FRAMES, FRAME_MS, type AnimFrame } from "@pixabots/core";
 import { Button } from "@/components/ui/button";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import {
@@ -28,20 +28,7 @@ const NATIVE = 32;
 const PX = DISPLAY / NATIVE;
 const W = DISPLAY + 24;
 
-type AnimOffsets = Record<"top" | "heads" | "eyes" | "body", number>;
-
-const ANIM_FRAMES: AnimOffsets[] = [
-  { top: 0, heads: 0, eyes: 0, body: 0 },
-  { top: 0, heads: 0, eyes: 0, body: 0 },
-  { top: 0, heads: 1, eyes: 1, body: 0 },
-  { top: 1, heads: 2, eyes: 2, body: 1 },
-  { top: 2, heads: 2, eyes: 2, body: 1 },
-  { top: 2.5, heads: 2, eyes: 2, body: 1 },
-  { top: 2, heads: 1, eyes: 1, body: 1 },
-  { top: 1, heads: 0, eyes: 0, body: 0 },
-];
-
-const FRAME_MS = 72;
+type AnimOffsets = AnimFrame;
 
 function randomSelection(): Record<PartCategory, number> {
   return {

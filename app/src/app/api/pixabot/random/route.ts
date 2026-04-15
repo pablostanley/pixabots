@@ -19,12 +19,14 @@ export async function GET(request: NextRequest) {
 
   if (format === "json") {
     const combo = decode(id);
+    const origin = request.nextUrl.origin;
     return Response.json(
       {
         id,
         combo,
         parts: resolve(combo),
-        png: `${request.nextUrl.origin}/api/pixabot/${id}`,
+        png: `${origin}/api/pixabot/${id}`,
+        gif: `${origin}/api/pixabot/${id}?animated=true`,
       },
       { headers: CORS_HEADERS }
     );

@@ -34,8 +34,9 @@ pixabots/
 
 ## API
 
-- `GET /api/pixabot/{id}` — PNG image. `?size=32|64|128|240|480|960`, `?format=json` for metadata
+- `GET /api/pixabot/{id}` — PNG image. `?size=32|64|128|240|480|960`, `?format=json` for metadata, `?animated=true` for animated GIF
 - `GET /api/pixabot/random` — 302 redirect to random pixabot (or `?format=json`)
+- JSON responses include `png` and `gif` URLs
 - CORS enabled, immutable caching on deterministic endpoints
 
 ## Deployment
