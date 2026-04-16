@@ -284,7 +284,7 @@ export default function Home() {
       <div className="text-sm text-center" style={{ width: W }}>
         <a href="https://github.com/pablostanley/pixabots" target="_blank" rel="noopener noreferrer">github</a>
         {" · "}
-        <a href="/openapi.json" target="_blank" rel="noopener noreferrer">api docs</a>
+        <a href="https://github.com/pablostanley/pixabots#api" target="_blank" rel="noopener noreferrer">api docs</a>
         {" · "}
         by <a href="https://x.com/pablostanley" target="_blank" rel="noopener noreferrer">pablo stanley</a>
       </div>
