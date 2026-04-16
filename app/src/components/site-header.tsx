@@ -19,7 +19,7 @@ export function SiteHeader() {
         Pixabots
       </Link>
       <nav className="flex items-center gap-4 ml-auto">
-        <Button variant="outline" size="icon" onClick={toggleTheme} title={dark ? "Light mode" : "Dark mode"}>
+        <Button variant="ghost" size="icon" onClick={toggleTheme} title={dark ? "Light mode" : "Dark mode"}>
           <PixelIcon name={dark ? "lightbulb" : "moon"} className="size-4" />
         </Button>
         <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">
