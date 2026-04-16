@@ -7,8 +7,7 @@ import {
 } from "fumadocs-ui/page";
 import { notFound } from "next/navigation";
 import defaultMdxComponents from "fumadocs-ui/mdx";
-
-const SITE_URL = "https://pixabots.com";
+import { SITE_URL } from "@/lib/constants";
 
 export default async function Page({
   params,

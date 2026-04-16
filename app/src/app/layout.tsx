@@ -3,6 +3,7 @@ import { Pixelify_Sans } from "next/font/google";
 import { RootProvider } from "fumadocs-ui/provider/next";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { SITE_URL } from "@/lib/constants";
 import "./globals.css";
 
 const pixelify = Pixelify_Sans({
@@ -10,8 +11,6 @@ const pixelify = Pixelify_Sans({
   weight: ["400", "500", "600", "700"],
   variable: "--font-pixel",
 });
-
-const SITE_URL = "https://pixabots.com";
 
 export const metadata: Metadata = {
   title: {

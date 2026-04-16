@@ -156,25 +156,21 @@
 /* Terminal-core: Fumadocs overrides */
 :root {
   --fd-radius: 0px;
+  --fd-sidebar-background: var(--background);
+}
+
+.dark {
+  --fd-sidebar-background: var(--background);
 }
 
 [data-docs] {
   font-family: var(--font-pixel), ui-monospace, monospace;
 }
 
-/* Pixel-sharp borders everywhere */
 [data-docs] *,
 [data-docs] *::before,
 [data-docs] *::after {
   border-radius: 0 !important;
-}
-
-/* Sidebar matches content background, no scroll */
-:root {
-  --fd-sidebar-background: var(--background);
-}
-.dark {
-  --fd-sidebar-background: var(--background);
 }
 
 [data-docs] [data-sidebar],
