@@ -26,7 +26,6 @@ const SIZES = [240, 480, 960, 1920] as const;
 const DISPLAY = 480;
 const NATIVE = 32;
 const PX = DISPLAY / NATIVE;
-const W = DISPLAY + 24;
 
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -164,8 +163,9 @@ export default function Home() {
   };
 
   return (
-    <main className="flex flex-col items-center justify-center flex-1 gap-4 p-6">
-      <div className="flex items-center gap-2" style={{ width: W }}>
+    <main className="flex flex-col items-center justify-center flex-1 gap-3 p-4 sm:gap-4 sm:p-6">
+      {/* Toolbar */}
+      <div className="flex items-center gap-2 w-full max-w-[504px]">
         <span className="text-lg font-bold mr-auto">Create</span>
         <Button
           variant="outline"
@@ -174,17 +174,17 @@ export default function Home() {
           className={`text-sm gap-2 ${animating ? "bg-foreground/10" : ""}`}
         >
           <PixelIcon name={animating ? "stop" : "play"} className="size-4" />
-          {animating ? "Stop" : "Play"}
+          <span className="hidden sm:inline">{animating ? "Stop" : "Play"}</span>
         </Button>
         <Button variant="outline" size="lg" onClick={shuffle} className="text-sm gap-2">
           <PixelIcon name="shuffle" className="size-4" />
-          Shuffle
+          <span className="hidden sm:inline">Shuffle</span>
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="lg" className="text-sm gap-2">
               <PixelIcon name="download" className="size-4" />
-              Download
+              <span className="hidden sm:inline">Download</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -197,15 +197,16 @@ export default function Home() {
         </DropdownMenu>
       </div>
 
+      {/* Canvas */}
       <ContextMenu>
         <ContextMenuTrigger asChild>
-          <div className="border border-border bg-card p-3 cursor-pointer active:scale-[0.98] transition-transform" onClick={shuffle}>
+          <div className="border border-border bg-card p-2 sm:p-3 cursor-pointer active:scale-[0.98] transition-transform w-full max-w-[504px]" onClick={shuffle}>
             <div className="checkerboard">
               <canvas
                 ref={setCanvasRef}
                 width={DISPLAY}
                 height={DISPLAY}
-                className="block"
+                className="block w-full h-auto"
                 style={{ imageRendering: "pixelated" }}
               />
             </div>
@@ -228,7 +229,8 @@ export default function Home() {
         </ContextMenuContent>
       </ContextMenu>
 
-      <div className="flex gap-1" style={{ width: W }}>
+      {/* Part selectors — 2x2 on mobile, 4 in a row on desktop */}
+      <div className="grid grid-cols-2 sm:flex gap-1 w-full max-w-[504px]">
         {layerOrder.map((category) => (
           <div key={category} className="flex flex-1 min-w-0">
             <Button variant="outline" size="lg" onClick={() => cycle(category)} className="rounded-none border-r-0 flex-1 text-sm">
@@ -252,7 +254,8 @@ export default function Home() {
         ))}
       </div>
 
-      <div className="border border-border px-4 py-3 flex flex-wrap items-center gap-2 text-sm" style={{ width: W }}>
+      {/* ID bar */}
+      <div className="border border-border px-3 py-2 sm:px-4 sm:py-3 flex flex-wrap items-center gap-2 text-sm w-full max-w-[504px]">
         <span className="font-mono text-foreground">{pixabotId}</span>
         <button onClick={copyApiUrl} className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer flex items-center gap-1">
           <PixelIcon name={copied ? "check" : "copy"} className="size-4" />
@@ -270,7 +273,6 @@ export default function Home() {
           </a>
         </div>
       </div>
-
     </main>
   );
 }

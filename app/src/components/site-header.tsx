@@ -14,11 +14,11 @@ export function SiteHeader() {
   };
 
   return (
-    <header className="flex items-center gap-4 px-6 h-12 border-b border-border text-sm">
+    <header className="flex items-center gap-2 sm:gap-4 px-4 sm:px-6 h-12 border-b border-border text-sm">
       <Link href="/" className="font-bold text-lg tracking-wide hover:text-foreground transition-colors">
         Pixabots
       </Link>
-      <nav className="flex items-center gap-4 ml-auto">
+      <nav className="flex items-center gap-2 sm:gap-4 ml-auto">
         <Button variant="ghost" size="icon" onClick={toggleTheme} title={dark ? "Light mode" : "Dark mode"}>
           <PixelIcon name={dark ? "lightbulb" : "moon"} className="size-4" />
         </Button>
@@ -28,10 +28,10 @@ export function SiteHeader() {
         <Link href="/docs" className="text-muted-foreground hover:text-foreground transition-colors">
           docs
         </Link>
-        <Link href="/docs/api" className="text-muted-foreground hover:text-foreground transition-colors">
+        <Link href="/docs/api" className="hidden sm:inline text-muted-foreground hover:text-foreground transition-colors">
           api
         </Link>
-        <a href="https://github.com/pablostanley/pixabots" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+        <a href="https://github.com/pablostanley/pixabots" target="_blank" rel="noopener noreferrer" className="hidden sm:inline text-muted-foreground hover:text-foreground transition-colors">
           github
         </a>
       </nav>
