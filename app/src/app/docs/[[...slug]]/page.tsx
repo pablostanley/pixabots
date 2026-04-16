@@ -7,7 +7,6 @@ import {
 } from "fumadocs-ui/page";
 import { notFound } from "next/navigation";
 import defaultMdxComponents from "fumadocs-ui/mdx";
-import type { ComponentType } from "react";
 
 export default async function Page({
   params,
@@ -18,8 +17,8 @@ export default async function Page({
   const page = source.getPage(slug);
   if (!page) notFound();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const data = page.data as any;
+  // Fumadocs loader types PageData (no body/toc) but MDX source produces DocData (with body/toc)
+  const data = page.data as typeof page.data & { body: React.ComponentType; toc: typeof page.data.toc };
   const MDX = data.body;
 
   return (
