@@ -1,4 +1,4 @@
 {
   "title": "Pixabots",
-  "pages": ["---Overview---", "index", "---API---", "api", "api/animated", "---SDK---", "sdk", "---Reference---", "parts"]
+  "pages": ["index", "api", "sdk", "parts"]
 }
