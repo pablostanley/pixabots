@@ -17,7 +17,7 @@
 
 ## Up Next
 
-- [ ] **Responsive creator** — the homepage character creator overflows on mobile. Canvas, buttons, and ID bar need to scale down.
+- [ ] **System theme detection** — default to system preference instead of forced dark mode
 
 ## Recently Done
 
@@ -25,11 +25,11 @@
 - [x] **Published `@pixabots/core` to npm** — v0.1.0 live at npmjs.com/package/@pixabots/core
 - [x] **AGENTS.md cleanup** — updated for Pixelify Sans + pixelarticons
 - [x] **Removed old GeistPixel font file**
+- [x] **Responsive creator** — fluid canvas, icon-only buttons on mobile, 2x2 part grid, flex-wrap ID bar
 
 ## Polish
 
 - [x] **Clearer ID bar UX** — redesigned with labeled PNG/GIF/JSON links and "Copy URL" button
-- [ ] **System theme detection** — default to system preference instead of forced dark mode
 - [ ] **Lighter dark-mode checkerboard** — the transparent grid background needs more contrast with the bots
 - [ ] **Background color picker** — transparent by default, but let users pick a color for exports
 - [ ] **Custom pixel tooltips** — replace native browser tooltips with styled ones using our pixel font
