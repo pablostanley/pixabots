@@ -1,6 +1,18 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { PixelIcon } from "@/components/ui/pixel-icon";
 
 export function SiteHeader() {
+  const [dark, setDark] = useState(true);
+
+  const toggleTheme = () => {
+    setDark((d) => !d);
+    document.documentElement.classList.toggle("dark");
+  };
+
   return (
     <header className="flex items-center gap-4 px-6 h-12 border-b border-border text-sm">
       <Link href="/" className="font-bold text-lg tracking-wide hover:text-foreground transition-colors">
@@ -19,6 +31,9 @@ export function SiteHeader() {
         <a href="https://github.com/pablostanley/pixabots" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
           github
         </a>
+        <Button variant="outline" size="icon" onClick={toggleTheme} title={dark ? "Light mode" : "Dark mode"}>
+          <PixelIcon name={dark ? "lightbulb" : "moon"} className="size-4" />
+        </Button>
       </nav>
     </header>
   );

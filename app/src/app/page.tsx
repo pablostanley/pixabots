@@ -67,7 +67,6 @@ function drawOnCanvas(
 
 export default function Home() {
   const [selection, setSelection] = useState(randomCombo);
-  const [dark, setDark] = useState(true);
   const [animating, setAnimating] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -109,14 +108,6 @@ export default function Home() {
     loadAndDraw(next);
   }
 
-  const cycle = (category: PartCategory) => {
-    const prev = selRef.current;
-    updateSelection({
-      ...prev,
-      [category]: (prev[category] + 1) % parts[category].length,
-    });
-  };
-
   const pick = (category: PartCategory, index: number) => {
     updateSelection({ ...selRef.current, [category]: index });
   };
@@ -127,11 +118,6 @@ export default function Home() {
     navigator.clipboard.writeText(window.location.origin + apiUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
-  };
-
-  const toggleTheme = () => {
-    setDark((d) => !d);
-    document.documentElement.classList.toggle("dark");
   };
 
   const toggleAnimation = () => {
@@ -171,27 +157,26 @@ export default function Home() {
 
   return (
     <main className="flex flex-col items-center justify-center flex-1 gap-4 p-6">
-      <div className="flex items-center gap-3" style={{ width: W }}>
-        <span className="text-sm text-muted-foreground mr-auto">mix and match</span>
-        <Button variant="outline" size="icon-lg" onClick={toggleTheme} title={dark ? "Light mode" : "Dark mode"}>
-          <PixelIcon name={dark ? "lightbulb" : "moon"} />
-        </Button>
+      <div className="flex items-center gap-2" style={{ width: W }}>
+        <span className="text-lg font-bold mr-auto">Create</span>
         <Button
           variant="outline"
-          size="icon-lg"
+          size="lg"
           onClick={toggleAnimation}
-          title={animating ? "Stop" : "Play"}
-          className={animating ? "bg-foreground/10" : ""}
+          className={`text-sm gap-2 ${animating ? "bg-foreground/10" : ""}`}
         >
-          <PixelIcon name={animating ? "stop" : "play"} />
+          <PixelIcon name={animating ? "stop" : "play"} className="size-4" />
+          {animating ? "Stop" : "Play"}
         </Button>
-        <Button variant="outline" size="icon-lg" onClick={shuffle} title="Shuffle">
-          <PixelIcon name="shuffle" />
+        <Button variant="outline" size="lg" onClick={shuffle} className="text-sm gap-2">
+          <PixelIcon name="shuffle" className="size-4" />
+          Shuffle
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="icon-lg" title="Download">
-              <PixelIcon name="download" />
+            <Button variant="outline" size="lg" className="text-sm gap-2">
+              <PixelIcon name="download" className="size-4" />
+              Download
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -235,27 +220,26 @@ export default function Home() {
         </ContextMenuContent>
       </ContextMenu>
 
-      <div className="flex gap-1" style={{ width: W }}>
+      <div className="flex flex-col gap-1" style={{ width: W }}>
         {layerOrder.map((category) => (
-          <div key={category} className="flex flex-1 min-w-0">
-            <Button variant="outline" size="lg" onClick={() => cycle(category)} className="rounded-none border-r-0 flex-1 text-sm">
-              {layerLabel[category]}
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon-lg" className="rounded-none shrink-0 text-muted-foreground">
-                  <PixelIcon name="chevron-down" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {parts[category].map((option, i) => (
-                  <DropdownMenuItem key={option.name} onClick={() => pick(category, i)} className={`text-sm ${i === selection[category] ? "bg-accent" : ""}`}>
-                    {option.name}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          <DropdownMenu key={category}>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="lg" className="w-full justify-between text-sm px-4">
+                <span className="text-muted-foreground">{layerLabel[category]}</span>
+                <span className="flex items-center gap-2">
+                  {parts[category][selection[category]].name}
+                  <PixelIcon name="chevron-down" className="size-4 text-muted-foreground" />
+                </span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-48">
+              {parts[category].map((option, i) => (
+                <DropdownMenuItem key={option.name} onClick={() => pick(category, i)} className={`text-sm ${i === selection[category] ? "bg-accent" : ""}`}>
+                  {option.name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         ))}
       </div>
 
