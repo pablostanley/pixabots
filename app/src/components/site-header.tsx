@@ -19,6 +19,9 @@ export function SiteHeader() {
         Pixabots
       </Link>
       <nav className="flex items-center gap-4 ml-auto">
+        <Button variant="outline" size="icon" onClick={toggleTheme} title={dark ? "Light mode" : "Dark mode"}>
+          <PixelIcon name={dark ? "lightbulb" : "moon"} className="size-4" />
+        </Button>
         <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">
           create
         </Link>
@@ -31,9 +34,6 @@ export function SiteHeader() {
         <a href="https://github.com/pablostanley/pixabots" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
           github
         </a>
-        <Button variant="outline" size="icon" onClick={toggleTheme} title={dark ? "Light mode" : "Dark mode"}>
-          <PixelIcon name={dark ? "lightbulb" : "moon"} className="size-4" />
-        </Button>
       </nav>
     </header>
   );
