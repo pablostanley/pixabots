@@ -169,10 +169,14 @@
   border-radius: 0 !important;
 }
 
-/* Sidebar matches content background */
+/* Sidebar matches content background, no scroll */
 :root {
   --fd-sidebar-background: var(--background);
 }
 .dark {
   --fd-sidebar-background: var(--background);
+}
+
+[data-docs] [data-sidebar] {
+  overflow: visible;
 }
