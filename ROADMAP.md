@@ -18,7 +18,7 @@
 ## Up Next
 
 - [ ] **Docs site** — Fumadocs at `/docs` with API reference, SDK guide, usage examples, and interactive playground
-- [ ] **Publish `@pixabots/core` to npm** — so anyone can encode/decode IDs, generate random pixabots client-side. Once published, swap designteam's inlined `randomPixabotId()` for the real package.
+- [x] **Published `@pixabots/core` to npm** — v0.1.0 live at npmjs.com/package/@pixabots/core
 - [ ] **AGENTS.md cleanup** — still references GeistPixel font glyphs and phosphor icons, needs updating for Pixelify Sans + pixelarticons
 - [ ] **Remove old GeistPixel font file** — `app/src/app/fonts/GeistPixel-Square.woff2` is still on disk but no longer imported
 
