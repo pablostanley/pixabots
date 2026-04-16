@@ -13,6 +13,9 @@ export function SiteHeader() {
         <Link href="/docs" className="text-muted-foreground hover:text-foreground transition-colors">
           docs
         </Link>
+        <Link href="/docs/api" className="text-muted-foreground hover:text-foreground transition-colors">
+          api
+        </Link>
         <a href="https://github.com/pablostanley/pixabots" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
           github
         </a>

@@ -168,3 +168,11 @@
 [data-docs] *::after {
   border-radius: 0 !important;
 }
+
+/* Sidebar matches content background */
+:root {
+  --fd-sidebar-background: var(--background);
+}
+.dark {
+  --fd-sidebar-background: var(--background);
+}
