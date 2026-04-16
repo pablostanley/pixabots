@@ -177,7 +177,8 @@
   --fd-sidebar-background: var(--background);
 }
 
-[data-docs] [data-sidebar] {
+[data-docs] [data-sidebar],
+[data-docs] .bg-fd-card {
   overflow: visible;
   background: transparent !important;
 }
