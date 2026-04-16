@@ -2,9 +2,15 @@
 
 Pixel character creator and avatar API. 9,856 unique combinations from 4 categories of 32x32 sprites.
 
-## Roadmap
+## Checklists
 
-**Always check and update `ROADMAP.md` when starting or finishing work.** Move items between sections (Ideas → Up Next → Done) as they progress. Add new ideas as they come up.
+**After every change, check if any of these need updating:**
+
+- `ROADMAP.md` — move items between sections, add new ideas
+- `app/content/docs/` — update docs if API params, SDK functions, or parts changed
+- `app/public/openapi.json` — update if API endpoints or params changed
+- `@pixabots/core` on npm — bump version + republish if `packages/core/` changed
+- `app/AGENTS.md` — update if conventions changed
 
 ## Monorepo structure
 
