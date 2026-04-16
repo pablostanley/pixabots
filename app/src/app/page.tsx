@@ -108,6 +108,14 @@ export default function Home() {
     loadAndDraw(next);
   }
 
+  const cycle = (category: PartCategory) => {
+    const prev = selRef.current;
+    updateSelection({
+      ...prev,
+      [category]: (prev[category] + 1) % parts[category].length,
+    });
+  };
+
   const pick = (category: PartCategory, index: number) => {
     updateSelection({ ...selRef.current, [category]: index });
   };
@@ -220,49 +228,47 @@ export default function Home() {
         </ContextMenuContent>
       </ContextMenu>
 
-      <div className="flex flex-col gap-1" style={{ width: W }}>
+      <div className="flex gap-1" style={{ width: W }}>
         {layerOrder.map((category) => (
-          <DropdownMenu key={category}>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="lg" className="w-full justify-between text-sm px-4">
-                <span className="text-muted-foreground">{layerLabel[category]}</span>
-                <span className="flex items-center gap-2">
-                  {parts[category][selection[category]].name}
-                  <PixelIcon name="chevron-down" className="size-4 text-muted-foreground" />
-                </span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="min-w-48">
-              {parts[category].map((option, i) => (
-                <DropdownMenuItem key={option.name} onClick={() => pick(category, i)} className={`text-sm ${i === selection[category] ? "bg-accent" : ""}`}>
-                  {option.name}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div key={category} className="flex flex-1 min-w-0">
+            <Button variant="outline" size="lg" onClick={() => cycle(category)} className="rounded-none border-r-0 flex-1 text-sm">
+              {layerLabel[category]}
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon-lg" className="rounded-none shrink-0 text-muted-foreground">
+                  <PixelIcon name="chevron-down" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {parts[category].map((option, i) => (
+                  <DropdownMenuItem key={option.name} onClick={() => pick(category, i)} className={`text-sm ${i === selection[category] ? "bg-accent" : ""}`}>
+                    {option.name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         ))}
       </div>
 
-      <div className="border border-border h-9 px-3 flex items-center gap-3 text-sm text-muted-foreground" style={{ width: W }}>
-        <span className="font-bold uppercase tracking-wide">ID</span>
-        <a href={apiUrl} target="_blank" rel="noopener noreferrer" className="font-mono hover:text-foreground transition-colors">
-          {pixabotId}
-        </a>
-        <span className="text-border">|</span>
-        <a href={`${apiUrl}?format=json`} target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
-          json
-        </a>
-        <span className="text-border">|</span>
-        <a href={`${apiUrl}?size=960`} target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
-          960px
-        </a>
-        <span className="text-border">|</span>
-        <a href={`${apiUrl}?animated=true`} target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
-          gif
-        </a>
-        <button onClick={copyApiUrl} className="ml-auto hover:text-foreground transition-colors cursor-pointer" title="Copy API URL">
+      <div className="border border-border px-4 py-3 flex flex-wrap items-center gap-2 text-sm" style={{ width: W }}>
+        <span className="font-mono text-foreground">{pixabotId}</span>
+        <button onClick={copyApiUrl} className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer flex items-center gap-1">
           <PixelIcon name={copied ? "check" : "copy"} className="size-4" />
+          {copied ? "Copied!" : "Copy URL"}
         </button>
+        <div className="flex items-center gap-2 ml-auto">
+          <a href={apiUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+            PNG
+          </a>
+          <a href={`${apiUrl}?animated=true`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+            GIF
+          </a>
+          <a href={`${apiUrl}?format=json`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+            JSON
+          </a>
+        </div>
       </div>
 
     </main>
