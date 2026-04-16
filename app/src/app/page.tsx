@@ -67,7 +67,6 @@ function drawOnCanvas(
 
 export default function Home() {
   const [selection, setSelection] = useState(randomCombo);
-  const [dark, setDark] = useState(true);
   const [animating, setAnimating] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -129,11 +128,6 @@ export default function Home() {
     setTimeout(() => setCopied(false), 1500);
   };
 
-  const toggleTheme = () => {
-    setDark((d) => !d);
-    document.documentElement.classList.toggle("dark");
-  };
-
   const toggleAnimation = () => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -170,28 +164,27 @@ export default function Home() {
   };
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-dvh gap-4 p-6">
-      <div className="flex items-center gap-3" style={{ width: W }}>
-        <h1 className="text-2xl font-bold tracking-wide mr-auto">Pixabots</h1>
-        <Button variant="outline" size="icon-lg" onClick={toggleTheme} title={dark ? "Light mode" : "Dark mode"}>
-          <PixelIcon name={dark ? "lightbulb" : "moon"} />
-        </Button>
+    <main className="flex flex-col items-center justify-center flex-1 gap-4 p-6">
+      <div className="flex items-center gap-2" style={{ width: W }}>
+        <span className="text-lg font-bold mr-auto">Create</span>
         <Button
           variant="outline"
-          size="icon-lg"
+          size="lg"
           onClick={toggleAnimation}
-          title={animating ? "Stop" : "Play"}
-          className={animating ? "bg-foreground/10" : ""}
+          className={`text-sm gap-2 ${animating ? "bg-foreground/10" : ""}`}
         >
-          <PixelIcon name={animating ? "stop" : "play"} />
+          <PixelIcon name={animating ? "stop" : "play"} className="size-4" />
+          {animating ? "Stop" : "Play"}
         </Button>
-        <Button variant="outline" size="icon-lg" onClick={shuffle} title="Shuffle">
-          <PixelIcon name="shuffle" />
+        <Button variant="outline" size="lg" onClick={shuffle} className="text-sm gap-2">
+          <PixelIcon name="shuffle" className="size-4" />
+          Shuffle
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="icon-lg" title="Download">
-              <PixelIcon name="download" />
+            <Button variant="outline" size="lg" className="text-sm gap-2">
+              <PixelIcon name="download" className="size-4" />
+              Download
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -259,33 +252,25 @@ export default function Home() {
         ))}
       </div>
 
-      <div className="border border-border h-9 px-3 flex items-center gap-3 text-sm text-muted-foreground" style={{ width: W }}>
-        <span className="font-bold uppercase tracking-wide">ID</span>
-        <a href={apiUrl} target="_blank" rel="noopener noreferrer" className="font-mono hover:text-foreground transition-colors">
-          {pixabotId}
-        </a>
-        <span className="text-border">|</span>
-        <a href={`${apiUrl}?format=json`} target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
-          json
-        </a>
-        <span className="text-border">|</span>
-        <a href={`${apiUrl}?size=960`} target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
-          960px
-        </a>
-        <span className="text-border">|</span>
-        <a href={`${apiUrl}?animated=true`} target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
-          gif
-        </a>
-        <button onClick={copyApiUrl} className="ml-auto hover:text-foreground transition-colors cursor-pointer" title="Copy API URL">
+      <div className="border border-border px-4 py-3 flex flex-wrap items-center gap-2 text-sm" style={{ width: W }}>
+        <span className="font-mono text-foreground">{pixabotId}</span>
+        <button onClick={copyApiUrl} className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer flex items-center gap-1">
           <PixelIcon name={copied ? "check" : "copy"} className="size-4" />
+          {copied ? "Copied!" : "Copy URL"}
         </button>
+        <div className="flex items-center gap-2 ml-auto">
+          <a href={apiUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+            PNG
+          </a>
+          <a href={`${apiUrl}?animated=true`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+            GIF
+          </a>
+          <a href={`${apiUrl}?format=json`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+            JSON
+          </a>
+        </div>
       </div>
 
-      <div className="flex items-center gap-4 text-sm text-muted-foreground" style={{ width: W }}>
-        <a href="https://github.com/pablostanley/pixabots" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">github</a>
-        <a href="/openapi.json" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">api</a>
-        <span className="ml-auto hover:text-foreground transition-colors">by <a href="https://x.com/pablostanley" target="_blank" rel="noopener noreferrer">pablo stanley</a></span>
-      </div>
     </main>
   );
 }

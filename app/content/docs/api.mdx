@@ -1,0 +1,93 @@
+---
+title: API
+description: REST API for fetching pixabot images, animations, and metadata
+---
+
+All endpoints support CORS and return immutable cache headers for deterministic URLs.
+
+## GET /api/pixabot/\{id\}
+
+Returns a pixabot image or metadata.
+
+### Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `id` | path | required | 4-char base36 pixabot ID (e.g. `2156`, `f76a`) |
+| `size` | query | `128` | Image size in pixels: `32`, `64`, `128`, `240`, `480`, `960` |
+| `format` | query | — | Set to `json` for metadata instead of image |
+| `animated` | query | — | Set to `true` for an animated GIF |
+
+### PNG (default)
+
+```bash
+curl https://pixabots.com/api/pixabot/2156 -o pixabot.png
+curl https://pixabots.com/api/pixabot/2156?size=480 -o pixabot-480.png
+```
+
+### Animated GIF
+
+Add `?animated=true` to get the idle bounce animation:
+
+```bash
+curl https://pixabots.com/api/pixabot/2156?animated=true -o bounce.gif
+curl https://pixabots.com/api/pixabot/2156?animated=true&size=480 -o bounce-480.gif
+```
+
+<img src="/api/pixabot/2156?animated=true&size=128" alt="Animated pixabot" width="128" height="128" style={{imageRendering: 'pixelated'}} />
+
+Animated GIFs are capped at **480px** max. The animation is 8 frames at 72ms (~14fps).
+
+### JSON metadata
+
+```bash
+curl https://pixabots.com/api/pixabot/2156?format=json
+```
+
+```json
+{
+  "id": "2156",
+  "combo": { "eyes": 2, "heads": 1, "body": 5, "top": 6 },
+  "parts": {
+    "eyes": "glasses",
+    "heads": "blob",
+    "body": "wings",
+    "top": "mohawk"
+  },
+  "png": "https://pixabots.com/api/pixabot/2156?size=128",
+  "gif": "https://pixabots.com/api/pixabot/2156?size=128&animated=true"
+}
+```
+
+### Errors
+
+```bash
+curl https://pixabots.com/api/pixabot/zzzz
+# → {"error":"Invalid pixabot ID"}
+```
+
+---
+
+## GET /api/pixabot/random
+
+Returns a random pixabot. Redirects to the deterministic URL so the image gets cached.
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `size` | query | `128` | Forwarded to the redirect target |
+| `format` | query | — | Set to `json` to get the random ID directly (no redirect) |
+
+```bash
+curl -L https://pixabots.com/api/pixabot/random -o random.png
+curl https://pixabots.com/api/pixabot/random?format=json
+```
+
+---
+
+## Caching
+
+Deterministic endpoints return `Cache-Control: public, max-age=31536000, immutable`. Same ID + size always produces the same image, so CDNs cache it forever. The `/random` endpoint never caches (302 redirect).
+
+## OpenAPI Spec
+
+Full spec at [`/openapi.json`](https://pixabots.com/openapi.json).

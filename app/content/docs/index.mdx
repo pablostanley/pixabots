@@ -1,0 +1,74 @@
+---
+title: Overview
+description: Pixel character avatars with deterministic IDs
+---
+
+Pixabots are 32x32 pixel art characters built from 4 layers. Every combination gets a unique 4-character ID.
+
+```
+16 eyes x 8 heads x 7 bodies x 11 tops = 9,856 unique characters
+```
+
+## How IDs work
+
+Each pixabot ID is a 4-char base36 string. One character per layer:
+
+| Position | Layer | Range | Example |
+|----------|-------|-------|---------|
+| 1st char | eyes | 0-f (16 options) | `2` = glasses |
+| 2nd char | heads | 0-7 (8 options) | `1` = blob |
+| 3rd char | body | 0-6 (7 options) | `5` = wings |
+| 4th char | top | 0-a (11 options) | `6` = mohawk |
+
+So `2156` = glasses + blob + wings + mohawk:
+
+<img src="/api/pixabot/2156?size=240" alt="Pixabot 2156" width="240" height="240" style={{imageRendering: 'pixelated'}} />
+
+Same ID always returns the same character. No database, pure math.
+
+## Quick start
+
+Fetch any pixabot as a PNG:
+
+```bash
+curl https://pixabots.com/api/pixabot/2156 -o pixabot.png
+```
+
+Get a random one:
+
+```bash
+curl https://pixabots.com/api/pixabot/random -L -o random.png
+```
+
+Get metadata:
+
+```bash
+curl https://pixabots.com/api/pixabot/2156?format=json
+```
+
+```json
+{
+  "id": "2156",
+  "combo": { "eyes": 2, "heads": 1, "body": 5, "top": 6 },
+  "parts": { "eyes": "glasses", "heads": "blob", "body": "wings", "top": "mohawk" },
+  "png": "https://pixabots.com/api/pixabot/2156?size=128",
+  "gif": "https://pixabots.com/api/pixabot/2156?size=128&animated=true"
+}
+```
+
+## Use as an avatar
+
+Drop a pixabot anywhere you need an avatar:
+
+```html
+<img src="https://pixabots.com/api/pixabot/f76a?size=240" alt="pixabot" />
+```
+
+Use the [SDK](/docs/sdk) to generate IDs deterministically from usernames, emails, or any string:
+
+```typescript
+import { seededId } from "@pixabots/core";
+
+const avatarId = seededId("user@example.com"); // always the same pixabot
+const url = `https://pixabots.com/api/pixabot/${avatarId}?size=240`;
+```

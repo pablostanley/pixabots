@@ -17,14 +17,18 @@
 
 ## Up Next
 
-- [ ] **Docs site** — Fumadocs at `/docs` with API reference, SDK guide, usage examples, and interactive playground
+- [ ] **Responsive creator** — the homepage character creator overflows on mobile. Canvas, buttons, and ID bar need to scale down.
+
+## Recently Done
+
+- [x] **Docs site** — Fumadocs at `/docs` with API reference, SDK, parts catalog, shared header/footer, SEO metadata
 - [x] **Published `@pixabots/core` to npm** — v0.1.0 live at npmjs.com/package/@pixabots/core
-- [ ] **AGENTS.md cleanup** — still references GeistPixel font glyphs and phosphor icons, needs updating for Pixelify Sans + pixelarticons
-- [ ] **Remove old GeistPixel font file** — `app/src/app/fonts/GeistPixel-Square.woff2` is still on disk but no longer imported
+- [x] **AGENTS.md cleanup** — updated for Pixelify Sans + pixelarticons
+- [x] **Removed old GeistPixel font file**
 
 ## Polish
 
-- [ ] **Clearer ID bar UX** — the ID/json/960px/gif/copy row isn't obvious to users. Needs better labels or a more intuitive layout (maybe a "share" or "embed" framing?)
+- [x] **Clearer ID bar UX** — redesigned with labeled PNG/GIF/JSON links and "Copy URL" button
 - [ ] **System theme detection** — default to system preference instead of forced dark mode
 - [ ] **Lighter dark-mode checkerboard** — the transparent grid background needs more contrast with the bots
 - [ ] **Background color picker** — transparent by default, but let users pick a color for exports
