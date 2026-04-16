@@ -281,7 +281,7 @@ export default function Home() {
         </button>
       </div>
 
-      <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground" style={{ width: W }}>
+      <div className="flex items-center gap-4 text-sm text-muted-foreground" style={{ width: W }}>
         <a href="https://github.com/pablostanley/pixabots" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">github</a>
         <a href="/openapi.json" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">api</a>
         <span className="ml-auto hover:text-foreground transition-colors">by <a href="https://x.com/pablostanley" target="_blank" rel="noopener noreferrer">pablo stanley</a></span>
