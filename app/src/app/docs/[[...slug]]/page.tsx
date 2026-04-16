@@ -8,6 +8,8 @@ import {
 import { notFound } from "next/navigation";
 import defaultMdxComponents from "fumadocs-ui/mdx";
 
+const SITE_URL = "https://pixabots.com";
+
 export default async function Page({
   params,
 }: {
@@ -45,8 +47,36 @@ export async function generateMetadata({
   const page = source.getPage(slug);
   if (!page) notFound();
 
+  const title = page.data.title ?? "Docs";
+  const description =
+    page.data.description ??
+    "Pixabots documentation — API reference, SDK guide, and parts catalog.";
+  const url = `${SITE_URL}/docs/${slug?.join("/") ?? ""}`;
+
   return {
-    title: `${page.data.title} — Pixabots`,
-    description: page.data.description,
+    title,
+    description,
+    openGraph: {
+      type: "article",
+      title: `${title} — Pixabots`,
+      description,
+      url,
+      siteName: "Pixabots",
+      images: [
+        {
+          url: `${SITE_URL}/api/pixabot/2156?size=960`,
+          width: 960,
+          height: 960,
+          alt: "Pixabot 2156",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary",
+      title: `${title} — Pixabots`,
+      description,
+      images: [`${SITE_URL}/api/pixabot/2156?size=480`],
+      creator: "@pablostanley",
+    },
   };
 }
