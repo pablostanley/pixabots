@@ -170,9 +170,9 @@ export default function Home() {
   };
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-dvh gap-4 p-6">
+    <main className="flex flex-col items-center justify-center flex-1 gap-4 p-6">
       <div className="flex items-center gap-3" style={{ width: W }}>
-        <h1 className="text-2xl font-bold tracking-wide mr-auto">Pixabots</h1>
+        <span className="text-sm text-muted-foreground mr-auto">mix and match</span>
         <Button variant="outline" size="icon-lg" onClick={toggleTheme} title={dark ? "Light mode" : "Dark mode"}>
           <PixelIcon name={dark ? "lightbulb" : "moon"} />
         </Button>
@@ -281,11 +281,6 @@ export default function Home() {
         </button>
       </div>
 
-      <div className="flex items-center gap-4 text-sm text-muted-foreground" style={{ width: W }}>
-        <a href="https://github.com/pablostanley/pixabots" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">github</a>
-        <a href="/openapi.json" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">api</a>
-        <span className="ml-auto hover:text-foreground transition-colors">by <a href="https://x.com/pablostanley" target="_blank" rel="noopener noreferrer">pablo stanley</a></span>
-      </div>
     </main>
   );
 }

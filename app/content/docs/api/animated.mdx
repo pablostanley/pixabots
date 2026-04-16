@@ -1,0 +1,49 @@
+---
+title: Animated GIF
+description: Get bouncing pixabot animations via the API
+---
+
+Add `?animated=true` to any pixabot URL to get an animated GIF of the idle bounce animation.
+
+```bash
+curl https://pixabots.com/api/pixabot/2156?animated=true -o bounce.gif
+```
+
+<img src="/api/pixabot/2156?animated=true&size=128" alt="Animated pixabot" width="128" height="128" style={{imageRendering: 'pixelated'}} />
+
+## Parameters
+
+Works with the same `size` parameter as static PNGs:
+
+```bash
+# Small (128px)
+curl https://pixabots.com/api/pixabot/2156?animated=true&size=128
+
+# Large (480px max)
+curl https://pixabots.com/api/pixabot/2156?animated=true&size=480
+```
+
+## Size cap
+
+Animated GIFs are capped at **480px** maximum to keep file sizes reasonable and prevent memory issues on the server. If you request `size=960` with `animated=true`, the GIF will render at 480px.
+
+## How it works
+
+The animation is an 8-frame idle bounce at 72ms per frame (~14fps). Each frame shifts the 4 layers by different Y-offsets to create a squash-and-stretch bounce effect:
+
+| Frame | Top | Heads | Eyes | Body |
+|-------|-----|-------|------|------|
+| 1 | 0 | 0 | 0 | 0 |
+| 2 | 0 | 0 | 0 | 0 |
+| 3 | 0 | 1 | 1 | 0 |
+| 4 | 1 | 2 | 2 | 1 |
+| 5 | 2 | 2 | 2 | 1 |
+| 6 | 2.5 | 2 | 2 | 1 |
+| 7 | 2 | 1 | 1 | 1 |
+| 8 | 1 | 0 | 0 | 0 |
+
+Values are Y-offsets in native pixels (32x32 grid). The server renders each frame with Sharp, composites them, and returns an animated GIF.
+
+## Caching
+
+Animated GIFs use the same immutable caching as PNGs. Same ID + size always produces the same animation.

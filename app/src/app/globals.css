@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "fumadocs-ui/css/neutral.css";
+@import "fumadocs-ui/css/preset.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -72,7 +74,7 @@
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
+  --radius: 0rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -149,4 +151,20 @@
     linear-gradient(45deg, transparent 75%, oklch(0.2 0 0) 75%),
     linear-gradient(-45deg, transparent 75%, oklch(0.2 0 0) 75%);
   background-color: oklch(0.17 0 0);
+}
+
+/* Terminal-core: Fumadocs overrides */
+:root {
+  --fd-radius: 0px;
+}
+
+[data-docs] {
+  font-family: var(--font-pixel), ui-monospace, monospace;
+}
+
+/* Pixel-sharp borders everywhere */
+[data-docs] *,
+[data-docs] *::before,
+[data-docs] *::after {
+  border-radius: 0 !important;
 }

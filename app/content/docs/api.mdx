@@ -1,0 +1,117 @@
+---
+title: API Reference
+description: REST API for fetching pixabot images and metadata
+---
+
+All endpoints support CORS and return immutable cache headers for deterministic URLs.
+
+## GET /api/pixabot/\{id\}
+
+Returns a pixabot image or metadata.
+
+### Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `id` | path | required | 4-char base36 pixabot ID (e.g. `2156`, `f76a`) |
+| `size` | query | `128` | Image size in pixels: `32`, `64`, `128`, `240`, `480`, `960` |
+| `format` | query | — | Set to `json` for metadata instead of image |
+| `animated` | query | — | Set to `true` for an animated GIF ([details](/docs/api/animated)) |
+
+### Examples
+
+**PNG image (default):**
+
+```bash
+curl https://pixabots.com/api/pixabot/2156 -o pixabot.png
+```
+
+**Specific size:**
+
+```bash
+curl https://pixabots.com/api/pixabot/2156?size=480 -o pixabot-480.png
+```
+
+**JSON metadata:**
+
+```bash
+curl https://pixabots.com/api/pixabot/2156?format=json
+```
+
+Response:
+
+```json
+{
+  "id": "2156",
+  "combo": { "eyes": 2, "heads": 1, "body": 5, "top": 6 },
+  "parts": {
+    "eyes": "glasses",
+    "heads": "blob",
+    "body": "wings",
+    "top": "mohawk"
+  },
+  "png": "https://pixabots.com/api/pixabot/2156?size=128",
+  "gif": "https://pixabots.com/api/pixabot/2156?size=128&animated=true"
+}
+```
+
+**Invalid ID:**
+
+```bash
+curl https://pixabots.com/api/pixabot/zzzz
+# → {"error":"Invalid pixabot ID"}
+```
+
+### Caching
+
+Deterministic endpoints return `Cache-Control: public, max-age=31536000, immutable`. Same ID + size always produces the same image, so CDNs cache it forever.
+
+---
+
+## GET /api/pixabot/random
+
+Returns a random pixabot. Redirects to the deterministic URL so the image gets cached.
+
+### Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `size` | query | `128` | Forwarded to the redirect target |
+| `format` | query | — | Set to `json` to get the random ID directly (no redirect) |
+
+### Examples
+
+**Random image (follows redirect):**
+
+```bash
+curl -L https://pixabots.com/api/pixabot/random -o random.png
+```
+
+**Random metadata (no redirect):**
+
+```bash
+curl https://pixabots.com/api/pixabot/random?format=json
+```
+
+Response:
+
+```json
+{
+  "id": "d632",
+  "combo": { "eyes": 13, "heads": 6, "body": 3, "top": 2 },
+  "parts": {
+    "eyes": "visor",
+    "heads": "frame",
+    "body": "swag",
+    "top": "bunny-ears"
+  },
+  "png": "https://pixabots.com/api/pixabot/d632",
+  "gif": "https://pixabots.com/api/pixabot/d632?animated=true"
+}
+```
+
+---
+
+## OpenAPI Spec
+
+The full OpenAPI 3.1 spec is available at [`/openapi.json`](https://pixabots.com/openapi.json).

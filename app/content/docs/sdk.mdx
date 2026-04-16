@@ -1,0 +1,107 @@
+---
+title: SDK
+description: "@pixabots/core — ID encoding, random generation, and parts catalog"
+---
+
+`@pixabots/core` is a zero-dependency package for working with pixabot IDs client-side. Works in browsers, Node.js, and edge runtimes.
+
+## Install
+
+```bash
+npm install @pixabots/core
+```
+
+## Encode / Decode
+
+Convert between part indices and 4-char IDs:
+
+```typescript
+import { encode, decode, resolve } from "@pixabots/core";
+
+// Indices → ID
+const id = encode({ eyes: 2, heads: 1, body: 5, top: 6 });
+// "2156"
+
+// ID → indices
+const combo = decode("2156");
+// { eyes: 2, heads: 1, body: 5, top: 6 }
+
+// ID → part names
+const parts = resolve(combo);
+// { eyes: "glasses", heads: "blob", body: "wings", top: "mohawk" }
+```
+
+## Random generation
+
+```typescript
+import { randomId, randomCombo } from "@pixabots/core";
+
+const id = randomId();       // e.g. "7133"
+const combo = randomCombo();  // e.g. { eyes: 7, heads: 1, body: 3, top: 3 }
+```
+
+## Seeded generation
+
+Generate deterministic pixabots from any string. Same input always returns the same pixabot:
+
+```typescript
+import { seededId, seededCombo } from "@pixabots/core";
+
+seededId("user@example.com");  // always the same ID
+seededId("agent-123");         // always the same ID
+seededId("user@example.com");  // same as the first call
+```
+
+This is useful for generating avatars from usernames, emails, or any unique identifier without storing the mapping.
+
+## Validation
+
+```typescript
+import { isValidId } from "@pixabots/core";
+
+isValidId("2156");  // true
+isValidId("f76a");  // true
+isValidId("zzzz");  // false — out of range
+isValidId("abc");   // false — wrong length
+```
+
+## Parts catalog
+
+Access the full parts catalog:
+
+```typescript
+import { PARTS, partCount, getPart, getPartIndex, totalCombinations } from "@pixabots/core";
+
+totalCombinations();  // 9856
+
+partCount("eyes");  // 16
+partCount("heads"); // 8
+partCount("body");  // 7
+partCount("top");   // 11
+
+getPart("eyes", 2);  // { name: "glasses", path: "eyes/glasses.png" }
+
+getPartIndex("eyes", "glasses");  // 2
+```
+
+## Animation data
+
+The bounce animation frames are also available:
+
+```typescript
+import { ANIM_FRAMES, FRAME_MS } from "@pixabots/core";
+
+FRAME_MS;      // 72 (ms per frame)
+ANIM_FRAMES;   // 8-frame array of { top, heads, eyes, body } offsets
+```
+
+## Types
+
+```typescript
+import type { PixabotCombo, PartCategory, PartOption, AnimFrame } from "@pixabots/core";
+
+// PixabotCombo = { eyes: number, heads: number, body: number, top: number }
+// PartCategory = "eyes" | "heads" | "body" | "top"
+// PartOption = { name: string, path: string }
+// AnimFrame = { top: number, heads: number, eyes: number, body: number }
+```
