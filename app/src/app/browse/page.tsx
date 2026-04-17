@@ -59,32 +59,29 @@ function BotCard({ bot }: { bot: BotCell }) {
       </Link>
 
       {/* Overlay — bottom bar on mobile, full cover on hover for desktop */}
-      <div className="absolute inset-x-0 bottom-0 sm:inset-0 bg-background/90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex flex-col items-center justify-end sm:justify-center gap-1 p-1.5 sm:p-2 sm:pointer-events-none sm:group-hover:pointer-events-auto">
+      <div className="absolute inset-x-0 bottom-0 sm:inset-0 bg-background/80 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex flex-col items-center justify-end sm:justify-center gap-2 p-2 sm:pointer-events-none sm:group-hover:pointer-events-auto">
         <span className="hidden sm:block font-mono text-sm text-foreground">{bot.id}</span>
         <div className="flex gap-1">
           <button
             onClick={copy}
-            className="flex items-center gap-1 px-1.5 py-0.5 text-xs border border-border bg-card hover:bg-muted transition-colors cursor-pointer"
-            title="Copy share URL"
+            className="size-8 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer"
+            title="Share"
           >
-            <PixelIcon name={copied ? "check" : "copy"} className="size-3" />
-            <span className="hidden sm:inline">{copied ? "Copied" : "Share"}</span>
+            <PixelIcon name={copied ? "check" : "copy"} className="size-4" />
           </button>
           <button
             onClick={download}
-            className="flex items-center gap-1 px-1.5 py-0.5 text-xs border border-border bg-card hover:bg-muted transition-colors cursor-pointer"
-            title="Download PNG"
+            className="size-8 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer"
+            title="Download"
           >
-            <PixelIcon name="download" className="size-3" />
-            <span className="hidden sm:inline">Save</span>
+            <PixelIcon name="download" className="size-4" />
           </button>
           <Link
             href={`/?id=${bot.id}`}
-            className="flex items-center gap-1 px-1.5 py-0.5 text-xs border border-border bg-card hover:bg-muted transition-colors"
-            title="Open in creator"
+            className="size-8 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors"
+            title="Edit"
           >
-            <PixelIcon name="shuffle" className="size-3" />
-            <span className="hidden sm:inline">Edit</span>
+            <PixelIcon name="pen-square" className="size-4" />
           </Link>
         </div>
       </div>
