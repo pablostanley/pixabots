@@ -71,7 +71,7 @@ function BotCard({ bot }: { bot: BotCell }) {
       </Link>
 
       {/* Actions — below image on mobile, bottom overlay on desktop hover */}
-      <div className="flex items-center gap-1 p-1 sm:absolute sm:inset-x-0 sm:bottom-0 sm:p-2 sm:opacity-0 sm:group-hover:opacity-100 sm:translate-y-full sm:group-hover:translate-y-0 transition-all sm:bg-background/90">
+      <div className="flex items-center gap-1 p-1 sm:absolute sm:inset-x-0 sm:bottom-0 sm:p-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity sm:bg-background/90">
         <span className="font-mono text-xs text-muted-foreground mr-auto">{bot.id}</span>
         <button
           onClick={copy}
