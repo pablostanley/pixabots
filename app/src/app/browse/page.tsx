@@ -48,11 +48,18 @@ function BotCard({ bot }: { bot: BotCell }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <Link href={`/?id=${bot.id}`}>
+      <Link href={`/?id=${bot.id}`} className="block w-full h-full relative">
         <img
-          src={hovered ? staticSrc : animatedSrc}
+          src={animatedSrc}
           alt={`Pixabot ${bot.id}`}
-          className="w-full h-full object-cover"
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity ${hovered ? "opacity-0" : "opacity-100"}`}
+          style={{ imageRendering: "pixelated" }}
+          loading="lazy"
+        />
+        <img
+          src={staticSrc}
+          alt=""
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity ${hovered ? "opacity-100" : "opacity-0"}`}
           style={{ imageRendering: "pixelated" }}
           loading="lazy"
         />
