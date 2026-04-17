@@ -19,12 +19,13 @@
 - [x] Lighter dark-mode checkerboard — bumped contrast for dark pixel art
 - [x] Error handling in render — RenderError class, 404 for missing sprites, clean JSON errors
 - [x] 1920px API size — added to VALID_SIZES, OpenAPI spec, and docs
+- [x] designteam.app integration merged — PR #3 merged, `@pixabots/core` swapped in as real dep
 - [x] Housekeeping — removed GeistPixel, @phosphor-icons/react, fixed AGENTS.md, generate-grids.mjs
 - [x] Clearer ID bar UX — redesigned with labeled PNG/GIF/JSON links and Copy URL button
 
 ## Up Next
 
-- [ ] **Merge designteam PR #3** — the integration is built, just needs to be merged on the designteam side. Then swap inlined `randomPixabotId()` for `@pixabots/core`'s `randomId()`.
+Pick from Polish or Ideas below.
 
 ## Polish
 
