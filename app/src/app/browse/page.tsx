@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { randomId } from "@pixabots/core";
 import { PixelIcon } from "@/components/ui/pixel-icon";
@@ -22,7 +22,10 @@ function generateBatch(count: number): BotCell[] {
 
 function BotCard({ bot }: { bot: BotCell }) {
   const [copied, setCopied] = useState(false);
-  const src = `/api/pixabot/${bot.id}?size=${bot.featured ? 480 : 240}`;
+  const [hovered, setHovered] = useState(false);
+  const size = bot.featured ? 480 : 240;
+  const animatedSrc = `/api/pixabot/${bot.id}?size=${size}&animated=true`;
+  const staticSrc = `/api/pixabot/${bot.id}?size=${size}`;
 
   const copy = () => {
     navigator.clipboard.writeText(`${window.location.origin}/?id=${bot.id}`);
@@ -42,10 +45,12 @@ function BotCard({ bot }: { bot: BotCell }) {
       className={`group relative bg-card border border-border overflow-hidden aspect-square ${
         bot.featured ? "col-span-2 row-span-2" : ""
       }`}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
       <Link href={`/?id=${bot.id}`}>
         <img
-          src={src}
+          src={hovered ? staticSrc : animatedSrc}
           alt={`Pixabot ${bot.id}`}
           className="w-full h-full object-cover"
           style={{ imageRendering: "pixelated" }}
@@ -89,18 +94,32 @@ function BotCard({ bot }: { bot: BotCell }) {
 
 export default function BrowsePage() {
   const [batches, setBatches] = useState(1);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   const bots = useMemo(
     () => Array.from({ length: batches }, () => generateBatch(BATCH_SIZE)).flat(),
     [batches]
   );
 
+  const loadMore = useCallback(() => setBatches((b) => b + 1), []);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) loadMore(); },
+      { rootMargin: "400px" }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [loadMore]);
+
   return (
     <main className="flex-1 p-2 sm:p-4">
       <div
         className="grid gap-1 sm:gap-2"
         style={{
-          gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
           gridAutoFlow: "dense",
         }}
       >
@@ -108,15 +127,7 @@ export default function BrowsePage() {
           <BotCard key={bot.id} bot={bot} />
         ))}
       </div>
-
-      <div className="flex justify-center py-8">
-        <button
-          onClick={() => setBatches((b) => b + 1)}
-          className="px-6 py-2 text-sm border border-border hover:bg-muted transition-colors cursor-pointer"
-        >
-          Load more
-        </button>
-      </div>
+      <div ref={sentinelRef} className="h-1" />
     </main>
   );
 }
