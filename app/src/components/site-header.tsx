@@ -24,8 +24,8 @@ export function SiteHeader() {
     });
   };
 
-  const navLink = (href: string, label: string, className?: string) => {
-    const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
+  const navLink = (href: string, label: string, className?: string, exact?: boolean) => {
+    const isActive = exact || href === "/" ? pathname === href : pathname.startsWith(href);
     return (
       <Link
         href={href}
@@ -46,7 +46,7 @@ export function SiteHeader() {
           <PixelIcon name={dark ? "lightbulb" : "moon"} className="size-4" />
         </Button>
         {navLink("/", "create")}
-        {navLink("/docs", "docs")}
+        {navLink("/docs", "docs", undefined, true)}
         {navLink("/docs/api", "api", "hidden sm:inline")}
         <a href="https://github.com/pablostanley/pixabots" target="_blank" rel="noopener noreferrer" className="hidden sm:inline text-muted-foreground hover:text-foreground transition-colors">
           github

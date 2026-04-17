@@ -130,8 +130,8 @@ export default function Home() {
 
   const shuffle = () => updateSelection(randomCombo());
 
-  const copyApiUrl = () => {
-    navigator.clipboard.writeText(window.location.origin + apiUrl);
+  const copyShareUrl = () => {
+    navigator.clipboard.writeText(`${window.location.origin}/?id=${pixabotId}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
@@ -171,6 +171,7 @@ export default function Home() {
     link.click();
   };
 
+  // Empty deps is safe — cycle/shuffle/toggleAnimation all use refs internally
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
     switch (e.key) {
@@ -300,9 +301,9 @@ export default function Home() {
       {/* ID bar */}
       <div className="border border-border px-3 py-2 sm:px-4 sm:py-3 flex flex-wrap items-center gap-2 text-sm w-full max-w-[504px]">
         <span className="font-mono text-foreground">{pixabotId}</span>
-        <button onClick={copyApiUrl} className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer flex items-center gap-1">
+        <button onClick={copyShareUrl} className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer flex items-center gap-1">
           <PixelIcon name={copied ? "check" : "copy"} className="size-4" />
-          {copied ? "Copied!" : "Copy URL"}
+          {copied ? "Copied!" : "Share"}
         </button>
         <div className="flex items-center gap-2 ml-auto">
           <a href={apiUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
