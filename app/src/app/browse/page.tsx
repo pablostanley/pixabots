@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { randomId } from "@pixabots/core";
 import { PixelIcon } from "@/components/ui/pixel-icon";
@@ -23,14 +23,18 @@ function generateBatch(count: number): BotCell[] {
 function BotCard({ bot }: { bot: BotCell }) {
   const [copied, setCopied] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const size = bot.featured ? 480 : 240;
   const animatedSrc = `/api/pixabot/${bot.id}?size=${size}&animated=true`;
   const staticSrc = `/api/pixabot/${bot.id}?size=${size}`;
 
+  useEffect(() => () => clearTimeout(copyTimerRef.current), []);
+
   const copy = () => {
     navigator.clipboard.writeText(`${window.location.origin}/?id=${bot.id}`);
     setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
+    clearTimeout(copyTimerRef.current);
+    copyTimerRef.current = setTimeout(() => setCopied(false), 1500);
   };
 
   const download = () => {
@@ -42,13 +46,14 @@ function BotCard({ bot }: { bot: BotCell }) {
 
   return (
     <div
-      className={`group relative bg-card border border-border overflow-hidden aspect-square ${
+      className={`group flex flex-col bg-card border border-border overflow-hidden ${
         bot.featured ? "col-span-2 row-span-2" : ""
       }`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <Link href={`/?id=${bot.id}`} className="block w-full h-full relative">
+      {/* Image */}
+      <Link href={`/?id=${bot.id}`} className="block relative aspect-square">
         <img
           src={animatedSrc}
           alt={`Pixabot ${bot.id}`}
@@ -65,47 +70,43 @@ function BotCard({ bot }: { bot: BotCell }) {
         />
       </Link>
 
-      {/* Overlay — bottom bar on mobile, full cover on hover for desktop */}
-      <div className="absolute inset-x-0 bottom-0 sm:inset-0 bg-background/80 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex flex-col items-center justify-end sm:justify-center gap-2 p-2 sm:pointer-events-none sm:group-hover:pointer-events-auto">
-        <span className="hidden sm:block font-mono text-sm text-foreground">{bot.id}</span>
-        <div className="flex gap-1">
-          <button
-            onClick={copy}
-            className="size-8 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer"
-            title="Share"
-          >
-            <PixelIcon name={copied ? "check" : "copy"} className="size-4" />
-          </button>
-          <button
-            onClick={download}
-            className="size-8 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer"
-            title="Download"
-          >
-            <PixelIcon name="download" className="size-4" />
-          </button>
-          <Link
-            href={`/?id=${bot.id}`}
-            className="size-8 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors"
-            title="Edit"
-          >
-            <PixelIcon name="pen-square" className="size-4" />
-          </Link>
-        </div>
+      {/* Actions — below image on mobile, bottom overlay on desktop hover */}
+      <div className="flex items-center gap-1 p-1 sm:absolute sm:inset-x-0 sm:bottom-0 sm:p-2 sm:opacity-0 sm:group-hover:opacity-100 sm:translate-y-full sm:group-hover:translate-y-0 transition-all sm:bg-background/90">
+        <span className="font-mono text-xs text-muted-foreground mr-auto">{bot.id}</span>
+        <button
+          onClick={copy}
+          className="size-7 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer"
+          title="Share"
+        >
+          <PixelIcon name={copied ? "check" : "copy"} className="size-3.5" />
+        </button>
+        <button
+          onClick={download}
+          className="size-7 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer"
+          title="Download"
+        >
+          <PixelIcon name="download" className="size-3.5" />
+        </button>
+        <Link
+          href={`/?id=${bot.id}`}
+          className="size-7 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors"
+          title="Edit"
+        >
+          <PixelIcon name="pen-square" className="size-3.5" />
+        </Link>
       </div>
     </div>
   );
 }
 
 export default function BrowsePage() {
-  const [batches, setBatches] = useState(1);
+  const [bots, setBots] = useState(() => generateBatch(BATCH_SIZE));
   const sentinelRef = useRef<HTMLDivElement>(null);
 
-  const bots = useMemo(
-    () => Array.from({ length: batches }, () => generateBatch(BATCH_SIZE)).flat(),
-    [batches]
+  const loadMore = useCallback(
+    () => setBots((prev) => [...prev, ...generateBatch(BATCH_SIZE)]),
+    []
   );
-
-  const loadMore = useCallback(() => setBatches((b) => b + 1), []);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;

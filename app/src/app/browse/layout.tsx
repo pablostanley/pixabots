@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     title: "Browse Pixabots",
     description: "Explore 9,856 unique pixel art characters.",
     url: `${SITE_URL}/browse`,
-    images: [`${SITE_URL}/api/pixabot/random?size=960`],
+    images: [`${SITE_URL}/api/pixabot/2156?size=960`],
   },
 };
 
