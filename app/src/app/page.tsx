@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { parts, layerOrder, layerLabel, type PartCategory } from "@/lib/parts";
-import { encode, randomCombo, ANIM_FRAMES, FRAME_MS, type AnimFrame } from "@pixabots/core";
+import { encode, decode, isValidId, randomCombo, ANIM_FRAMES, FRAME_MS, type AnimFrame } from "@pixabots/core";
 import { Button } from "@/components/ui/button";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import {
@@ -64,8 +64,15 @@ function drawOnCanvas(
   }
 }
 
+function getInitialSelection() {
+  if (typeof window === "undefined") return randomCombo();
+  const id = new URLSearchParams(window.location.search).get("id");
+  if (id && isValidId(id)) return decode(id);
+  return randomCombo();
+}
+
 export default function Home() {
-  const [selection, setSelection] = useState(randomCombo);
+  const [selection, setSelection] = useState(getInitialSelection);
   const [animating, setAnimating] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -105,6 +112,8 @@ export default function Home() {
     selRef.current = next;
     setSelection(next);
     loadAndDraw(next);
+    const nextId = encode(next);
+    window.history.replaceState(null, "", `/?id=${nextId}`);
   }
 
   const cycle = (category: PartCategory) => {
@@ -161,6 +170,40 @@ export default function Home() {
     link.href = canvas.toDataURL("image/png");
     link.click();
   };
+
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+    switch (e.key) {
+      case " ":
+        e.preventDefault();
+        updateSelection(randomCombo());
+        break;
+      case "p":
+        toggleAnimation();
+        break;
+      case "ArrowRight":
+        e.preventDefault();
+        cycle(layerOrder[0]);
+        break;
+      case "ArrowLeft":
+        e.preventDefault();
+        cycle(layerOrder[1]);
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        cycle(layerOrder[2]);
+        break;
+      case "ArrowDown":
+        e.preventDefault();
+        cycle(layerOrder[3]);
+        break;
+    }
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
 
   return (
     <main className="flex flex-col items-center justify-center flex-1 gap-3 p-4 sm:gap-4 sm:p-6">
