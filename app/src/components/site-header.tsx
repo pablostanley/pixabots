@@ -46,6 +46,7 @@ export function SiteHeader() {
           <PixelIcon name={dark ? "lightbulb" : "moon"} className="size-4" />
         </Button>
         {navLink("/", "create")}
+        {navLink("/browse", "browse")}
         {navLink("/docs", "docs")}
         {navLink("/docs/api", "api", "hidden sm:inline")}
         <a href="https://github.com/pablostanley/pixabots" target="_blank" rel="noopener noreferrer" className="hidden sm:inline text-muted-foreground hover:text-foreground transition-colors">
