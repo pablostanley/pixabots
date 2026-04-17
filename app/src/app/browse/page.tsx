@@ -47,7 +47,7 @@ function BotCard({ bot }: { bot: BotCell }) {
   return (
     <div
       className={`group flex flex-col bg-card border border-border overflow-hidden ${
-        bot.featured ? "col-span-2 row-span-2" : ""
+        bot.featured ? "sm:col-span-2 sm:row-span-2" : ""
       }`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -121,13 +121,7 @@ export default function BrowsePage() {
 
   return (
     <main className="flex-1 p-2 sm:p-4">
-      <div
-        className="grid gap-1 sm:gap-2"
-        style={{
-          gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-          gridAutoFlow: "dense",
-        }}
-      >
+      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-1 sm:gap-2" style={{ gridAutoFlow: "dense" }}>
         {bots.map((bot) => (
           <BotCard key={bot.id} bot={bot} />
         ))}
