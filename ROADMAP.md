@@ -15,16 +15,16 @@
 - [x] Parallel layer loading and frame rendering
 - [x] Vercel monorepo deployment config
 - [x] Responsive creator — fluid canvas, icon-only buttons on mobile, 2x2 part grid
+- [x] System theme detection — reads OS prefers-color-scheme on mount
+- [x] Lighter dark-mode checkerboard — bumped contrast for dark pixel art
+- [x] Error handling in render — RenderError class, 404 for missing sprites, clean JSON errors
+- [x] 1920px API size — added to VALID_SIZES, OpenAPI spec, and docs
 - [x] Housekeeping — removed GeistPixel, @phosphor-icons/react, fixed AGENTS.md, generate-grids.mjs
 - [x] Clearer ID bar UX — redesigned with labeled PNG/GIF/JSON links and Copy URL button
 
 ## Up Next
 
-- [ ] **System theme detection** — default to system preference instead of forced dark mode. The header theme toggle should sync with OS preference on first load.
 - [ ] **Merge designteam PR #3** — the integration is built, just needs to be merged on the designteam side. Then swap inlined `randomPixabotId()` for `@pixabots/core`'s `randomId()`.
-- [ ] **Lighter dark-mode checkerboard** — the transparent grid background needs more contrast with the bots
-- [ ] **Error handling in render** — if a sprite PNG is missing, the API returns a raw 500. Wrap in try/catch for a cleaner 404.
-- [ ] **1920px API size** — AGENTS.md lists 1920 as a valid download size, but `VALID_SIZES` in the API only goes up to 960. Add 1920 to the API.
 
 ## Polish
 
