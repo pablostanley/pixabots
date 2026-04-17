@@ -32,10 +32,10 @@ Pick from Polish or Ideas below.
 - [ ] **Background color picker** — transparent by default, but let users pick a color for exports
 - [ ] **Custom pixel tooltips** — replace native browser tooltips with styled ones using our pixel font
 - [ ] **Body clipping in animated GIF** — client-side animation keeps the body's bottom row planted ("feet stay planted"), but the GIF renderer doesn't replicate this
-- [ ] **Active nav state** — header nav links should highlight the current page (create vs docs)
+- [x] **Active nav state** — header highlights current page
 - [ ] **Loading state** — show a skeleton or spinner while the canvas loads images on first render
-- [ ] **Keyboard shortcuts** — arrow keys to cycle parts, space to shuffle, s to save
-- [ ] **Share URL** — `pixabots.com/?id=2156` that opens the creator with a specific combo pre-loaded
+- [x] **Keyboard shortcuts** — space to shuffle, P to play, arrows to cycle parts
+- [x] **Share URL** — `pixabots.com/?id=2156` opens a specific combo, URL syncs live
 
 ## Ideas
 
