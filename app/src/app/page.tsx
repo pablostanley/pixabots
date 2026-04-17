@@ -75,6 +75,7 @@ export default function Home() {
   const [selection, setSelection] = useState(getInitialSelection);
   const [animating, setAnimating] = useState(false);
   const [copied, setCopied] = useState(false);
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const pixabotId = encode(selection);
   const apiUrl = `/api/pixabot/${pixabotId}`;
@@ -133,8 +134,11 @@ export default function Home() {
   const copyShareUrl = () => {
     navigator.clipboard.writeText(`${window.location.origin}/?id=${pixabotId}`);
     setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
+    clearTimeout(copyTimerRef.current);
+    copyTimerRef.current = setTimeout(() => setCopied(false), 1500);
   };
+
+  useEffect(() => () => clearTimeout(copyTimerRef.current), []);
 
   const toggleAnimation = () => {
     if (intervalRef.current) {
