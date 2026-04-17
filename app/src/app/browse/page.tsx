@@ -46,13 +46,12 @@ function BotCard({ bot }: { bot: BotCell }) {
 
   return (
     <div
-      className={`group flex flex-col bg-card border border-border overflow-hidden ${
+      className={`group bg-card border border-border overflow-hidden ${
         bot.featured ? "sm:col-span-2 sm:row-span-2" : ""
       }`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {/* Image */}
       <Link href={`/?id=${bot.id}`} className="block relative aspect-square">
         <img
           src={animatedSrc}
@@ -70,29 +69,28 @@ function BotCard({ bot }: { bot: BotCell }) {
         />
       </Link>
 
-      {/* Actions — below image on mobile, bottom overlay on desktop hover */}
-      <div className="flex items-center gap-1 p-1 sm:absolute sm:inset-x-0 sm:bottom-0 sm:p-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity sm:bg-background/90">
+      <div className="flex items-center gap-1 p-1 sm:max-h-0 sm:overflow-hidden sm:group-hover:max-h-12 sm:group-hover:p-1.5 transition-all duration-200">
         <span className="font-mono text-xs text-muted-foreground mr-auto">{bot.id}</span>
         <button
           onClick={copy}
-          className="size-7 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer"
+          className="size-6 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer"
           title="Share"
         >
-          <PixelIcon name={copied ? "check" : "copy"} className="size-3.5" />
+          <PixelIcon name={copied ? "check" : "copy"} className="size-3" />
         </button>
         <button
           onClick={download}
-          className="size-7 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer"
+          className="size-6 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer"
           title="Download"
         >
-          <PixelIcon name="download" className="size-3.5" />
+          <PixelIcon name="download" className="size-3" />
         </button>
         <Link
           href={`/?id=${bot.id}`}
-          className="size-7 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors"
+          className="size-6 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors"
           title="Edit"
         >
-          <PixelIcon name="pen-square" className="size-3.5" />
+          <PixelIcon name="pen-square" className="size-3" />
         </Link>
       </div>
     </div>
