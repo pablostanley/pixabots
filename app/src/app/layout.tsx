@@ -64,7 +64,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${pixelify.variable} dark`}>
+    <html lang="en" className={pixelify.variable} suppressHydrationWarning>
       <body className="min-h-dvh flex flex-col font-[family-name:var(--font-pixel)]">
         <RootProvider>
           <SiteHeader />

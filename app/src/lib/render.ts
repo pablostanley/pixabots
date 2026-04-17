@@ -15,16 +15,29 @@ const PARTS_DIR = path.join(process.cwd(), "public", "parts");
 const FRAME_DELAYS = ANIM_FRAMES.map(() => FRAME_MS);
 const ANIM_MAX_SIZE = 480;
 
+export class RenderError extends Error {
+  status: number;
+  constructor(message: string, status = 500) {
+    super(message);
+    this.status = status;
+  }
+}
+
 async function loadLayers(combo: PixabotCombo) {
   const entries = await Promise.all(
     LAYER_ORDER.map(async (category) => {
       const part = PARTS[category][combo[category]];
+      if (!part) throw new RenderError(`Unknown part index ${combo[category]} for "${category}"`, 400);
       const filePath = path.join(PARTS_DIR, part.path);
-      const buf = await sharp(filePath)
-        .resize(NATIVE_SIZE, NATIVE_SIZE, { kernel: sharp.kernel.nearest })
-        .png()
-        .toBuffer();
-      return [category, buf] as const;
+      try {
+        const buf = await sharp(filePath)
+          .resize(NATIVE_SIZE, NATIVE_SIZE, { kernel: sharp.kernel.nearest })
+          .png()
+          .toBuffer();
+        return [category, buf] as const;
+      } catch {
+        throw new RenderError(`Sprite not found: ${part.path}`, 404);
+      }
     })
   );
   return Object.fromEntries(entries) as Record<string, Buffer>;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { PixelIcon } from "@/components/ui/pixel-icon";
@@ -8,9 +8,18 @@ import { PixelIcon } from "@/components/ui/pixel-icon";
 export function SiteHeader() {
   const [dark, setDark] = useState(true);
 
+  useEffect(() => {
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    setDark(prefersDark);
+    document.documentElement.classList.toggle("dark", prefersDark);
+  }, []);
+
   const toggleTheme = () => {
-    setDark((d) => !d);
-    document.documentElement.classList.toggle("dark");
+    setDark((d) => {
+      const next = !d;
+      document.documentElement.classList.toggle("dark", next);
+      return next;
+    });
   };
 
   return (

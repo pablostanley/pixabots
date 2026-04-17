@@ -146,11 +146,11 @@
 
 .dark .checkerboard {
   background-image:
-    linear-gradient(45deg, oklch(0.2 0 0) 25%, transparent 25%),
-    linear-gradient(-45deg, oklch(0.2 0 0) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, oklch(0.2 0 0) 75%),
-    linear-gradient(-45deg, transparent 75%, oklch(0.2 0 0) 75%);
-  background-color: oklch(0.17 0 0);
+    linear-gradient(45deg, oklch(0.28 0 0) 25%, transparent 25%),
+    linear-gradient(-45deg, oklch(0.28 0 0) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, oklch(0.28 0 0) 75%),
+    linear-gradient(-45deg, transparent 75%, oklch(0.28 0 0) 75%);
+  background-color: oklch(0.22 0 0);
 }
 
 /* Terminal-core: Fumadocs overrides */

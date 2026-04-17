@@ -1,9 +1,9 @@
 import { type NextRequest } from "next/server";
 import { decode, isValidId, resolve } from "@pixabots/core";
-import { renderPixabot, renderAnimatedPixabot } from "@/lib/render";
+import { renderPixabot, renderAnimatedPixabot, RenderError } from "@/lib/render";
 import { CORS_HEADERS, optionsResponse, imageResponse } from "@/lib/api";
 
-const VALID_SIZES = new Set([32, 64, 128, 240, 480, 960]);
+const VALID_SIZES = new Set([32, 64, 128, 240, 480, 960, 1920]);
 
 export const OPTIONS = optionsResponse;
 
@@ -47,9 +47,17 @@ export async function GET(
     );
   }
 
-  if (animated) {
-    return imageResponse(await renderAnimatedPixabot(combo, size), "image/gif");
+  try {
+    if (animated) {
+      return imageResponse(await renderAnimatedPixabot(combo, size), "image/gif");
+    }
+    return imageResponse(await renderPixabot(combo, size), "image/png");
+  } catch (e) {
+    const status = e instanceof RenderError ? e.status : 500;
+    const message = e instanceof RenderError ? e.message : "Render failed";
+    return Response.json(
+      { error: message },
+      { status, headers: CORS_HEADERS }
+    );
   }
-
-  return imageResponse(await renderPixabot(combo, size), "image/png");
 }
