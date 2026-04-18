@@ -62,6 +62,7 @@
 - [x] Background color picker — 9-swatch row paints behind the canvas + bakes into downloaded PNGs. (PR #40)
 - [x] BotDetail tilt — subtle 3D rotate on pointer hover, respects reduce-motion. (PR #41)
 - [x] Browse skeleton — muted pulse layer until each card's GIF loads; motion-safe pulse. (PR #42)
+- [x] Creator boot fade — motion-safe soft reveal on mount. (PR #43)
 
 ## Up Next
 
@@ -139,7 +140,7 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 
 ### Delight
 - [ ] **Easter-egg IDs** — specific IDs trigger special animations (`pxlb` → author credit). Konami rapid-shuffle is done in PR #35.
-- [ ] **Random boot-up animation** — first-paint shows the character "materializing" pixel-by-pixel
+- [ ] **Pixel-by-pixel materialize animation** — first-paint progressively reveals the character (simple creator fade shipped in PR #43; full materialize still open)
 - [ ] **Opt-in 8-bit sound effects** — chiptune blip on shuffle/copy, toggled off by default
 
 ### Done
