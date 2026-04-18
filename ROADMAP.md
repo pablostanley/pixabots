@@ -40,6 +40,7 @@
 - [x] Sprite preload on home — server-rendered `<link rel="preload">` for all 42 sprite PNGs, hoisted to head by React 19. First shuffle draws without network; every subsequent shuffle cache-hit. (PR #18)
 - [x] 404 page — custom not-found.tsx with random animated pixabot, personality copy, links to Home/Browse/#{id}. Catches invalid `/bot/{id}` and any unknown route. (PR #19)
 - [x] Animated copy feedback — check icon pops via `animate-in zoom-in-50 fade-in-0`; creator label slides + fades to "Copied!". Auto-resets 1.5s later. (PR #20)
+- [x] Web Share API — `useShareOrCopy` calls `navigator.share()` when available (mobile native sheet), falls back to clipboard. Old `useCopyToClipboard` removed. (PR #21)
 
 ## Up Next
 
@@ -59,9 +60,7 @@ Prioritized tickets to work through. Each is self-contained and shippable.
 
 ### 7. ~~Animated copy-button feedback~~ — **shipped (PR #20)**
 
-### 8. Web Share API on mobile
-On touch devices, "Share" button calls `navigator.share({ url, title, text })`. Fallback to existing clipboard copy when unavailable (desktop, or API missing).
-- **Acceptance:** iOS/Android opens native share sheet; desktop/unsupported copies URL
+### 8. ~~Web Share API on mobile~~ — **shipped (PR #21)**
 
 ### 9. a11y — `prefers-reduced-motion`
 Respect `@media (prefers-reduced-motion: reduce)` everywhere: freeze idle bounce in creator, disable 2x-speed-on-hover in browse, cut dialog + sticky-header transitions. Pause GIFs: serve static PNG instead of animated.
