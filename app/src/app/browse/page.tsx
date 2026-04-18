@@ -22,15 +22,25 @@ function generateBatch(count: number): BotCell[] {
   }));
 }
 
+const DETAIL_SIZE = 480;
+
 function BotCard({ bot }: { bot: BotCell }) {
   const [copied, copy] = useCopyToClipboard();
   const [fastRequested, setFastRequested] = useState(false);
   const [fastReady, setFastReady] = useState(false);
   const [hovered, setHovered] = useState(false);
-  const size = bot.featured ? 480 : 240;
+  const prefetchedRef = useRef(false);
+  const size = bot.featured ? DETAIL_SIZE : 240;
   const animatedSrc = `/api/pixabot/${bot.id}?size=${size}&animated=true`;
   const fastSrc = `/api/pixabot/${bot.id}?size=${size}&animated=true&speed=2`;
   const showFast = hovered && fastReady;
+
+  const prefetchDetail = () => {
+    if (prefetchedRef.current || size === DETAIL_SIZE) return;
+    prefetchedRef.current = true;
+    const img = new Image();
+    img.src = `/api/pixabot/${bot.id}?size=${DETAIL_SIZE}&animated=true`;
+  };
 
   const onCopy = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -56,6 +66,7 @@ function BotCard({ bot }: { bot: BotCell }) {
       onMouseEnter={() => {
         setHovered(true);
         setFastRequested(true);
+        prefetchDetail();
       }}
       onMouseLeave={() => setHovered(false)}
     >
