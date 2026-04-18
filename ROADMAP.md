@@ -61,6 +61,7 @@
 - [x] Footer discovery copy — "9,856 combos · SPACE · ? for shortcuts" in footer. (PR #39)
 - [x] Background color picker — 9-swatch row paints behind the canvas + bakes into downloaded PNGs. (PR #40)
 - [x] BotDetail tilt — subtle 3D rotate on pointer hover, respects reduce-motion. (PR #41)
+- [x] Browse skeleton — muted pulse layer until each card's GIF loads; motion-safe pulse. (PR #42)
 
 ## Up Next
 
@@ -110,7 +111,6 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 
 ### UI
 - [ ] **Custom pixel tooltips** — replace native browser tooltips with styled ones using our pixel font
-- [ ] **Loading state** — skeleton/shimmer on creator canvas and browse grid while first images load
 - [ ] **Animated part transitions** — smooth fade/slide between parts instead of instant swap
 - [ ] **Mobile bottom sheet** — use a bottom sheet instead of centered dialog on mobile for bot detail
 - [ ] **Sticky header with scroll behavior** — hide on scroll down, reveal on scroll up; backdrop blur
