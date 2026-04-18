@@ -18,7 +18,7 @@ export function ActionButton({
   external?: boolean;
 }) {
   const className =
-    "flex items-center gap-2 px-3 py-2 border border-border hover:bg-muted transition-colors text-sm";
+    "flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3 py-2 border border-border hover:bg-muted transition-colors text-sm";
   const content = (
     <>
       <PixelIcon name={icon} className="size-4" />
