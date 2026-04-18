@@ -15,3 +15,4 @@ pnpm-debug.log*
 # source art (binary, managed in Dropbox)
 *.psd
 .source
+.claude/

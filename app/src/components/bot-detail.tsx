@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { resolveId } from "@pixabots/core";
 import { PixelIcon } from "@/components/ui/pixel-icon";
+import { BotNav } from "@/components/bot-nav";
 
 type IconName = React.ComponentProps<typeof PixelIcon>["name"];
 
@@ -58,7 +59,10 @@ export function BotDetail({ id }: { id: string }) {
       </div>
 
       <div className="flex flex-col gap-3">
-        <h2 className="text-3xl font-bold font-mono">{id}</h2>
+        <div className="flex items-center gap-3">
+          <h2 className="text-3xl font-bold font-mono mr-auto">{id}</h2>
+          <BotNav id={id} />
+        </div>
         <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
           <dt className="text-muted-foreground">face</dt>
           <dd>{parts.eyes}</dd>
