@@ -28,8 +28,8 @@
             "name": "size",
             "in": "query",
             "required": false,
-            "description": "Image size in pixels. Must be a multiple of 32 between 32 and 1920 (60 discrete sizes). Nearest-neighbor scaled from the 32×32 source — pixel-perfect at every step.",
-            "schema": { "type": "integer", "minimum": 32, "maximum": 1920, "multipleOf": 32, "default": 128 }
+            "description": "Image size in pixels (any integer from 32 to 1920). Nearest-neighbor scaled from the 32×32 source. Multiples of 32 give the cleanest pixel-perfect result; other values still work.",
+            "schema": { "type": "integer", "minimum": 32, "maximum": 1920, "default": 128 }
           },
           {
             "name": "format",
@@ -194,8 +194,8 @@
             "name": "size",
             "in": "query",
             "required": false,
-            "description": "Image size in pixels, forwarded to the redirect target. Must be a multiple of 32 between 32 and 1920.",
-            "schema": { "type": "integer", "minimum": 32, "maximum": 1920, "multipleOf": 32, "default": 128 }
+            "description": "Image size in pixels, forwarded to the redirect target (any integer from 32 to 1920).",
+            "schema": { "type": "integer", "minimum": 32, "maximum": 1920, "default": 128 }
           },
           {
             "name": "animated",
