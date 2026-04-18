@@ -66,6 +66,7 @@
 - [x] Pixel tooltips — CSS-only `data-tooltip` with styled popover + fade; icon buttons swapped from `title=`. (PR #44)
 - [x] Opt-in SFX — ♪ header toggle + Web Audio square-wave blips on shuffle/copy/cycle, off by default. (PR #45)
 - [x] Service worker — cache-first for `/api/pixabot/*` (excl random) + `/parts/*`; instant repeat loads and partial offline. (PR #46)
+- [x] Gallery mode — fullscreen single-bot dialog with Edit + Get PNG actions. (PR #47)
 
 ## Up Next
 
@@ -119,7 +120,6 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 - [ ] **Sticky header with scroll behavior** — hide on scroll down, reveal on scroll up; backdrop blur
 - [ ] **Focus rings everywhere** — audit all interactive elements for visible keyboard focus
 - [ ] **"You might also like"** — on bot page, show 4 one-part-different variants
-- [ ] **Gallery mode** — fullscreen single-bot view with background color options, big animation
 
 ### Speed & perf
 - [ ] **Prefetch bot detail on browse hover** — Next.js `<Link prefetch>` already partial; extend to PNG preload
