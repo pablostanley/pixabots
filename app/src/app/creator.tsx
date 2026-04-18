@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import { useShareOrCopy } from "@/lib/use-share-or-copy";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
+import { ShuffleHint, dismissShuffleHint } from "@/components/shuffle-hint";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -151,6 +152,7 @@ export function Creator({ initialId }: { initialId: string | null }) {
     loadAndDraw(next);
     const nextId = encode(next);
     window.history.replaceState(null, "", `/?id=${nextId}`);
+    dismissShuffleHint();
   }
 
   const cycle = (category: PartCategory) => {
@@ -325,6 +327,8 @@ export function Creator({ initialId }: { initialId: string | null }) {
           </div>
         ))}
       </div>
+
+      <ShuffleHint />
 
       {/* ID bar */}
       <div className="border border-border px-3 py-2 sm:px-4 sm:py-3 flex flex-wrap items-center gap-2 text-sm w-full max-w-[504px]">
