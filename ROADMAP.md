@@ -47,9 +47,9 @@ Prioritized tickets to work through. Each is self-contained and shippable.
 
 ### 3. ~~Sticky header with scroll behavior~~ — **shipped (PR #16)**
 
-### 4. Prefetch bot PNG on browse card hover
-On `mouseenter` of a browse card, kick off a fetch for the detail-size PNG so clicking feels instant. Route prefetch already handled by `<Link>`.
-- **Acceptance:** hovered → clicked card shows image immediately (no network wait); non-hovered path unchanged
+### 4. Prefetch bot PNG on browse card hover — **in review ([PR #17](https://github.com/pablostanley/pixabots/pull/17))**
+On `mouseenter` of a browse card, kick off a fetch for the detail-size GIF so clicking feels instant.
+- **Acceptance met:** 480 animated prefetched on first hover; idempotent via `prefetchedRef`; featured cards skipped (already 480)
 
 ### 5. Preload sprite parts on creator mount
 On creator mount, fire parallel `fetch` for all 42 sprite PNGs (`/parts/**/*.png`). Browser cache means every subsequent shuffle draws without network. Same sprites serve browse, bot pages, OG images — cache is hot across the site.
