@@ -34,6 +34,7 @@
 - [x] Browse modal — clicking a card opens a dialog at `/bot/{id}`, ESC/outside dismisses back to grid, refresh shows full page
 - [x] API hardening — 60 sizes (multiple of 32 up to 1920), animations all sizes, `/random` forwards `animated`/`speed`, strict input validation (size/speed return 400 on invalid), render memory cut ~8x at large sizes, OpenAPI gaps closed (/api/og documented)
 - [x] Prev/next bot navigation — `<` `>` buttons + ArrowLeft/ArrowRight on BotDetail. Works in dialog and on full page. Combo-index walks 9,856 bots in stable order with wrap. `router.replace` so back still returns to `/browse`. (PR #14)
+- [x] Mobile bottom sheet — dialog anchors to bottom edge and slides up on mobile, stays centered on desktop. Drag-handle affordance. ESC + outside tap dismiss. Drag-to-dismiss tracked as ticket #15. (PR #15)
 
 ## Up Next
 
@@ -41,10 +42,7 @@ Prioritized tickets to work through. Each is self-contained and shippable.
 
 ### 1. ~~Prev / next navigation in browse dialog~~ — **shipped (PR #14)**
 
-### 2. Mobile bottom sheet for bot detail — **in review ([PR #15](https://github.com/pablostanley/pixabots/pull/15))**
-Below the `sm` breakpoint, render the dialog as a bottom sheet that slides up from the edge. Desktop keeps the centered dialog.
-- **Acceptance met:** slide animation, full-width bottom anchor, internal scroll when content taller than viewport, ESC + outside tap dismiss, no CLS
-- **Descoped:** drag-to-dismiss gesture → new ticket #15 below (needs `vaul` or custom touch handling)
+### 2. ~~Mobile bottom sheet for bot detail~~ — **shipped (PR #15)**
 
 ### 3. Sticky header with scroll behavior
 Header stays pinned; hides on scroll down, reveals on scroll up; backdrop blur kicks in past 20px of scroll. Applies to home and `/browse` (docs keeps Fumadocs default).
