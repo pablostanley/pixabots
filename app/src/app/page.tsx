@@ -74,7 +74,7 @@ function getInitialSelection() {
 
 export default function Home() {
   const [selection, setSelection] = useState(getInitialSelection);
-  const [animating, setAnimating] = useState(false);
+  const [animating, setAnimating] = useState(true);
   const [copied, copy] = useCopyToClipboard();
 
   const pixabotId = encode(selection);
@@ -87,6 +87,7 @@ export default function Home() {
   const genRef = useRef(0);
   const selRef = useRef(selection);
   const mountedRef = useRef(false);
+  const animatingRef = useRef(true);
 
   async function loadAndDraw(sel: Record<PartCategory, number>) {
     const gen = ++genRef.current;
@@ -96,9 +97,36 @@ export default function Home() {
     }
     if (gen !== genRef.current) return;
     imagesRef.current = loaded;
-    if (canvasRef.current && !intervalRef.current) {
+    if (!canvasRef.current) return;
+    if (intervalRef.current) return; // animation running — will pick up new images next tick
+    if (animatingRef.current) {
+      startAnimation();
+    } else {
       drawOnCanvas(canvasRef.current, loaded);
     }
+  }
+
+  function startAnimation() {
+    if (intervalRef.current) return;
+    frameRef.current = 0;
+    intervalRef.current = setInterval(() => {
+      if (canvasRef.current) {
+        drawOnCanvas(canvasRef.current, imagesRef.current, ANIM_FRAMES[frameRef.current]);
+        frameRef.current = (frameRef.current + 1) % ANIM_FRAMES.length;
+      }
+    }, FRAME_MS);
+    animatingRef.current = true;
+    setAnimating(true);
+  }
+
+  function stopAnimation() {
+    if (!intervalRef.current) return;
+    clearInterval(intervalRef.current);
+    intervalRef.current = undefined;
+    frameRef.current = 0;
+    if (canvasRef.current) drawOnCanvas(canvasRef.current, imagesRef.current);
+    animatingRef.current = false;
+    setAnimating(false);
   }
 
   function setCanvasRef(node: HTMLCanvasElement | null) {
@@ -136,22 +164,8 @@ export default function Home() {
   };
 
   const toggleAnimation = () => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = undefined;
-      frameRef.current = 0;
-      if (canvasRef.current) drawOnCanvas(canvasRef.current, imagesRef.current);
-      setAnimating(false);
-    } else {
-      frameRef.current = 0;
-      intervalRef.current = setInterval(() => {
-        if (canvasRef.current) {
-          drawOnCanvas(canvasRef.current, imagesRef.current, ANIM_FRAMES[frameRef.current]);
-          frameRef.current = (frameRef.current + 1) % ANIM_FRAMES.length;
-        }
-      }, FRAME_MS);
-      setAnimating(true);
-    }
+    if (intervalRef.current) stopAnimation();
+    else startAnimation();
   };
 
   const download = async (size: number) => {
@@ -243,16 +257,14 @@ export default function Home() {
       {/* Canvas */}
       <ContextMenu>
         <ContextMenuTrigger asChild>
-          <div className="border border-border bg-card p-2 sm:p-3 cursor-pointer active:scale-[0.98] transition-transform w-full max-w-[504px]" onClick={shuffle}>
-            <div className="checkerboard">
-              <canvas
-                ref={setCanvasRef}
-                width={DISPLAY}
-                height={DISPLAY}
-                className="block w-full h-auto"
-                style={{ imageRendering: "pixelated" }}
-              />
-            </div>
+          <div className="border border-border p-2 sm:p-3 cursor-pointer active:scale-[0.98] transition-transform w-full max-w-[504px]" onClick={shuffle}>
+            <canvas
+              ref={setCanvasRef}
+              width={DISPLAY}
+              height={DISPLAY}
+              className="block w-full h-auto"
+              style={{ imageRendering: "pixelated" }}
+            />
           </div>
         </ContextMenuTrigger>
         <ContextMenuContent>
