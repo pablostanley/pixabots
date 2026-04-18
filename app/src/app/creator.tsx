@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useCallback } from "react";
+import { useKeydown } from "@/lib/use-keydown";
 import { parts, layerOrder, layerLabel, type PartCategory } from "@/lib/parts";
 import { encode, decode, isValidId, randomCombo, ANIM_FRAMES, FRAME_MS, type AnimFrame } from "@pixabots/core";
 import { Button } from "@/components/ui/button";
@@ -210,10 +211,7 @@ export function Creator({ initialId }: { initialId: string | null }) {
     }
   }, []);
 
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleKeyDown]);
+  useKeydown(handleKeyDown);
 
   return (
     <main className="flex flex-col items-center justify-center flex-1 gap-3 p-4 sm:gap-4 sm:p-6">
