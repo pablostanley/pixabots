@@ -305,7 +305,7 @@ export function Creator({ initialId }: { initialId: string | null }) {
   useKeydown(handleKeyDown);
 
   return (
-    <main className="flex flex-col items-center justify-center flex-1 gap-3 p-4 sm:gap-4 sm:p-6">
+    <main className="flex flex-col items-center justify-center flex-1 gap-3 p-4 sm:gap-4 sm:p-6 motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-500">
       <div aria-live="polite" aria-atomic="true" className="sr-only">{announcement}</div>
       {/* Toolbar */}
       <div className="flex items-center gap-2 w-full max-w-[504px]">
