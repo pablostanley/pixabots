@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { randomId } from "@pixabots/core";
 import { PixelIcon } from "@/components/ui/pixel-icon";
-import { useCopyToClipboard } from "@/lib/use-copy-to-clipboard";
+import { useShareOrCopy } from "@/lib/use-share-or-copy";
 
 const BATCH_SIZE = 60;
 const FEATURED_EVERY = 8;
@@ -25,7 +25,7 @@ function generateBatch(count: number): BotCell[] {
 const DETAIL_SIZE = 480;
 
 function BotCard({ bot }: { bot: BotCell }) {
-  const [copied, copy] = useCopyToClipboard();
+  const [copied, share] = useShareOrCopy();
   const [fastRequested, setFastRequested] = useState(false);
   const [fastReady, setFastReady] = useState(false);
   const [hovered, setHovered] = useState(false);
@@ -45,7 +45,11 @@ function BotCard({ bot }: { bot: BotCell }) {
   const onCopy = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    copy(`${window.location.origin}/?id=${bot.id}`);
+    share({
+      url: `${window.location.origin}/?id=${bot.id}`,
+      title: `Pixabot ${bot.id}`,
+      text: `Check out pixabot ${bot.id}`,
+    });
   };
 
   const onDownload = (e: React.MouseEvent) => {

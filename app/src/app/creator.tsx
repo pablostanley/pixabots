@@ -6,7 +6,7 @@ import { parts, layerOrder, layerLabel, type PartCategory } from "@/lib/parts";
 import { encode, decode, isValidId, randomCombo, ANIM_FRAMES, FRAME_MS, type AnimFrame } from "@pixabots/core";
 import { Button } from "@/components/ui/button";
 import { PixelIcon } from "@/components/ui/pixel-icon";
-import { useCopyToClipboard } from "@/lib/use-copy-to-clipboard";
+import { useShareOrCopy } from "@/lib/use-share-or-copy";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -72,7 +72,7 @@ export function Creator({ initialId }: { initialId: string | null }) {
     return randomCombo();
   });
   const [animating, setAnimating] = useState(true);
-  const [copied, copy] = useCopyToClipboard();
+  const [copied, share] = useShareOrCopy();
 
   const pixabotId = encode(selection);
   const apiUrl = `/api/pixabot/${pixabotId}`;
@@ -157,7 +157,11 @@ export function Creator({ initialId }: { initialId: string | null }) {
   const shuffle = () => updateSelection(randomCombo());
 
   const copyShareUrl = () => {
-    copy(`${window.location.origin}/?id=${pixabotId}`);
+    share({
+      url: `${window.location.origin}/?id=${pixabotId}`,
+      title: `Pixabot ${pixabotId}`,
+      text: `Check out pixabot ${pixabotId}`,
+    });
   };
 
   const toggleAnimation = () => {
