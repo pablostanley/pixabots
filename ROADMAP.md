@@ -70,6 +70,7 @@
 - [x] Size=240 regression fix — API validator widened to any integer 32–1920 (dropped multiple-of-32 requirement). Restored browse card rendering. (PR #48)
 - [x] Shuffle hint position — moved below the ID bar so actions lead. (PR #49)
 - [x] Canvas pulse on part change — subtle 180ms scale pulse on shuffle/cycle/pick. (PR #50)
+- [x] Special-ID captions — small note on BotDetail for curated IDs (2156, 1337, 0000, f76a, 0001). (PR #51)
 
 ## Up Next
 
@@ -142,7 +143,7 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 - [ ] **Command palette (⌘K)** — quick jump to ID, Browse, Docs, Random; monospace-style UI matches vibe
 
 ### Delight
-- [ ] **Easter-egg IDs** — specific IDs trigger special animations (`pxlb` → author credit). Konami rapid-shuffle is done in PR #35.
+- [ ] **Easter-egg special animations** — Konami rapid-shuffle (PR #35) and ID captions (PR #51) done. Full special-animations-per-ID still open as a stretch.
 - [ ] **Pixel-by-pixel materialize animation** — first-paint progressively reveals the character (simple creator fade shipped in PR #43; full materialize still open)
 
 ### Done
