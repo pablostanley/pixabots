@@ -194,6 +194,93 @@
         }
       }
     },
+    "/api/pixabot/batch": {
+      "get": {
+        "operationId": "getPixabotBatch",
+        "summary": "Get metadata for many pixabots in one call",
+        "description": "Returns JSON metadata (id, combo, parts, png, gif URLs) for a list of pixabots in a single request. Pass `ids=a,b,c,...` for specific ones (up to 100) or `count=N` for N random pixabots.",
+        "parameters": [
+          {
+            "name": "ids",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated list of 4-char base36 pixabot IDs (max 100). Mutually exclusive with `count`.",
+            "schema": { "type": "string", "example": "2156,f76a,0000" }
+          },
+          {
+            "name": "count",
+            "in": "query",
+            "required": false,
+            "description": "Return N random pixabots (1–100). Mutually exclusive with `ids`.",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 100 }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "description": "Image size for the png/gif URLs embedded in the response (any integer from 32 to 1920).",
+            "schema": { "type": "integer", "minimum": 32, "maximum": 1920, "default": 128 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of pixabot metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "count": { "type": "integer", "example": 3 },
+                    "pixabots": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string", "example": "2156" },
+                          "combo": {
+                            "type": "object",
+                            "properties": {
+                              "eyes": { "type": "integer" },
+                              "heads": { "type": "integer" },
+                              "body": { "type": "integer" },
+                              "top": { "type": "integer" }
+                            }
+                          },
+                          "parts": {
+                            "type": "object",
+                            "properties": {
+                              "eyes": { "type": "string" },
+                              "heads": { "type": "string" },
+                              "body": { "type": "string" },
+                              "top": { "type": "string" }
+                            }
+                          },
+                          "png": { "type": "string", "format": "uri" },
+                          "gif": { "type": "string", "format": "uri" }
+                        },
+                        "required": ["id", "combo", "parts", "png", "gif"]
+                      }
+                    }
+                  },
+                  "required": ["count", "pixabots"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid size, missing both ids/count, too many IDs, or any invalid ID in the list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "error": { "type": "string" } }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/pixabot/random": {
       "get": {
         "operationId": "getRandomPixabot",
