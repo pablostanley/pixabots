@@ -17,19 +17,19 @@ export function BgPicker({
   onChange,
 }: {
   bg: string | null;
-  onChange: (color: string | null) => void;
+  onChange: (color: string | null, index: number) => void;
 }) {
   return (
     <div className="w-full max-w-[504px] flex items-center gap-2 flex-wrap text-xs text-muted-foreground">
       <span className="mr-1">Background</span>
-      {SWATCHES.map((s) => {
+      {SWATCHES.map((s, i) => {
         const active = bg === s.color;
         const isTransparent = s.color === null;
         return (
           <button
             key={s.label}
             type="button"
-            onClick={() => onChange(s.color)}
+            onClick={() => onChange(s.color, i)}
             aria-pressed={active}
             title={s.label}
             className={`size-6 border ${active ? "border-foreground border-2" : "border-border"} cursor-pointer relative`}
