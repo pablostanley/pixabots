@@ -60,6 +60,7 @@
 - [x] Compare view — `/compare?ids=a,b,…` renders up to 6 BotDetails side by side; Favorites page gets a Compare CTA. (PR #38)
 - [x] Footer discovery copy — "9,856 combos · SPACE · ? for shortcuts" in footer. (PR #39)
 - [x] Background color picker — 9-swatch row paints behind the canvas + bakes into downloaded PNGs. (PR #40)
+- [x] BotDetail tilt — subtle 3D rotate on pointer hover, respects reduce-motion. (PR #41)
 
 ## Up Next
 
@@ -138,7 +139,6 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 
 ### Delight
 - [ ] **Easter-egg IDs** — specific IDs trigger special animations (`pxlb` → author credit). Konami rapid-shuffle is done in PR #35.
-- [ ] **Drop-shadow / parallax tilt on hover** — subtle hover depth on bot detail page
 - [ ] **Random boot-up animation** — first-paint shows the character "materializing" pixel-by-pixel
 - [ ] **Opt-in 8-bit sound effects** — chiptune blip on shuffle/copy, toggled off by default
 
