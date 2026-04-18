@@ -40,10 +40,54 @@ Pick from Polish or Ideas below.
 
 ## Polish
 
+### UI
 - [ ] **Background color picker** — transparent by default, but let users pick a color for exports
 - [ ] **Custom pixel tooltips** — replace native browser tooltips with styled ones using our pixel font
+- [ ] **Loading state** — skeleton/shimmer on creator canvas and browse grid while first images load
+- [ ] **Lock layers** — lock icon per category so shuffle keeps locked layers fixed (shuffle "eyes only", etc.)
+- [ ] **Shuffle one layer** — click a category label to re-roll just that layer
+- [ ] **Animated part transitions** — smooth fade/slide between parts instead of instant swap
+- [ ] **Mobile bottom sheet** — use a bottom sheet instead of centered dialog on mobile for bot detail
+- [ ] **Sticky header with scroll behavior** — hide on scroll down, reveal on scroll up; backdrop blur
+- [ ] **Focus rings everywhere** — audit all interactive elements for visible keyboard focus
+- [ ] **Favorite / pin pixabots** — star icon persists IDs in localStorage, "Favorites" tab in browse
+- [ ] **Prev / next on bot page** — arrows to walk neighbor IDs (`/bot/2155` → `/bot/2156` → `/bot/2157`)
+- [ ] **"You might also like"** — on bot page, show 4 one-part-different variants
+- [ ] **Compare view** — side-by-side two pixabots at `?compare=2156,f76a`
+- [ ] **Gallery mode** — fullscreen single-bot view with background color options, big animation
+- [ ] **Embed code on bot page** — tabbed snippet generator: HTML / Markdown / React / URL
+
+### Speed & perf
+- [ ] **Prefetch bot detail on browse hover** — Next.js `<Link prefetch>` already partial; extend to PNG preload
+- [ ] **Preload sprite parts on creator mount** — 42 tiny PNGs fetched in parallel so first shuffle is instant
+- [ ] **Next shuffle preloaded** — generate+preload the next random ID behind the scenes; shuffle becomes 0ms
+- [ ] **Palette-optimized GIFs** — Sharp `gif({ effort })` / reduced colors for smaller files on the wire
+- [ ] **WebP animated output** — smaller than GIF with alpha support (see Ideas)
+- [ ] **Service worker** — cache API responses and parts for repeat visits / offline
+- [ ] **PWA manifest** — installable as an app, home-screen icon, standalone display
+
+### Messaging & copy
+- [ ] **Personality in empty states / 404** — "this pixabot got lost" + random pixabot on 404 page
+- [ ] **First-shuffle hint** — tiny coachmark on first visit: "press SPACE to shuffle"
+- [ ] **Copy-button state polish** — animated check that fades back to copy icon, accompanied by "Copied URL"
+- [ ] **Error messages match voice** — API 400s stay plain, but UI error states use the pixel vibe
+- [ ] **Share via Web Share API on mobile** — native share sheet instead of copy-URL-only
+- [ ] **Discovery copy** — on homepage subtly note "9,856 combos — press SPACE to keep going"
+
+### Accessibility & comfort
+- [ ] **`prefers-reduced-motion` support** — freeze idle bounce, disable hover "speed up" on browse
+- [ ] **Screen-reader announcements on shuffle** — `aria-live` region announces the new ID
+- [ ] **High-contrast focus + checkered BG** — audit dark mode for AA contrast on all text
+- [ ] **Command palette (⌘K)** — quick jump to ID, Browse, Docs, Random; monospace-style UI matches vibe
+
+### Delight
+- [ ] **Easter-egg IDs** — specific IDs trigger special animations (Konami → rapid shuffle, `pxlb` → author credit)
+- [ ] **Drop-shadow / parallax tilt on hover** — subtle hover depth on bot detail page
+- [ ] **Random boot-up animation** — first-paint shows the character "materializing" pixel-by-pixel
+- [ ] **Opt-in 8-bit sound effects** — chiptune blip on shuffle/copy, toggled off by default
+
+### Done
 - [x] **Active nav state** — header highlights current page
-- [ ] **Loading state** — show a skeleton or spinner while the canvas loads images on first render
 - [x] **Keyboard shortcuts** — space to shuffle, P to play, arrows to cycle parts
 - [x] **Share URL** — `pixabots.com/?id=2156` opens a specific combo, URL syncs live
 
