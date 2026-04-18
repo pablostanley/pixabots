@@ -43,6 +43,7 @@
 - [x] Web Share API — `useShareOrCopy` calls `navigator.share()` when available (mobile native sheet), falls back to clipboard. Old `useCopyToClipboard` removed. (PR #21)
 - [x] `prefers-reduced-motion` — creator freezes to static frame; browse serves static PNG + skips fast GIF; bot detail + 404 use `<picture>` with media source so the browser swaps to PNG server-side. (PR #22)
 - [x] aria-live shuffle announcement — sr-only polite region in creator reads out the new ID + parts on every selection change. (PR #23)
+- [x] Focus-visible outline — global `:focus-visible { outline: 2px solid var(--ring) }` in `globals.css`. Covers every previously-ringless element. (PR #24)
 
 ## Up Next
 
@@ -69,9 +70,7 @@ Prioritized tickets to work through. Each is self-contained and shippable.
 ### 10. ~~a11y — aria-live shuffle announcement~~ — **shipped (PR #23)**
 Browse-hover announcement deemed out of scope: hovering each card in a grid of 60 would spam the screen reader. Kept to creator where intent matches user action.
 
-### 11. a11y — focus ring audit
-Every interactive element (buttons, links, cards, dialog close, dropdown triggers) has a visible keyboard-only focus ring at AA contrast in both themes.
-- **Acceptance:** tab through entire site — every focused element clearly indicated; no `:focus { outline: none }` without replacement
+### 11. ~~a11y — focus ring audit~~ — **shipped (PR #24)**
 
 ### 12. a11y — dark mode contrast audit
 Run WCAG AA check on all text/background pairs in dark mode. `muted-foreground` against `background` is the likely weak spot.
