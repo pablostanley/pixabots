@@ -74,6 +74,7 @@
 - [x] WebP animated output — `?webp=true` on API returns animated WebP via Sharp; smaller + alpha preserved. Random forwards it. Docs + OpenAPI synced. (PR #52)
 - [x] Musical SFX — per-action pentatonic scales, softer triangle + lowpass voice, download jingle, color swatches as ascending notes. (PR #53)
 - [x] Batch API — `/api/pixabot/batch?ids=...` (100 max) or `?count=N` for bulk metadata. (PR #54)
+- [x] Browse filters — per-category dropdown filter, URL-driven. (PR #55)
 
 ## Up Next
 
@@ -165,7 +166,6 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 - [ ] Social cards — `GET /api/pixabot/{id}/og` for Open Graph images with name/title
 - [ ] SVG output — vector version alongside PNG
 - [ ] Embed widget — `<script>` tag or iframe for embedding a pixabot in any site
-- [ ] Browse filters — filter by part (e.g., all bots with glasses)
 - [ ] GitHub avatar integration — use as profile pic via URL
 - [ ] Rate limiting — protect the API from abuse (especially animated endpoint)
 - [ ] Analytics — track which pixabots are most popular, API usage stats
