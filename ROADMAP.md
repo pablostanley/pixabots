@@ -51,6 +51,7 @@
 - [x] D opens Download menu — controlled DropdownMenu in creator + `D` keydown. (PR #29)
 - [x] Drag-to-dismiss — mobile bottom sheet can be swiped down to close; 80px / 0.5 px/ms threshold, scrollTop gate. No new deps. (PR #30)
 - [x] Bot-page embed tabs — URL / HTML / Markdown / React snippets with copy buttons on `/bot/[id]`. (PR #31)
+- [x] PWA manifest — `app/manifest.ts` emits `/manifest.webmanifest`; installable on iOS and Android with the pixabot icon. (PR #32)
 
 ## Up Next
 
@@ -119,7 +120,6 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 - [ ] **Palette-optimized GIFs** — Sharp `gif({ effort })` / reduced colors for smaller files on the wire
 - [ ] **WebP animated output** — smaller than GIF with alpha support (see Ideas)
 - [ ] **Service worker** — cache API responses and parts for repeat visits / offline
-- [ ] **PWA manifest** — installable as an app, home-screen icon, standalone display
 
 ### Messaging & copy
 - [ ] **Personality in empty states / 404** — "this pixabot got lost" + random pixabot on 404 page
