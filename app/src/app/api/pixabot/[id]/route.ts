@@ -68,7 +68,10 @@ export async function GET(
 
   try {
     if (animated) {
-      return imageResponse(await renderAnimatedPixabot(combo, size, speed), "image/gif");
+      const wantsWebp = request.nextUrl.searchParams.get("webp") === "true";
+      const outFormat = wantsWebp ? "webp" : "gif";
+      const buf = await renderAnimatedPixabot(combo, size, speed, outFormat);
+      return imageResponse(buf, wantsWebp ? "image/webp" : "image/gif");
     }
     return imageResponse(await renderPixabot(combo, size), "image/png");
   } catch (e) {
