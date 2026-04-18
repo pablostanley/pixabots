@@ -214,6 +214,14 @@ export default function Home() {
     }
   }, []);
 
+  // SSR renders with randomCombo (window undef). Reconcile from URL on mount.
+  useEffect(() => {
+    const urlId = new URLSearchParams(window.location.search).get("id");
+    if (urlId && isValidId(urlId) && urlId !== encode(selRef.current)) {
+      updateSelection(decode(urlId));
+    }
+  }, []);
+
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
