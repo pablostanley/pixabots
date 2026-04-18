@@ -1,12 +1,26 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo, Suspense } from "react";
 import Link from "next/link";
-import { randomId } from "@pixabots/core";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import {
+  randomCombo,
+  encode,
+  CATEGORY_ORDER,
+  PARTS,
+  getPartIndex,
+  type PartCategory,
+} from "@pixabots/core";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import { useShareOrCopy } from "@/lib/use-share-or-copy";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 import { FavoriteButton } from "@/components/favorite-button";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 const BATCH_SIZE = 60;
 const FEATURED_EVERY = 8;
@@ -17,11 +31,93 @@ interface BotCell {
   featured: boolean;
 }
 
-function generateBatch(count: number): BotCell[] {
-  return Array.from({ length: count }, (_, i) => ({
-    id: randomId(),
-    featured: i % FEATURED_EVERY === 0,
-  }));
+type Filters = Partial<Record<PartCategory, number>>;
+
+function generateBatch(count: number, filters: Filters, offset: number): BotCell[] {
+  return Array.from({ length: count }, (_, i) => {
+    const combo = randomCombo();
+    for (const cat of CATEGORY_ORDER) {
+      const locked = filters[cat];
+      if (locked !== undefined) combo[cat] = locked;
+    }
+    return {
+      id: encode(combo),
+      featured: (i + offset) % FEATURED_EVERY === 0,
+    };
+  });
+}
+
+function parseFilters(params: URLSearchParams): Filters {
+  const out: Filters = {};
+  for (const cat of CATEGORY_ORDER) {
+    const value = params.get(cat);
+    if (!value) continue;
+    const idx = getPartIndex(cat, value);
+    if (idx >= 0) out[cat] = idx;
+  }
+  return out;
+}
+
+function FilterBar({
+  filters,
+  onChange,
+}: {
+  filters: Filters;
+  onChange: (cat: PartCategory, value: string | null) => void;
+}) {
+  const active = Object.keys(filters).length > 0;
+  return (
+    <div className="flex flex-wrap items-center gap-2 mb-3 sm:mb-4 px-2 text-sm">
+      <span className="text-muted-foreground mr-1">Filter</span>
+      {CATEGORY_ORDER.map((cat) => {
+        const selectedIdx = filters[cat];
+        const label = cat === "eyes" ? "face" : cat;
+        const selectedName = selectedIdx !== undefined ? PARTS[cat][selectedIdx].name : null;
+        return (
+          <DropdownMenu key={cat}>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className={`px-2 py-1 border transition-colors cursor-pointer ${
+                  selectedName
+                    ? "border-foreground bg-foreground/10"
+                    : "border-border hover:bg-muted text-muted-foreground"
+                }`}
+              >
+                {label}
+                {selectedName ? `: ${selectedName}` : ""}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="max-h-64 overflow-y-auto">
+              <DropdownMenuItem onClick={() => onChange(cat, null)} className="text-sm font-medium">
+                Any {label}
+              </DropdownMenuItem>
+              {PARTS[cat].map((p) => (
+                <DropdownMenuItem
+                  key={p.name}
+                  onClick={() => onChange(cat, p.name)}
+                  className={`text-sm ${p.name === selectedName ? "bg-accent" : ""}`}
+                >
+                  {p.name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      })}
+      {active && (
+        <button
+          type="button"
+          onClick={() => {
+            for (const cat of CATEGORY_ORDER) onChange(cat, null);
+          }}
+          className="ml-auto px-2 py-1 text-xs text-muted-foreground hover:text-foreground cursor-pointer"
+        >
+          Clear
+        </button>
+      )}
+    </div>
+  );
 }
 
 const DETAIL_SIZE = 480;
@@ -143,21 +239,36 @@ function BotCard({ bot }: { bot: BotCell }) {
   );
 }
 
-export default function BrowsePage() {
-  const [bots, setBots] = useState(() => generateBatch(BATCH_SIZE));
+function BrowseInner() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const filters = useMemo(
+    () => parseFilters(new URLSearchParams(searchParams.toString())),
+    [searchParams]
+  );
+
+  const [bots, setBots] = useState(() => generateBatch(BATCH_SIZE, filters, 0));
   const sentinelRef = useRef<HTMLDivElement>(null);
   const loadingRef = useRef(false);
+
+  // Regenerate when filters change
+  const filterKey = JSON.stringify(filters);
+  useEffect(() => {
+    setBots(generateBatch(BATCH_SIZE, filters, 0));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterKey]);
 
   const loadMore = useCallback(() => {
     if (loadingRef.current) return;
     loadingRef.current = true;
     setBots((prev) => {
       if (prev.length >= MAX_BOTS) return prev;
-      return [...prev, ...generateBatch(BATCH_SIZE)];
+      return [...prev, ...generateBatch(BATCH_SIZE, filters, prev.length)];
     });
-    // Release guard after React commits. setTimeout 0 pushes past current microtask.
     setTimeout(() => { loadingRef.current = false; }, 0);
-  }, []);
+  }, [filters]);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
@@ -170,8 +281,20 @@ export default function BrowsePage() {
     return () => observer.disconnect();
   }, [loadMore]);
 
+  const setFilter = useCallback(
+    (cat: PartCategory, value: string | null) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (value) params.set(cat, value);
+      else params.delete(cat);
+      const qs = params.toString();
+      router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+    },
+    [pathname, router, searchParams]
+  );
+
   return (
     <main className="flex-1 p-2 sm:p-4">
+      <FilterBar filters={filters} onChange={setFilter} />
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4" style={{ gridAutoFlow: "dense" }}>
         {bots.map((bot) => (
           <BotCard key={bot.id} bot={bot} />
@@ -179,5 +302,13 @@ export default function BrowsePage() {
       </div>
       <div ref={sentinelRef} className="h-1" />
     </main>
+  );
+}
+
+export default function BrowsePage() {
+  return (
+    <Suspense fallback={<main className="flex-1 p-2 sm:p-4" />}>
+      <BrowseInner />
+    </Suspense>
   );
 }
