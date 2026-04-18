@@ -13,6 +13,7 @@ type Shortcut = { keys: string[]; label: string };
 
 const GLOBAL: Shortcut[] = [
   { keys: ["?"], label: "Show this help" },
+  { keys: ["⌘K", "Ctrl+K"], label: "Open command palette" },
 ];
 
 const CREATOR: Shortcut[] = [
