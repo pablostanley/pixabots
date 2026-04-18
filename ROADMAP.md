@@ -41,6 +41,7 @@
 - [x] 404 page — custom not-found.tsx with random animated pixabot, personality copy, links to Home/Browse/#{id}. Catches invalid `/bot/{id}` and any unknown route. (PR #19)
 - [x] Animated copy feedback — check icon pops via `animate-in zoom-in-50 fade-in-0`; creator label slides + fades to "Copied!". Auto-resets 1.5s later. (PR #20)
 - [x] Web Share API — `useShareOrCopy` calls `navigator.share()` when available (mobile native sheet), falls back to clipboard. Old `useCopyToClipboard` removed. (PR #21)
+- [x] `prefers-reduced-motion` — creator freezes to static frame; browse serves static PNG + skips fast GIF; bot detail + 404 use `<picture>` with media source so the browser swaps to PNG server-side. (PR #22)
 
 ## Up Next
 
@@ -62,9 +63,7 @@ Prioritized tickets to work through. Each is self-contained and shippable.
 
 ### 8. ~~Web Share API on mobile~~ — **shipped (PR #21)**
 
-### 9. a11y — `prefers-reduced-motion`
-Respect `@media (prefers-reduced-motion: reduce)` everywhere: freeze idle bounce in creator, disable 2x-speed-on-hover in browse, cut dialog + sticky-header transitions. Pause GIFs: serve static PNG instead of animated.
-- **Acceptance:** toggle OS setting → all animation halts; static frames display; no CLS
+### 9. ~~a11y — `prefers-reduced-motion`~~ — **shipped (PR #22)**
 
 ### 10. a11y — aria-live shuffle announcement
 Visually-hidden `aria-live="polite"` region announces the new ID after each shuffle ("Pixabot 2156, glasses blob wings mohawk"). Fires on both creator and browse-hover.
