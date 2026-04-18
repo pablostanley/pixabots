@@ -74,6 +74,7 @@ export function Creator({ initialId }: { initialId: string | null }) {
   });
   const reducedMotion = usePrefersReducedMotion();
   const [animating, setAnimating] = useState(true);
+  const [downloadOpen, setDownloadOpen] = useState(false);
   const [copied, share] = useShareOrCopy();
 
   const pixabotId = encode(selection);
@@ -209,6 +210,10 @@ export function Creator({ initialId }: { initialId: string | null }) {
       case "c":
         copyShareUrl();
         break;
+      case "d":
+        e.preventDefault();
+        setDownloadOpen((o) => !o);
+        break;
       case "ArrowRight":
         e.preventDefault();
         cycle(layerOrder[0]);
@@ -249,7 +254,7 @@ export function Creator({ initialId }: { initialId: string | null }) {
           <PixelIcon name="shuffle" className="size-4" />
           <span className="hidden sm:inline">Shuffle</span>
         </Button>
-        <DropdownMenu>
+        <DropdownMenu open={downloadOpen} onOpenChange={setDownloadOpen}>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="lg" className="text-sm gap-2">
               <PixelIcon name="download" className="size-4" />

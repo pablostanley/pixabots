@@ -20,6 +20,7 @@ const CREATOR: Shortcut[] = [
   { keys: ["Space"], label: "Shuffle" },
   { keys: ["P"], label: "Play / Stop animation" },
   { keys: ["C"], label: "Copy share URL" },
+  { keys: ["D"], label: "Open Download menu" },
   { keys: ["← →"], label: "Cycle face / heads" },
   { keys: ["↑ ↓"], label: "Cycle body / top" },
 ];
