@@ -38,6 +38,7 @@
 - [x] Sticky header — `SiteHeader` is `sticky top-0`, hides on scroll down past 20px, reveals on scroll up, backdrop-blur + bg/80 when scrolled. Scroll tracked via useSyncExternalStore. Respects prefers-reduced-motion. (PR #16)
 - [x] Browse prefetch — `mouseenter` on non-featured cards fires background fetch for the 480 animated the detail view renders. Click → cache-hit. (PR #17)
 - [x] Sprite preload on home — server-rendered `<link rel="preload">` for all 42 sprite PNGs, hoisted to head by React 19. First shuffle draws without network; every subsequent shuffle cache-hit. (PR #18)
+- [x] 404 page — custom not-found.tsx with random animated pixabot, personality copy, links to Home/Browse/#{id}. Catches invalid `/bot/{id}` and any unknown route. (PR #19)
 
 ## Up Next
 
@@ -53,9 +54,7 @@ Prioritized tickets to work through. Each is self-contained and shippable.
 
 ### 5. ~~Preload sprite parts on creator mount~~ — **shipped (PR #18)**
 
-### 6. 404 page with lost pixabot
-Create `app/not-found.tsx` with a random animated pixabot, personality copy ("this pixabot got lost"), and links to Home + Browse. Caught by invalid `/bot/{id}` too.
-- **Acceptance:** visiting any unknown route renders the 404; `/bot/zzzz` also renders it; pixabot animates
+### 6. ~~404 page with lost pixabot~~ — **shipped (PR #19)**
 
 ### 7. Animated copy-button feedback
 Copy button currently swaps icon `copy` → `check`. Upgrade: scale-pop + "Copied!" label that lingers ~1.5s, then fades back. No layout shift.
