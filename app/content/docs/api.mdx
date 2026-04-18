@@ -14,7 +14,7 @@ Returns a pixabot image or metadata.
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `id` | path | required | 4-char base36 pixabot ID (e.g. `2156`, `f76a`) |
-| `size` | query | `128` | Image size in pixels. Any multiple of 32 between 32 and 1920 (60 sizes). Nearest-neighbor scaled from the 32×32 source. |
+| `size` | query | `128` | Image size in pixels, any integer from 32 to 1920. Nearest-neighbor scaled from the 32×32 source. |
 | `format` | query | — | Set to `json` for metadata instead of image |
 | `animated` | query | — | Set to `true` for an animated GIF. Supports all sizes. |
 | `speed` | query | `1` | Animation speed multiplier (`0.25`–`4`). Only works with `animated=true`. |
@@ -29,7 +29,7 @@ curl https://pixabots.com/api/pixabot/2156?size=1920 -o pixabot-huge.png
 
 ### Sizes
 
-Any multiple of 32 from 32 to 1920 works — that's **60 discrete sizes**. Common choices:
+Any integer from 32 to 1920 works. Multiples of 32 produce the cleanest pixel scaling (every source pixel becomes an integer block); non-multiples still render via nearest-neighbor. Common choices:
 
 | Size | Use case |
 |------|----------|
@@ -42,7 +42,7 @@ Any multiple of 32 from 32 to 1920 works — that's **60 discrete sizes**. Commo
 
 ### Animated GIF
 
-Add `?animated=true` to get the idle bounce animation. **All 60 sizes** are supported — including 1920px:
+Add `?animated=true` to get the idle bounce animation. **All sizes** are supported — including 1920px:
 
 ```bash
 curl https://pixabots.com/api/pixabot/2156?animated=true -o bounce.gif

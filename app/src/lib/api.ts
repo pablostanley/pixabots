@@ -6,17 +6,16 @@ export const CORS_HEADERS = {
 
 export const MIN_SIZE = 32;
 export const MAX_SIZE = 1920;
-export const SIZE_STEP = 32;
 export const DEFAULT_SIZE = 128;
 
 export const MIN_SPEED = 0.25;
 export const MAX_SPEED = 4;
 
 export function isValidSize(n: number) {
-  return Number.isInteger(n) && n >= MIN_SIZE && n <= MAX_SIZE && n % SIZE_STEP === 0;
+  return Number.isInteger(n) && n >= MIN_SIZE && n <= MAX_SIZE;
 }
 
-export const INVALID_SIZE_MESSAGE = `Invalid size. Must be a multiple of ${SIZE_STEP} between ${MIN_SIZE} and ${MAX_SIZE} (e.g. ${MIN_SIZE}, 64, 128, 240, 480, 960, ${MAX_SIZE}).`;
+export const INVALID_SIZE_MESSAGE = `Invalid size. Must be an integer between ${MIN_SIZE} and ${MAX_SIZE}.`;
 
 const IMMUTABLE_CACHE = "public, max-age=31536000, immutable";
 
