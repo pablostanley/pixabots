@@ -38,9 +38,11 @@
 
 Prioritized tickets to work through. Each is self-contained and shippable.
 
-### 1. Prev / next navigation in browse dialog
+### 1. Prev / next navigation in browse dialog — **in review ([PR #14](https://github.com/pablostanley/pixabots/pull/14))**
 When the bot dialog is open on `/browse`, left/right arrow keys (and visible `<` `>` buttons) move to the prev/next bot in the current grid order. URL updates to the new `/bot/{id}`.
 - **Acceptance:** arrow keys + on-screen buttons navigate; ESC still dismisses back to grid; deep-linking `/bot/{id}` directly (full page) unaffected
+- **Scope change:** implemented on shared `BotDetail`, so it also covers the Polish "Prev / next on bot page" item for free
+- **Approach:** combo-index linearization walks all 9,856 bots in stable order, wraps at boundaries. `router.replace` keeps back button returning to `/browse`.
 
 ### 2. Mobile bottom sheet for bot detail
 Below the `sm` breakpoint, render the dialog as a bottom sheet that slides up from the edge and can be drag-dismissed. Desktop keeps the centered dialog.
