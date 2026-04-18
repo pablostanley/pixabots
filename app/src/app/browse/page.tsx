@@ -86,7 +86,7 @@ function BotCard({ bot }: { bot: BotCell }) {
       </div>
 
       {/* Desktop: absolute overlay on hover */}
-      <div className="hidden sm:flex absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto items-end p-2 bg-gradient-to-t from-background/90 via-background/40 to-transparent">
+      <div className="hidden sm:flex absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto items-end p-2 bg-background/80">
         <div className="flex items-center gap-1 w-full">
           <span className="font-mono text-sm text-foreground mr-auto">{bot.id}</span>
           <button onClick={copy} className="size-7 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" title="Share">
