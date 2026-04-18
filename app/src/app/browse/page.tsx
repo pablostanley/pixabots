@@ -70,7 +70,7 @@ function BotCard({ bot }: { bot: BotCell }) {
   return (
     <Link
       href={`/bot/${bot.id}`}
-      className={`group relative block bg-card border border-border overflow-hidden ${
+      className={`group relative block bg-card border border-border ${
         bot.featured ? "sm:col-span-2 sm:row-span-2" : ""
       }`}
       onMouseEnter={() => {
@@ -80,7 +80,7 @@ function BotCard({ bot }: { bot: BotCell }) {
       }}
       onMouseLeave={() => setHovered(false)}
     >
-      <div className="relative aspect-square bg-muted">
+      <div className="relative aspect-square bg-muted overflow-hidden">
         <div
           aria-hidden="true"
           className={`absolute inset-0 bg-muted motion-safe:animate-pulse transition-opacity duration-300 ${mainLoaded ? "opacity-0" : "opacity-100"}`}
@@ -110,14 +110,14 @@ function BotCard({ bot }: { bot: BotCell }) {
       <div className="flex items-center gap-1 p-1 sm:hidden">
         <span className="font-mono text-sm text-muted-foreground mr-auto">{bot.id}</span>
         <FavoriteButton id={bot.id} size="sm" />
-        <button onClick={onCopy} className="size-6 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" title={copied ? "Copied!" : "Share"}>
+        <button onClick={onCopy} className="size-6 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" data-tooltip={copied ? "Copied!" : "Share"} aria-label="Share">
           <PixelIcon
             key={copied ? "copied" : "idle"}
             name={copied ? "check" : "copy"}
             className={`size-3 ${copied ? "animate-in zoom-in-50 fade-in-0 duration-200" : ""}`}
           />
         </button>
-        <button onClick={onDownload} className="size-6 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" title="Download">
+        <button onClick={onDownload} className="size-6 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" data-tooltip="Download" aria-label="Download">
           <PixelIcon name="download" className="size-3" />
         </button>
       </div>
@@ -127,14 +127,14 @@ function BotCard({ bot }: { bot: BotCell }) {
         <div className="flex items-center gap-1 w-full">
           <span className="font-mono text-sm text-foreground mr-auto">{bot.id}</span>
           <FavoriteButton id={bot.id} />
-          <button onClick={onCopy} className="size-7 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" title={copied ? "Copied!" : "Share"}>
+          <button onClick={onCopy} className="size-7 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" data-tooltip={copied ? "Copied!" : "Share"} aria-label="Share">
             <PixelIcon
               key={copied ? "copied" : "idle"}
               name={copied ? "check" : "copy"}
               className={`size-3.5 ${copied ? "animate-in zoom-in-50 fade-in-0 duration-200" : ""}`}
             />
           </button>
-          <button onClick={onDownload} className="size-7 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" title="Download">
+          <button onClick={onDownload} className="size-7 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" data-tooltip="Download" aria-label="Download">
             <PixelIcon name="download" className="size-3.5" />
           </button>
         </div>

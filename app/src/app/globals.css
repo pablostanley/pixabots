@@ -135,6 +135,37 @@
     outline: 2px solid var(--ring);
     outline-offset: 2px;
   }
+  [data-tooltip] {
+    position: relative;
+  }
+  [data-tooltip]:hover::after,
+  [data-tooltip]:focus-visible::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-pixel);
+    font-size: 11px;
+    line-height: 1;
+    padding: 4px 6px;
+    background: var(--popover);
+    color: var(--popover-foreground);
+    border: 1px solid var(--border);
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 60;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    [data-tooltip]:hover::after,
+    [data-tooltip]:focus-visible::after {
+      animation: fade-in 120ms ease-out both;
+    }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateX(-50%) translateY(2px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
 }
 
 /* Terminal-core: Fumadocs overrides */
