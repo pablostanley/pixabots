@@ -44,6 +44,7 @@
 - [x] `prefers-reduced-motion` — creator freezes to static frame; browse serves static PNG + skips fast GIF; bot detail + 404 use `<picture>` with media source so the browser swaps to PNG server-side. (PR #22)
 - [x] aria-live shuffle announcement — sr-only polite region in creator reads out the new ID + parts on every selection change. (PR #23)
 - [x] Focus-visible outline — global `:focus-visible { outline: 2px solid var(--ring) }` in `globals.css`. Covers every previously-ringless element. (PR #24)
+- [x] Contrast audit — `--muted-foreground` raised in both themes (light 0.556→0.45, dark 0.708→0.76) so every muted label passes WCAG AA. (PR #25)
 
 ## Up Next
 
@@ -72,9 +73,8 @@ Browse-hover announcement deemed out of scope: hovering each card in a grid of 6
 
 ### 11. ~~a11y — focus ring audit~~ — **shipped (PR #24)**
 
-### 12. a11y — dark mode contrast audit
-Run WCAG AA check on all text/background pairs in dark mode. `muted-foreground` against `background` is the likely weak spot.
-- **Acceptance:** all body text ≥ 4.5:1, all large text ≥ 3:1; fixes shipped as theme-variable tweaks (not per-component)
+### 12. ~~a11y — contrast audit~~ — **shipped (PR #25)**
+Expanded beyond dark mode: light mode also had a muted-foreground regression (~4.0:1). Both themes now pass AA.
 
 ### 13. Expanded keyboard shortcuts + help overlay
 Keep existing (space=shuffle, p=play/pause, arrows=cycle layers). Add: `c`=copy URL, `d`=download menu, `?`=open shortcut-help overlay, `/`=focus command palette. All skip when typing in inputs.
