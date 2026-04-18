@@ -44,9 +44,10 @@ Prioritized tickets to work through. Each is self-contained and shippable.
 
 ### 2. ~~Mobile bottom sheet for bot detail~~ — **shipped (PR #15)**
 
-### 3. Sticky header with scroll behavior
-Header stays pinned; hides on scroll down, reveals on scroll up; backdrop blur kicks in past 20px of scroll. Applies to home and `/browse` (docs keeps Fumadocs default).
-- **Acceptance:** no layout jank; motion respects `prefers-reduced-motion`; never covers the canvas on home
+### 3. Sticky header with scroll behavior — **in review ([PR #16](https://github.com/pablostanley/pixabots/pull/16))**
+Header stays pinned; hides on scroll down, reveals on scroll up; backdrop blur kicks in past 20px of scroll.
+- **Acceptance met:** scroll direction via useSyncExternalStore; respects prefers-reduced-motion; 8px dead zone prevents jitter
+- **Note:** applies globally via `SiteHeader` in root layout (including `/docs` — Fumadocs renders inside layout main, so sticky header sits above). Verify no z-conflict with Fumadocs UI.
 
 ### 4. Prefetch bot PNG on browse card hover
 On `mouseenter` of a browse card, kick off a fetch for the detail-size PNG so clicking feels instant. Route prefetch already handled by `<Link>`.
@@ -87,6 +88,10 @@ Run WCAG AA check on all text/background pairs in dark mode. `muted-foreground` 
 ### 13. Expanded keyboard shortcuts + help overlay
 Keep existing (space=shuffle, p=play/pause, arrows=cycle layers). Add: `c`=copy URL, `d`=download menu, `?`=open shortcut-help overlay, `/`=focus command palette. All skip when typing in inputs.
 - **Acceptance:** `?` shows a modal listing every shortcut; `c` copies from anywhere in the creator; existing shortcuts unchanged
+
+### 16. SiteHeader theme detection via useEffect (follow-up from #3)
+`SiteHeader` reads `prefers-color-scheme` inside a `useEffect`. Swap to useSyncExternalStore reading `matchMedia`, or pre-hydration inline script that sets `documentElement.classList` before React mounts — avoids flash and complies with "no useEffect" rule.
+- **Acceptance:** theme set before first paint; matches `prefers-color-scheme` reactively; toggle button still works
 
 ### 15. Drag-to-dismiss on mobile bottom sheet (descoped from #2)
 Add touch-drag gesture to dismiss the mobile sheet. Either bring in `vaul` (shadcn's recommended drawer) or wire up `pointerdown`/`pointermove`/`pointerup` manually with a translate + velocity check.
