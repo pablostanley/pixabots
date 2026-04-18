@@ -63,6 +63,7 @@
 - [x] BotDetail tilt — subtle 3D rotate on pointer hover, respects reduce-motion. (PR #41)
 - [x] Browse skeleton — muted pulse layer until each card's GIF loads; motion-safe pulse. (PR #42)
 - [x] Creator boot fade — motion-safe soft reveal on mount. (PR #43)
+- [x] Pixel tooltips — CSS-only `data-tooltip` with styled popover + fade; icon buttons swapped from `title=`. (PR #44)
 
 ## Up Next
 
@@ -111,7 +112,6 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 ## Polish
 
 ### UI
-- [ ] **Custom pixel tooltips** — replace native browser tooltips with styled ones using our pixel font
 - [ ] **Animated part transitions** — smooth fade/slide between parts instead of instant swap
 - [ ] **Mobile bottom sheet** — use a bottom sheet instead of centered dialog on mobile for bot detail
 - [ ] **Sticky header with scroll behavior** — hide on scroll down, reveal on scroll up; backdrop blur
