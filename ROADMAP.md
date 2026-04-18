@@ -56,6 +56,7 @@
 - [x] Lock layers — per-category lock gate on shuffle, toggled from each category dropdown. (PR #34)
 - [x] Konami rapid shuffle — ↑↑↓↓←→←→BA on creator runs 20 shuffles at 80ms. (PR #35)
 - [x] Favorites — star/unstar on BotDetail + browse cards; `/favorites` page with empty state; nav link + command-palette action. (PR #36)
+- [x] GIF encoding — `effort: 10` on Sharp's `.gif()` for smaller palette-optimized files. Immutable cache means render-once, serve-forever. (PR #37)
 
 ## Up Next
 
@@ -119,7 +120,6 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 - [ ] **Prefetch bot detail on browse hover** — Next.js `<Link prefetch>` already partial; extend to PNG preload
 - [ ] **Preload sprite parts on creator mount** — 42 tiny PNGs fetched in parallel so first shuffle is instant
 - [ ] **Next shuffle preloaded** — generate+preload the next random ID behind the scenes; shuffle becomes 0ms
-- [ ] **Palette-optimized GIFs** — Sharp `gif({ effort })` / reduced colors for smaller files on the wire
 - [ ] **WebP animated output** — smaller than GIF with alpha support (see Ideas)
 - [ ] **Service worker** — cache API responses and parts for repeat visits / offline
 
