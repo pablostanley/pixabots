@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { isValidId, resolveId } from "@pixabots/core";
 import { SITE_URL } from "@/lib/constants";
 import { BotDetail } from "@/components/bot-detail";
+import { BotEmbed } from "@/components/bot-embed";
 
 export async function generateMetadata({
   params,
@@ -50,8 +51,9 @@ export default async function BotPage({
 
   return (
     <main className="flex-1 flex flex-col items-center justify-center p-6">
-      <div className="w-full max-w-[504px]">
+      <div className="w-full max-w-[504px] flex flex-col gap-6">
         <BotDetail id={id} />
+        <BotEmbed id={id} />
       </div>
     </main>
   );
