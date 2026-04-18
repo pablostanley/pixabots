@@ -39,6 +39,7 @@
 - [x] Browse prefetch — `mouseenter` on non-featured cards fires background fetch for the 480 animated the detail view renders. Click → cache-hit. (PR #17)
 - [x] Sprite preload on home — server-rendered `<link rel="preload">` for all 42 sprite PNGs, hoisted to head by React 19. First shuffle draws without network; every subsequent shuffle cache-hit. (PR #18)
 - [x] 404 page — custom not-found.tsx with random animated pixabot, personality copy, links to Home/Browse/#{id}. Catches invalid `/bot/{id}` and any unknown route. (PR #19)
+- [x] Animated copy feedback — check icon pops via `animate-in zoom-in-50 fade-in-0`; creator label slides + fades to "Copied!". Auto-resets 1.5s later. (PR #20)
 
 ## Up Next
 
@@ -56,9 +57,7 @@ Prioritized tickets to work through. Each is self-contained and shippable.
 
 ### 6. ~~404 page with lost pixabot~~ — **shipped (PR #19)**
 
-### 7. Animated copy-button feedback
-Copy button currently swaps icon `copy` → `check`. Upgrade: scale-pop + "Copied!" label that lingers ~1.5s, then fades back. No layout shift.
-- **Acceptance:** click copy → visible confirmation; reusable across home + browse + bot pages
+### 7. ~~Animated copy-button feedback~~ — **shipped (PR #20)**
 
 ### 8. Web Share API on mobile
 On touch devices, "Share" button calls `navigator.share({ url, title, text })`. Fallback to existing clipboard copy when unavailable (desktop, or API missing).
