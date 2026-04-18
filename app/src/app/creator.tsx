@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback } from "react";
 import { useKeydown } from "@/lib/use-keydown";
 import { parts, layerOrder, layerLabel, type PartCategory } from "@/lib/parts";
-import { encode, decode, isValidId, randomCombo, ANIM_FRAMES, FRAME_MS, type AnimFrame } from "@pixabots/core";
+import { encode, decode, isValidId, randomCombo, resolve, ANIM_FRAMES, FRAME_MS, type AnimFrame } from "@pixabots/core";
 import { Button } from "@/components/ui/button";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import { useShareOrCopy } from "@/lib/use-share-or-copy";
@@ -78,6 +78,8 @@ export function Creator({ initialId }: { initialId: string | null }) {
 
   const pixabotId = encode(selection);
   const apiUrl = `/api/pixabot/${pixabotId}`;
+  const partNames = resolve(selection);
+  const announcement = `Pixabot ${pixabotId}: ${partNames.eyes}, ${partNames.heads}, ${partNames.body}, ${partNames.top}.`;
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imagesRef = useRef<Record<string, HTMLImageElement>>({});
@@ -227,6 +229,7 @@ export function Creator({ initialId }: { initialId: string | null }) {
 
   return (
     <main className="flex flex-col items-center justify-center flex-1 gap-3 p-4 sm:gap-4 sm:p-6">
+      <div aria-live="polite" aria-atomic="true" className="sr-only">{announcement}</div>
       {/* Toolbar */}
       <div className="flex items-center gap-2 w-full max-w-[504px]">
         <span className="text-lg font-bold mr-auto">Create</span>
