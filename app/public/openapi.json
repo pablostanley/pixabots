@@ -44,6 +44,13 @@
             "required": false,
             "description": "Set to `true` to get an animated GIF of the bounce animation instead of a static PNG.",
             "schema": { "type": "string", "enum": ["true"] }
+          },
+          {
+            "name": "speed",
+            "in": "query",
+            "required": false,
+            "description": "Animation speed multiplier (0.25–4). Only applies when `animated=true`.",
+            "schema": { "type": "number", "minimum": 0.25, "maximum": 4, "default": 1 }
           }
         ],
         "responses": {

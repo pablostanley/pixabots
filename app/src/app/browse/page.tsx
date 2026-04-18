@@ -26,7 +26,7 @@ function BotCard({ bot }: { bot: BotCell }) {
   const copyTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const size = bot.featured ? 480 : 240;
   const animatedSrc = `/api/pixabot/${bot.id}?size=${size}&animated=true`;
-  const staticSrc = `/api/pixabot/${bot.id}?size=${size}`;
+  const fastSrc = `/api/pixabot/${bot.id}?size=${size}&animated=true&speed=2`;
 
   useEffect(() => () => clearTimeout(copyTimerRef.current), []);
 
@@ -61,7 +61,7 @@ function BotCard({ bot }: { bot: BotCell }) {
           loading="lazy"
         />
         <img
-          src={staticSrc}
+          src={fastSrc}
           alt=""
           className={`absolute inset-0 w-full h-full object-cover transition-opacity ${hovered ? "opacity-100" : "opacity-0"}`}
           style={{ imageRendering: "pixelated" }}
@@ -71,7 +71,7 @@ function BotCard({ bot }: { bot: BotCell }) {
 
       {/* Mobile: below image. Desktop: absolute overlay, bottom-aligned, hover reveal */}
       <div className="flex items-center gap-1 p-1 sm:hidden">
-        <span className="font-mono text-xs text-muted-foreground mr-auto">{bot.id}</span>
+        <span className="font-mono text-sm text-muted-foreground mr-auto">{bot.id}</span>
         <button onClick={copy} className="size-6 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" title="Share">
           <PixelIcon name={copied ? "check" : "copy"} className="size-3" />
         </button>
@@ -84,7 +84,7 @@ function BotCard({ bot }: { bot: BotCell }) {
       </div>
       <div className="hidden sm:flex absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto items-end p-2 bg-gradient-to-t from-background/90 via-background/40 to-transparent">
         <div className="flex items-center gap-1 w-full">
-          <span className="font-mono text-xs text-foreground mr-auto">{bot.id}</span>
+          <span className="font-mono text-sm text-foreground mr-auto">{bot.id}</span>
           <button onClick={copy} className="size-7 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" title="Share">
             <PixelIcon name={copied ? "check" : "copy"} className="size-3.5" />
           </button>

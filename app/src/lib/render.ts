@@ -111,7 +111,8 @@ async function renderFrame(
 /** Render an animated GIF of the bounce animation. */
 export async function renderAnimatedPixabot(
   combo: PixabotCombo,
-  size: number = NATIVE_SIZE
+  size: number = NATIVE_SIZE,
+  speed: number = 1
 ): Promise<Buffer> {
   const cappedSize = Math.min(size, ANIM_MAX_SIZE);
   const layers = await loadLayers(combo);
@@ -122,6 +123,7 @@ export async function renderAnimatedPixabot(
 
   const stacked = Buffer.concat(frameBuffers);
   const totalHeight = cappedSize * ANIM_FRAMES.length;
+  const delays = ANIM_FRAMES.map(() => Math.max(20, Math.round(FRAME_MS / speed)));
 
   return sharp(stacked, {
     raw: {
@@ -131,6 +133,6 @@ export async function renderAnimatedPixabot(
       pageHeight: cappedSize,
     } as sharp.CreateRaw,
   })
-    .gif({ delay: FRAME_DELAYS, loop: 0 })
+    .gif({ delay: delays, loop: 0 })
     .toBuffer();
 }
