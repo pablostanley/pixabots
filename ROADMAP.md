@@ -46,6 +46,7 @@
 - [x] Focus-visible outline — global `:focus-visible { outline: 2px solid var(--ring) }` in `globals.css`. Covers every previously-ringless element. (PR #24)
 - [x] Contrast audit — `--muted-foreground` raised in both themes (light 0.556→0.45, dark 0.708→0.76) so every muted label passes WCAG AA. (PR #25)
 - [x] Shortcuts help overlay + C to copy — `?` opens per-route help dialog, `C` copies share URL in creator. (PR #26)
+- [x] Command palette — `⌘K` / `Ctrl+K` opens a filtered action list: navigation, jump-by-ID, copy URL, random. (PR #27)
 
 ## Up Next
 
@@ -92,14 +93,8 @@ Radix `DropdownMenu` doesn't have a declarative open prop on the trigger; we'd n
 Add touch-drag gesture to dismiss the mobile sheet. Either bring in `vaul` (shadcn's recommended drawer) or wire up `pointerdown`/`pointermove`/`pointerup` manually with a translate + velocity check.
 - **Acceptance:** swipe-down on the sheet closes it with momentum; threshold feels natural (≥80px or >0.5 velocity); doesn't conflict with internal scroll
 
-### 14. Command palette (⌘K)
-Floating input triggered by ⌘K / Ctrl+K. Fuzzy-search actions:
-- **Navigation:** Go Home / Go to Browse / Go to Docs / Random
-- **Jump by ID:** type a 4-char ID → Enter → `/bot/{id}`
-- **Jump by part:** type `glasses` → sets creator face to glasses (home only)
-- **Actions (context-aware):** Copy URL, Download PNG, Download GIF, Play/Stop animation, Share
-- Keyboard-driven; arrows navigate options; Enter runs; ESC closes.
-- **Acceptance:** ⌘K works on every page; part-name search filters actions; ID input validates (invalid → inline error)
+### 14. ~~Command palette (⌘K)~~ — **shipped (PR #27)**
+Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (valid 4-char surfaces open action), copy URL. Descoped (creator-state-coupled actions): part-picking, download, play/stop — would require lifting creator state into context. Leave as future enhancement if requested.
 
 ## Polish
 
