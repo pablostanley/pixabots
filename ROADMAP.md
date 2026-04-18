@@ -57,6 +57,7 @@
 - [x] Konami rapid shuffle — ↑↑↓↓←→←→BA on creator runs 20 shuffles at 80ms. (PR #35)
 - [x] Favorites — star/unstar on BotDetail + browse cards; `/favorites` page with empty state; nav link + command-palette action. (PR #36)
 - [x] GIF encoding — `effort: 10` on Sharp's `.gif()` for smaller palette-optimized files. Immutable cache means render-once, serve-forever. (PR #37)
+- [x] Compare view — `/compare?ids=a,b,…` renders up to 6 BotDetails side by side; Favorites page gets a Compare CTA. (PR #38)
 
 ## Up Next
 
@@ -113,7 +114,6 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 - [ ] **Sticky header with scroll behavior** — hide on scroll down, reveal on scroll up; backdrop blur
 - [ ] **Focus rings everywhere** — audit all interactive elements for visible keyboard focus
 - [ ] **"You might also like"** — on bot page, show 4 one-part-different variants
-- [ ] **Compare view** — side-by-side two pixabots at `?compare=2156,f76a`
 - [ ] **Gallery mode** — fullscreen single-bot view with background color options, big animation
 
 ### Speed & perf
