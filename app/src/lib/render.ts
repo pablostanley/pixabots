@@ -162,6 +162,9 @@ export async function renderAnimatedPixabot(
       pageHeight: size,
     } as sharp.CreateRaw,
   })
-    .gif({ delay: delays, loop: 0 })
+    // effort: 10 maxes palette optimization — slower encode, smaller file.
+    // Immutable cached URL means render happens once per unique URL, then
+    // the CDN serves forever. Worth the extra ms at encode time.
+    .gif({ delay: delays, loop: 0, effort: 10 })
     .toBuffer();
 }
