@@ -1,17 +1,18 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import type { PartCategory } from "@pixabots/core";
 
 const KEY = "pixabots:sfx";
 const EVENT = "pixabots:sfx:change";
 
 let ctx: AudioContext | null = null;
-
 function getCtx(): AudioContext | null {
   if (typeof window === "undefined") return null;
   if (!ctx) {
     try {
-      const Ctor = (window as unknown as { AudioContext?: typeof AudioContext; webkitAudioContext?: typeof AudioContext }).AudioContext ??
+      const Ctor =
+        (window as unknown as { AudioContext?: typeof AudioContext }).AudioContext ??
         (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
       if (!Ctor) return null;
       ctx = new Ctor();
@@ -21,6 +22,24 @@ function getCtx(): AudioContext | null {
   }
   return ctx;
 }
+
+// MIDI → Hz. A4 (MIDI 69) = 440Hz
+const midiToHz = (m: number) => 440 * Math.pow(2, (m - 69) / 12);
+
+// C major pentatonic, two octaves — can't hit a wrong note
+const PENTA_C = [60, 62, 64, 67, 69, 72, 74, 76, 79, 81];
+
+// Each category gets its own pentatonic in a different register/key
+// so cycling through categories sounds harmonically distinct.
+const CATEGORY_SCALES: Record<PartCategory, number[]> = {
+  eyes: [60, 62, 64, 67, 69, 72], // C pentatonic, low
+  heads: [62, 64, 66, 69, 71, 74], // D pentatonic
+  body: [65, 67, 69, 72, 74, 77], // F pentatonic
+  top: [67, 69, 71, 74, 76, 79], // G pentatonic, high
+};
+
+// Module-level position trackers so successive shuffles climb a scale.
+let shuffleIdx = 0;
 
 function subscribe(cb: () => void) {
   window.addEventListener(EVENT, cb);
@@ -43,22 +62,106 @@ function getServerSnapshot(): boolean {
   return false;
 }
 
-function blip(freq: number, duration = 0.08, wave: OscillatorType = "square") {
+type VoiceOpts = {
+  wave?: OscillatorType;
+  dur?: number;
+  gain?: number;
+  delay?: number;
+  cutoff?: number;
+  detune?: number;
+};
+
+/**
+ * Single synth voice: triangle osc → lowpass filter → amp envelope → destination.
+ * Soft ADSR (6ms attack, quick decay to sustain, exponential release) and a
+ * 2.5kHz lowpass for warmth — chunky but not piercing.
+ */
+function voice(midi: number, opts: VoiceOpts = {}) {
   const a = getCtx();
   if (!a) return;
-  try {
-    const osc = a.createOscillator();
-    const gain = a.createGain();
-    osc.type = wave;
-    osc.frequency.value = freq;
-    osc.connect(gain);
-    gain.connect(a.destination);
-    const now = a.currentTime;
-    gain.gain.setValueAtTime(0.05, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
-    osc.start(now);
-    osc.stop(now + duration);
-  } catch {}
+  const {
+    wave = "triangle",
+    dur = 0.18,
+    gain = 0.05,
+    delay = 0,
+    cutoff = 2500,
+    detune = 0,
+  } = opts;
+  const now = a.currentTime + delay;
+  const osc = a.createOscillator();
+  const amp = a.createGain();
+  const filter = a.createBiquadFilter();
+  filter.type = "lowpass";
+  filter.frequency.value = cutoff;
+  filter.Q.value = 0.7;
+  osc.type = wave;
+  osc.frequency.value = midiToHz(midi);
+  if (detune) osc.detune.value = detune;
+  osc.connect(filter);
+  filter.connect(amp);
+  amp.connect(a.destination);
+  amp.gain.setValueAtTime(0, now);
+  amp.gain.linearRampToValueAtTime(gain, now + 0.006);
+  amp.gain.linearRampToValueAtTime(gain * 0.55, now + 0.04);
+  amp.gain.exponentialRampToValueAtTime(0.0005, now + dur);
+  osc.start(now);
+  osc.stop(now + dur + 0.02);
+}
+
+export type SfxEvent =
+  | { kind: "shuffle" }
+  | { kind: "cycle"; category: PartCategory; index: number }
+  | { kind: "pick"; category: PartCategory; index: number }
+  | { kind: "copy" }
+  | { kind: "bg"; index: number }
+  | { kind: "download" }
+  | { kind: "toggle" };
+
+function playEvent(ev: SfxEvent) {
+  switch (ev.kind) {
+    case "shuffle": {
+      // Climb a C-pentatonic scale on each successive shuffle.
+      const note = PENTA_C[shuffleIdx % PENTA_C.length];
+      shuffleIdx += 1;
+      voice(note, { gain: 0.055, dur: 0.2 });
+      // Soft fifth underneath for body
+      voice(note - 5, { gain: 0.022, dur: 0.22, delay: 0.01, cutoff: 1400 });
+      return;
+    }
+    case "cycle":
+    case "pick": {
+      // Map the chosen part index onto the category's scale.
+      const scale = CATEGORY_SCALES[ev.category];
+      const note = scale[ev.index % scale.length];
+      voice(note, { gain: 0.05, dur: 0.16 });
+      return;
+    }
+    case "bg": {
+      // Each swatch = ascending pentatonic note
+      const note = PENTA_C[ev.index % PENTA_C.length];
+      voice(note, { dur: 0.14, gain: 0.04, cutoff: 2200 });
+      return;
+    }
+    case "copy": {
+      // Two-note rising minor third
+      voice(72, { gain: 0.05, dur: 0.11 });
+      voice(76, { gain: 0.04, delay: 0.04, dur: 0.13 });
+      return;
+    }
+    case "download": {
+      // 4-note major arpeggio jingle
+      const notes = [60, 64, 67, 72];
+      notes.forEach((m, i) => voice(m, { delay: i * 0.07, gain: 0.05, dur: 0.22 }));
+      // Sparkle on the last note
+      voice(76, { delay: 4 * 0.07, gain: 0.03, dur: 0.24 });
+      return;
+    }
+    case "toggle": {
+      voice(67, { gain: 0.045, dur: 0.1 });
+      voice(74, { gain: 0.04, delay: 0.05, dur: 0.14 });
+      return;
+    }
+  }
 }
 
 export function useSfx() {
@@ -70,14 +173,12 @@ export function useSfx() {
       localStorage.setItem(KEY, next ? "1" : "0");
     } catch {}
     window.dispatchEvent(new CustomEvent(EVENT));
-    if (next) blip(660);
+    if (next) playEvent({ kind: "toggle" });
   };
 
-  const play = (name: "shuffle" | "copy" | "cycle") => {
+  const play = (ev: SfxEvent) => {
     if (!enabled) return;
-    if (name === "shuffle") blip(880, 0.07);
-    else if (name === "copy") blip(1320, 0.06);
-    else blip(660, 0.04);
+    playEvent(ev);
   };
 
   return { enabled, toggle, play };

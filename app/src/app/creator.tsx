@@ -182,15 +182,17 @@ export function Creator({ initialId }: { initialId: string | null }) {
 
   const cycle = (category: PartCategory) => {
     const prev = selRef.current;
+    const nextIndex = (prev[category] + 1) % parts[category].length;
     updateSelection({
       ...prev,
-      [category]: (prev[category] + 1) % parts[category].length,
+      [category]: nextIndex,
     });
-    sfx.play("cycle");
+    sfx.play({ kind: "cycle", category, index: nextIndex });
   };
 
   const pick = (category: PartCategory, index: number) => {
     updateSelection({ ...selRef.current, [category]: index });
+    sfx.play({ kind: "pick", category, index });
   };
 
   const shuffle = () => {
@@ -202,19 +204,20 @@ export function Creator({ initialId }: { initialId: string | null }) {
       body: locks.body ? prev.body : rand.body,
       top: locks.top ? prev.top : rand.top,
     });
-    sfx.play("shuffle");
+    sfx.play({ kind: "shuffle" });
   };
 
   const toggleLock = (category: PartCategory) => {
     setLocks((l) => ({ ...l, [category]: !l[category] }));
   };
 
-  const applyBg = (color: string | null) => {
+  const applyBg = (color: string | null, index?: number) => {
     setBg(color);
     bgRef.current = color;
     if (canvasRef.current && !intervalRef.current) {
       drawOnCanvas(canvasRef.current, imagesRef.current, undefined, color);
     }
+    if (typeof index === "number") sfx.play({ kind: "bg", index });
   };
 
   const copyShareUrl = () => {
@@ -223,7 +226,7 @@ export function Creator({ initialId }: { initialId: string | null }) {
       title: `Pixabot ${pixabotId}`,
       text: `Check out pixabot ${pixabotId}`,
     });
-    sfx.play("copy");
+    sfx.play({ kind: "copy" });
   };
 
   const toggleAnimation = () => {
@@ -249,6 +252,7 @@ export function Creator({ initialId }: { initialId: string | null }) {
     link.download = `pixabot-${size}x${size}.png`;
     link.href = canvas.toDataURL("image/png");
     link.click();
+    sfx.play({ kind: "download" });
   };
 
   const KONAMI = [
