@@ -58,6 +58,7 @@
 - [x] Favorites — star/unstar on BotDetail + browse cards; `/favorites` page with empty state; nav link + command-palette action. (PR #36)
 - [x] GIF encoding — `effort: 10` on Sharp's `.gif()` for smaller palette-optimized files. Immutable cache means render-once, serve-forever. (PR #37)
 - [x] Compare view — `/compare?ids=a,b,…` renders up to 6 BotDetails side by side; Favorites page gets a Compare CTA. (PR #38)
+- [x] Footer discovery copy — "9,856 combos · SPACE · ? for shortcuts" in footer. (PR #39)
 
 ## Up Next
 
@@ -128,7 +129,6 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 - [ ] **Copy-button state polish** — animated check that fades back to copy icon, accompanied by "Copied URL"
 - [ ] **Error messages match voice** — API 400s stay plain, but UI error states use the pixel vibe
 - [ ] **Share via Web Share API on mobile** — native share sheet instead of copy-URL-only
-- [ ] **Discovery copy** — on homepage subtly note "9,856 combos — press SPACE to keep going"
 
 ### Accessibility & comfort
 - [ ] **`prefers-reduced-motion` support** — freeze idle bounce, disable hover "speed up" on browse
