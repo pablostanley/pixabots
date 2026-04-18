@@ -5,6 +5,7 @@ import { BotNav } from "@/components/bot-nav";
 import { FavoriteButton } from "@/components/favorite-button";
 import { Tilt } from "@/components/tilt";
 import { GalleryDialog } from "@/components/gallery-dialog";
+import { specialNote } from "@/lib/special-ids";
 
 type IconName = React.ComponentProps<typeof PixelIcon>["name"];
 
@@ -47,6 +48,7 @@ export function ActionButton({
 
 export function BotDetail({ id }: { id: string }) {
   const parts = resolveId(id);
+  const note = specialNote(id);
 
   return (
     <div className="flex flex-col gap-4 sm:gap-6">
@@ -69,7 +71,12 @@ export function BotDetail({ id }: { id: string }) {
 
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
-          <h2 className="text-3xl font-bold font-mono mr-auto">{id}</h2>
+          <div className="mr-auto flex flex-col">
+            <h2 className="text-3xl font-bold font-mono leading-none">{id}</h2>
+            {note && (
+              <span className="text-xs text-muted-foreground mt-1">{note}</span>
+            )}
+          </div>
           <FavoriteButton id={id} />
           <GalleryDialog id={id} />
           <BotNav id={id} />
