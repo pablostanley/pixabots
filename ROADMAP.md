@@ -55,6 +55,7 @@
 - [x] First-shuffle hint — coachmark above ID bar dismissed on first selection change, persisted via localStorage. (PR #33)
 - [x] Lock layers — per-category lock gate on shuffle, toggled from each category dropdown. (PR #34)
 - [x] Konami rapid shuffle — ↑↑↓↓←→←→BA on creator runs 20 shuffles at 80ms. (PR #35)
+- [x] Favorites — star/unstar on BotDetail + browse cards; `/favorites` page with empty state; nav link + command-palette action. (PR #36)
 
 ## Up Next
 
@@ -110,7 +111,6 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 - [ ] **Mobile bottom sheet** — use a bottom sheet instead of centered dialog on mobile for bot detail
 - [ ] **Sticky header with scroll behavior** — hide on scroll down, reveal on scroll up; backdrop blur
 - [ ] **Focus rings everywhere** — audit all interactive elements for visible keyboard focus
-- [ ] **Favorite / pin pixabots** — star icon persists IDs in localStorage, "Favorites" tab in browse
 - [ ] **"You might also like"** — on bot page, show 4 one-part-different variants
 - [ ] **Compare view** — side-by-side two pixabots at `?compare=2156,f76a`
 - [ ] **Gallery mode** — fullscreen single-bot view with background color options, big animation
