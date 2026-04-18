@@ -41,9 +41,10 @@ Prioritized tickets to work through. Each is self-contained and shippable.
 
 ### 1. ~~Prev / next navigation in browse dialog~~ — **shipped (PR #14)**
 
-### 2. Mobile bottom sheet for bot detail — **in progress**
-Below the `sm` breakpoint, render the dialog as a bottom sheet that slides up from the edge and can be drag-dismissed. Desktop keeps the centered dialog.
-- **Acceptance:** touch targets ≥ 44px; slide is 60fps; dismissible via drag, ESC, and outside tap; scroll inside sheet when content taller than viewport
+### 2. Mobile bottom sheet for bot detail — **in review ([PR #15](https://github.com/pablostanley/pixabots/pull/15))**
+Below the `sm` breakpoint, render the dialog as a bottom sheet that slides up from the edge. Desktop keeps the centered dialog.
+- **Acceptance met:** slide animation, full-width bottom anchor, internal scroll when content taller than viewport, ESC + outside tap dismiss, no CLS
+- **Descoped:** drag-to-dismiss gesture → new ticket #15 below (needs `vaul` or custom touch handling)
 
 ### 3. Sticky header with scroll behavior
 Header stays pinned; hides on scroll down, reveals on scroll up; backdrop blur kicks in past 20px of scroll. Applies to home and `/browse` (docs keeps Fumadocs default).
@@ -88,6 +89,10 @@ Run WCAG AA check on all text/background pairs in dark mode. `muted-foreground` 
 ### 13. Expanded keyboard shortcuts + help overlay
 Keep existing (space=shuffle, p=play/pause, arrows=cycle layers). Add: `c`=copy URL, `d`=download menu, `?`=open shortcut-help overlay, `/`=focus command palette. All skip when typing in inputs.
 - **Acceptance:** `?` shows a modal listing every shortcut; `c` copies from anywhere in the creator; existing shortcuts unchanged
+
+### 15. Drag-to-dismiss on mobile bottom sheet (descoped from #2)
+Add touch-drag gesture to dismiss the mobile sheet. Either bring in `vaul` (shadcn's recommended drawer) or wire up `pointerdown`/`pointermove`/`pointerup` manually with a translate + velocity check.
+- **Acceptance:** swipe-down on the sheet closes it with momentum; threshold feels natural (≥80px or >0.5 velocity); doesn't conflict with internal scroll
 
 ### 14. Command palette (⌘K)
 Floating input triggered by ⌘K / Ctrl+K. Fuzzy-search actions:
