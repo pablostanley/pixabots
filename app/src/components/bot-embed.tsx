@@ -81,7 +81,8 @@ export function BotEmbed({ id }: { id: string }) {
           type="button"
           onClick={onCopy}
           className="absolute top-2 right-2 size-8 flex items-center justify-center border border-border bg-background hover:bg-muted transition-colors cursor-pointer"
-          title={copied ? "Copied!" : "Copy snippet"}
+          aria-label="Copy snippet"
+          data-tooltip={copied ? "Copied!" : "Copy snippet"}
         >
           <PixelIcon
             key={copied ? "c" : "i"}

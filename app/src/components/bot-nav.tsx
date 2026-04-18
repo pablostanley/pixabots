@@ -43,7 +43,7 @@ export function BotNav({ id }: { id: string }) {
         onClick={() => go(prevId(id))}
         className={btn}
         aria-label="Previous pixabot"
-        title="Previous (←)"
+        data-tooltip="Previous (←)"
       >
         <PixelIcon name="chevron-right" className="size-4 rotate-180" />
       </button>
@@ -52,7 +52,7 @@ export function BotNav({ id }: { id: string }) {
         onClick={() => go(nextId(id))}
         className={btn}
         aria-label="Next pixabot"
-        title="Next (→)"
+        data-tooltip="Next (→)"
       >
         <PixelIcon name="chevron-right" className="size-4" />
       </button>
