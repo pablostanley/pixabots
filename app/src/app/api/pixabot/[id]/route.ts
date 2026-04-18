@@ -32,6 +32,8 @@ export async function GET(
 
   const combo = decode(id);
   const animated = request.nextUrl.searchParams.get("animated") === "true";
+  const speedParam = request.nextUrl.searchParams.get("speed");
+  const speed = speedParam ? Math.min(4, Math.max(0.25, parseFloat(speedParam))) : 1;
 
   if (format === "json") {
     const origin = request.nextUrl.origin;
@@ -49,7 +51,7 @@ export async function GET(
 
   try {
     if (animated) {
-      return imageResponse(await renderAnimatedPixabot(combo, size), "image/gif");
+      return imageResponse(await renderAnimatedPixabot(combo, size, speed), "image/gif");
     }
     return imageResponse(await renderPixabot(combo, size), "image/png");
   } catch (e) {

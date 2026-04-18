@@ -12,7 +12,6 @@ import {
 const NATIVE_SIZE = 32;
 const ANIM_PAD = 4;
 const PARTS_DIR = path.join(process.cwd(), "public", "parts");
-const FRAME_DELAYS = ANIM_FRAMES.map(() => FRAME_MS);
 const ANIM_MAX_SIZE = 480;
 
 export class RenderError extends Error {
@@ -79,14 +78,24 @@ export async function renderPixabot(
 
 async function renderFrame(
   layers: Record<string, Buffer>,
+  bodyTop: Buffer,
+  bodyBottom: Buffer,
   offsets: AnimFrame,
   size: number
 ): Promise<Buffer> {
-  const composites = LAYER_ORDER.map((cat) => ({
-    input: layers[cat],
-    left: 0,
-    top: Math.round(offsets[cat as keyof AnimFrame]),
-  }));
+  const composites: sharp.OverlayOptions[] = [];
+
+  // Feet-stay-planted: body bottom row fixed at y=31, top 31 rows shifted.
+  // Matches client-side canvas logic in page.tsx.
+  for (const cat of LAYER_ORDER) {
+    const off = Math.round(offsets[cat as keyof AnimFrame]);
+    if (cat === "body" && off > 0) {
+      composites.push({ input: bodyTop, left: 0, top: off });
+      composites.push({ input: bodyBottom, left: 0, top: NATIVE_SIZE - 1 });
+    } else {
+      composites.push({ input: layers[cat], left: 0, top: off });
+    }
+  }
 
   // Two-step pipeline: sharp can't chain extract→resize on a created canvas
   const native = await sharp({
@@ -111,17 +120,31 @@ async function renderFrame(
 /** Render an animated GIF of the bounce animation. */
 export async function renderAnimatedPixabot(
   combo: PixabotCombo,
-  size: number = NATIVE_SIZE
+  size: number = NATIVE_SIZE,
+  speed: number = 1
 ): Promise<Buffer> {
   const cappedSize = Math.min(size, ANIM_MAX_SIZE);
   const layers = await loadLayers(combo);
 
+  // Precompute body top/bottom once; reused across all frames with body offset > 0
+  const [bodyTop, bodyBottom] = await Promise.all([
+    sharp(layers.body)
+      .extract({ left: 0, top: 0, width: NATIVE_SIZE, height: NATIVE_SIZE - 1 })
+      .png()
+      .toBuffer(),
+    sharp(layers.body)
+      .extract({ left: 0, top: NATIVE_SIZE - 1, width: NATIVE_SIZE, height: 1 })
+      .png()
+      .toBuffer(),
+  ]);
   const frameBuffers = await Promise.all(
-    ANIM_FRAMES.map((offsets) => renderFrame(layers, offsets, cappedSize))
+    ANIM_FRAMES.map((offsets) => renderFrame(layers, bodyTop, bodyBottom, offsets, cappedSize))
   );
 
   const stacked = Buffer.concat(frameBuffers);
   const totalHeight = cappedSize * ANIM_FRAMES.length;
+  const delay = Math.max(20, Math.round(FRAME_MS / speed));
+  const delays = ANIM_FRAMES.map(() => delay);
 
   return sharp(stacked, {
     raw: {
@@ -131,6 +154,6 @@ export async function renderAnimatedPixabot(
       pageHeight: cappedSize,
     } as sharp.CreateRaw,
   })
-    .gif({ delay: FRAME_DELAYS, loop: 0 })
+    .gif({ delay: delays, loop: 0 })
     .toBuffer();
 }
