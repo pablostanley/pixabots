@@ -54,6 +54,7 @@
 - [x] PWA manifest — `app/manifest.ts` emits `/manifest.webmanifest`; installable on iOS and Android with the pixabot icon. (PR #32)
 - [x] First-shuffle hint — coachmark above ID bar dismissed on first selection change, persisted via localStorage. (PR #33)
 - [x] Lock layers — per-category lock gate on shuffle, toggled from each category dropdown. (PR #34)
+- [x] Konami rapid shuffle — ↑↑↓↓←→←→BA on creator runs 20 shuffles at 80ms. (PR #35)
 
 ## Up Next
 
@@ -136,7 +137,7 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 - [ ] **Command palette (⌘K)** — quick jump to ID, Browse, Docs, Random; monospace-style UI matches vibe
 
 ### Delight
-- [ ] **Easter-egg IDs** — specific IDs trigger special animations (Konami → rapid shuffle, `pxlb` → author credit)
+- [ ] **Easter-egg IDs** — specific IDs trigger special animations (`pxlb` → author credit). Konami rapid-shuffle is done in PR #35.
 - [ ] **Drop-shadow / parallax tilt on hover** — subtle hover depth on bot detail page
 - [ ] **Random boot-up animation** — first-paint shows the character "materializing" pixel-by-pixel
 - [ ] **Opt-in 8-bit sound effects** — chiptune blip on shuffle/copy, toggled off by default
