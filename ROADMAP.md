@@ -35,6 +35,7 @@
 - [x] API hardening — 60 sizes (multiple of 32 up to 1920), animations all sizes, `/random` forwards `animated`/`speed`, strict input validation (size/speed return 400 on invalid), render memory cut ~8x at large sizes, OpenAPI gaps closed (/api/og documented)
 - [x] Prev/next bot navigation — `<` `>` buttons + ArrowLeft/ArrowRight on BotDetail. Works in dialog and on full page. Combo-index walks 9,856 bots in stable order with wrap. `router.replace` so back still returns to `/browse`. (PR #14)
 - [x] Mobile bottom sheet — dialog anchors to bottom edge and slides up on mobile, stays centered on desktop. Drag-handle affordance. ESC + outside tap dismiss. Drag-to-dismiss tracked as ticket #15. (PR #15)
+- [x] Sticky header — `SiteHeader` is `sticky top-0`, hides on scroll down past 20px, reveals on scroll up, backdrop-blur + bg/80 when scrolled. Scroll tracked via useSyncExternalStore. Respects prefers-reduced-motion. (PR #16)
 
 ## Up Next
 
@@ -44,10 +45,7 @@ Prioritized tickets to work through. Each is self-contained and shippable.
 
 ### 2. ~~Mobile bottom sheet for bot detail~~ — **shipped (PR #15)**
 
-### 3. Sticky header with scroll behavior — **in review ([PR #16](https://github.com/pablostanley/pixabots/pull/16))**
-Header stays pinned; hides on scroll down, reveals on scroll up; backdrop blur kicks in past 20px of scroll.
-- **Acceptance met:** scroll direction via useSyncExternalStore; respects prefers-reduced-motion; 8px dead zone prevents jitter
-- **Note:** applies globally via `SiteHeader` in root layout (including `/docs` — Fumadocs renders inside layout main, so sticky header sits above). Verify no z-conflict with Fumadocs UI.
+### 3. ~~Sticky header with scroll behavior~~ — **shipped (PR #16)**
 
 ### 4. Prefetch bot PNG on browse card hover
 On `mouseenter` of a browse card, kick off a fetch for the detail-size PNG so clicking feels instant. Route prefetch already handled by `<Link>`.
