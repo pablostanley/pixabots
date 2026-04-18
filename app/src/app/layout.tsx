@@ -60,6 +60,16 @@ export const metadata: Metadata = {
   creator: "Pablo Stanley",
 };
 
+const THEME_SCRIPT = `
+(function() {
+  try {
+    var pref = localStorage.getItem('theme');
+    var dark = pref ? pref === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (dark) document.documentElement.classList.add('dark');
+  } catch (e) {}
+})();
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -67,6 +77,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={pixelify.variable} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body className="min-h-dvh flex flex-col font-[family-name:var(--font-pixel)]">
         <RootProvider>
           <SiteHeader />
