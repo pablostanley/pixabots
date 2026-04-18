@@ -12,7 +12,6 @@ import { PARTS_DIR } from "@/lib/paths";
 
 const NATIVE_SIZE = 32;
 const ANIM_PAD = 4;
-const ANIM_MAX_SIZE = 480;
 
 export class RenderError extends Error {
   status: number;
@@ -123,7 +122,6 @@ export async function renderAnimatedPixabot(
   size: number = NATIVE_SIZE,
   speed: number = 1
 ): Promise<Buffer> {
-  const cappedSize = Math.min(size, ANIM_MAX_SIZE);
   const layers = await loadLayers(combo);
 
   // Precompute body top/bottom once; reused across all frames with body offset > 0
@@ -138,20 +136,20 @@ export async function renderAnimatedPixabot(
       .toBuffer(),
   ]);
   const frameBuffers = await Promise.all(
-    ANIM_FRAMES.map((offsets) => renderFrame(layers, bodyTop, bodyBottom, offsets, cappedSize))
+    ANIM_FRAMES.map((offsets) => renderFrame(layers, bodyTop, bodyBottom, offsets, size))
   );
 
   const stacked = Buffer.concat(frameBuffers);
-  const totalHeight = cappedSize * ANIM_FRAMES.length;
+  const totalHeight = size * ANIM_FRAMES.length;
   const delay = Math.max(20, Math.round(FRAME_MS / speed));
   const delays = ANIM_FRAMES.map(() => delay);
 
   return sharp(stacked, {
     raw: {
-      width: cappedSize,
+      width: size,
       height: totalHeight,
       channels: 4,
-      pageHeight: cappedSize,
+      pageHeight: size,
     } as sharp.CreateRaw,
   })
     .gif({ delay: delays, loop: 0 })

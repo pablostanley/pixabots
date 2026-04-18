@@ -3,7 +3,13 @@ import { decode, isValidId, resolve } from "@pixabots/core";
 import { renderPixabot, renderAnimatedPixabot, RenderError } from "@/lib/render";
 import { CORS_HEADERS, optionsResponse, imageResponse } from "@/lib/api";
 
-const VALID_SIZES = new Set([32, 64, 128, 240, 480, 960, 1920]);
+const MIN_SIZE = 32;
+const MAX_SIZE = 1920;
+const SIZE_STEP = 32;
+
+function isValidSize(n: number) {
+  return Number.isInteger(n) && n >= MIN_SIZE && n <= MAX_SIZE && n % SIZE_STEP === 0;
+}
 
 export const OPTIONS = optionsResponse;
 
@@ -23,9 +29,9 @@ export async function GET(
     );
   }
 
-  if (!VALID_SIZES.has(size)) {
+  if (!isValidSize(size)) {
     return Response.json(
-      { error: `Invalid size. Valid: ${[...VALID_SIZES].join(", ")}` },
+      { error: `Invalid size. Must be a multiple of ${SIZE_STEP} between ${MIN_SIZE} and ${MAX_SIZE}.` },
       { status: 400, headers: CORS_HEADERS }
     );
   }

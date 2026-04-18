@@ -4,7 +4,7 @@
 
 - [x] `@pixabots/core` npm package — v0.1.0 published (ID system, parts catalog, random/seeded generation)
 - [x] API routes — `GET /api/pixabot/{id}` (PNG + JSON) and `/api/pixabot/random`
-- [x] Animated API — `GET /api/pixabot/{id}?animated=true` returns animated GIF (capped at 480px)
+- [x] Animated API — `GET /api/pixabot/{id}?animated=true` returns animated GIF (all sizes up to 1920px)
 - [x] OpenAPI 3.1 spec at `/openapi.json`
 - [x] Docs site — Fumadocs at `/docs` with API reference, SDK, parts catalog, shared header/footer, full SEO metadata
 - [x] Homepage — pixabot ID, Copy URL, PNG/GIF/JSON links, labeled action buttons

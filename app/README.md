@@ -20,12 +20,15 @@ Every combination gets a unique 4-character ID (e.g. `2156`, `f76a`). Same combo
 ## API
 
 ```
-GET /api/pixabot/2156              → PNG (128px default)
-GET /api/pixabot/2156?size=480     → PNG at 480px
-GET /api/pixabot/2156?animated=true → animated GIF
-GET /api/pixabot/2156?format=json  → metadata + URLs
-GET /api/pixabot/random            → random pixabot
+GET /api/pixabot/2156                     → PNG (128px default)
+GET /api/pixabot/2156?size=480            → PNG at 480px (any multiple of 32 from 32 to 1920)
+GET /api/pixabot/2156?animated=true       → animated GIF (all sizes supported)
+GET /api/pixabot/2156?animated=true&speed=2 → faster animation (0.25–4)
+GET /api/pixabot/2156?format=json         → metadata + URLs
+GET /api/pixabot/random                   → random pixabot
 ```
+
+CORS enabled on every response — embed from anywhere.
 
 Full spec at [`/openapi.json`](https://pixabots.com/openapi.json).
 

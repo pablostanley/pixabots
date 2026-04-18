@@ -28,8 +28,8 @@
             "name": "size",
             "in": "query",
             "required": false,
-            "description": "Image size in pixels",
-            "schema": { "type": "integer", "enum": [32, 64, 128, 240, 480, 960, 1920], "default": 128 }
+            "description": "Image size in pixels. Must be a multiple of 32 between 32 and 1920 (60 discrete sizes). Nearest-neighbor scaled from the 32×32 source — pixel-perfect at every step.",
+            "schema": { "type": "integer", "minimum": 32, "maximum": 1920, "multipleOf": 32, "default": 128 }
           },
           {
             "name": "format",
@@ -42,7 +42,7 @@
             "name": "animated",
             "in": "query",
             "required": false,
-            "description": "Set to `true` to get an animated GIF of the bounce animation instead of a static PNG.",
+            "description": "Set to `true` to get an animated GIF of the bounce animation instead of a static PNG. All sizes supported.",
             "schema": { "type": "string", "enum": ["true"] }
           },
           {
@@ -118,8 +118,8 @@
             "name": "size",
             "in": "query",
             "required": false,
-            "description": "Image size in pixels (forwarded to the redirect target)",
-            "schema": { "type": "integer", "enum": [32, 64, 128, 240, 480, 960, 1920], "default": 128 }
+            "description": "Image size in pixels, forwarded to the redirect target. Must be a multiple of 32 between 32 and 1920.",
+            "schema": { "type": "integer", "minimum": 32, "maximum": 1920, "multipleOf": 32, "default": 128 }
           },
           {
             "name": "format",
