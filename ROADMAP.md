@@ -36,7 +36,68 @@
 
 ## Up Next
 
-Pick from Polish or Ideas below.
+Prioritized tickets to work through. Each is self-contained and shippable.
+
+### 1. Prev / next navigation in browse dialog
+When the bot dialog is open on `/browse`, left/right arrow keys (and visible `<` `>` buttons) move to the prev/next bot in the current grid order. URL updates to the new `/bot/{id}`.
+- **Acceptance:** arrow keys + on-screen buttons navigate; ESC still dismisses back to grid; deep-linking `/bot/{id}` directly (full page) unaffected
+
+### 2. Mobile bottom sheet for bot detail
+Below the `sm` breakpoint, render the dialog as a bottom sheet that slides up from the edge and can be drag-dismissed. Desktop keeps the centered dialog.
+- **Acceptance:** touch targets ≥ 44px; slide is 60fps; dismissible via drag, ESC, and outside tap; scroll inside sheet when content taller than viewport
+
+### 3. Sticky header with scroll behavior
+Header stays pinned; hides on scroll down, reveals on scroll up; backdrop blur kicks in past 20px of scroll. Applies to home and `/browse` (docs keeps Fumadocs default).
+- **Acceptance:** no layout jank; motion respects `prefers-reduced-motion`; never covers the canvas on home
+
+### 4. Prefetch bot PNG on browse card hover
+On `mouseenter` of a browse card, kick off a fetch for the detail-size PNG so clicking feels instant. Route prefetch already handled by `<Link>`.
+- **Acceptance:** hovered → clicked card shows image immediately (no network wait); non-hovered path unchanged
+
+### 5. Preload sprite parts on creator mount
+On creator mount, fire parallel `fetch` for all 42 sprite PNGs (`/parts/**/*.png`). Browser cache means every subsequent shuffle draws without network. Same sprites serve browse, bot pages, OG images — cache is hot across the site.
+- **Acceptance:** DevTools Network shows no sprite requests on 2nd+ shuffle; first meaningful paint not regressed
+
+### 6. 404 page with lost pixabot
+Create `app/not-found.tsx` with a random animated pixabot, personality copy ("this pixabot got lost"), and links to Home + Browse. Caught by invalid `/bot/{id}` too.
+- **Acceptance:** visiting any unknown route renders the 404; `/bot/zzzz` also renders it; pixabot animates
+
+### 7. Animated copy-button feedback
+Copy button currently swaps icon `copy` → `check`. Upgrade: scale-pop + "Copied!" label that lingers ~1.5s, then fades back. No layout shift.
+- **Acceptance:** click copy → visible confirmation; reusable across home + browse + bot pages
+
+### 8. Web Share API on mobile
+On touch devices, "Share" button calls `navigator.share({ url, title, text })`. Fallback to existing clipboard copy when unavailable (desktop, or API missing).
+- **Acceptance:** iOS/Android opens native share sheet; desktop/unsupported copies URL
+
+### 9. a11y — `prefers-reduced-motion`
+Respect `@media (prefers-reduced-motion: reduce)` everywhere: freeze idle bounce in creator, disable 2x-speed-on-hover in browse, cut dialog + sticky-header transitions. Pause GIFs: serve static PNG instead of animated.
+- **Acceptance:** toggle OS setting → all animation halts; static frames display; no CLS
+
+### 10. a11y — aria-live shuffle announcement
+Visually-hidden `aria-live="polite"` region announces the new ID after each shuffle ("Pixabot 2156, glasses blob wings mohawk"). Fires on both creator and browse-hover.
+- **Acceptance:** VoiceOver/NVDA speaks the new ID within ~1s of shuffle
+
+### 11. a11y — focus ring audit
+Every interactive element (buttons, links, cards, dialog close, dropdown triggers) has a visible keyboard-only focus ring at AA contrast in both themes.
+- **Acceptance:** tab through entire site — every focused element clearly indicated; no `:focus { outline: none }` without replacement
+
+### 12. a11y — dark mode contrast audit
+Run WCAG AA check on all text/background pairs in dark mode. `muted-foreground` against `background` is the likely weak spot.
+- **Acceptance:** all body text ≥ 4.5:1, all large text ≥ 3:1; fixes shipped as theme-variable tweaks (not per-component)
+
+### 13. Expanded keyboard shortcuts + help overlay
+Keep existing (space=shuffle, p=play/pause, arrows=cycle layers). Add: `c`=copy URL, `d`=download menu, `?`=open shortcut-help overlay, `/`=focus command palette. All skip when typing in inputs.
+- **Acceptance:** `?` shows a modal listing every shortcut; `c` copies from anywhere in the creator; existing shortcuts unchanged
+
+### 14. Command palette (⌘K)
+Floating input triggered by ⌘K / Ctrl+K. Fuzzy-search actions:
+- **Navigation:** Go Home / Go to Browse / Go to Docs / Random
+- **Jump by ID:** type a 4-char ID → Enter → `/bot/{id}`
+- **Jump by part:** type `glasses` → sets creator face to glasses (home only)
+- **Actions (context-aware):** Copy URL, Download PNG, Download GIF, Play/Stop animation, Share
+- Keyboard-driven; arrows navigate options; Enter runs; ESC closes.
+- **Acceptance:** ⌘K works on every page; part-name search filters actions; ID input validates (invalid → inline error)
 
 ## Polish
 
@@ -45,7 +106,6 @@ Pick from Polish or Ideas below.
 - [ ] **Custom pixel tooltips** — replace native browser tooltips with styled ones using our pixel font
 - [ ] **Loading state** — skeleton/shimmer on creator canvas and browse grid while first images load
 - [ ] **Lock layers** — lock icon per category so shuffle keeps locked layers fixed (shuffle "eyes only", etc.)
-- [ ] **Shuffle one layer** — click a category label to re-roll just that layer
 - [ ] **Animated part transitions** — smooth fade/slide between parts instead of instant swap
 - [ ] **Mobile bottom sheet** — use a bottom sheet instead of centered dialog on mobile for bot detail
 - [ ] **Sticky header with scroll behavior** — hide on scroll down, reveal on scroll up; backdrop blur
