@@ -29,19 +29,19 @@ export const metadata: Metadata = {
     url: SITE_URL,
     images: [
       {
-        url: `${SITE_URL}/api/pixabot/2156?size=960`,
-        width: 960,
-        height: 960,
-        alt: "Pixabot 2156",
+        url: `${SITE_URL}/api/og?type=grid&title=Pixabots&seed=home`,
+        width: 1200,
+        height: 630,
+        alt: "Pixabots",
       },
     ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Pixabots — Pixel Character Avatars",
     description:
       "9,856 unique pixel art characters with deterministic IDs. Free API for avatars, animated GIFs, and more.",
-    images: [`${SITE_URL}/api/pixabot/2156?size=480`],
+    images: [`${SITE_URL}/api/og?type=grid&title=Pixabots&seed=home`],
     creator: "@pablostanley",
   },
   keywords: [
