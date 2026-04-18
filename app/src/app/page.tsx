@@ -5,6 +5,7 @@ import { parts, layerOrder, layerLabel, type PartCategory } from "@/lib/parts";
 import { encode, decode, isValidId, randomCombo, ANIM_FRAMES, FRAME_MS, type AnimFrame } from "@pixabots/core";
 import { Button } from "@/components/ui/button";
 import { PixelIcon } from "@/components/ui/pixel-icon";
+import { useCopyToClipboard } from "@/lib/use-copy-to-clipboard";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -74,8 +75,7 @@ function getInitialSelection() {
 export default function Home() {
   const [selection, setSelection] = useState(getInitialSelection);
   const [animating, setAnimating] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const copyTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const [copied, copy] = useCopyToClipboard();
 
   const pixabotId = encode(selection);
   const apiUrl = `/api/pixabot/${pixabotId}`;
@@ -132,13 +132,8 @@ export default function Home() {
   const shuffle = () => updateSelection(randomCombo());
 
   const copyShareUrl = () => {
-    navigator.clipboard.writeText(`${window.location.origin}/?id=${pixabotId}`);
-    setCopied(true);
-    clearTimeout(copyTimerRef.current);
-    copyTimerRef.current = setTimeout(() => setCopied(false), 1500);
+    copy(`${window.location.origin}/?id=${pixabotId}`);
   };
-
-  useEffect(() => () => clearTimeout(copyTimerRef.current), []);
 
   const toggleAnimation = () => {
     if (intervalRef.current) {

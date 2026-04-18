@@ -76,13 +76,10 @@ export async function renderPixabot(
     .toBuffer();
 }
 
-interface FrameLayers extends Record<string, Buffer> {
-  bodyTop: Buffer;
-  bodyBottom: Buffer;
-}
-
 async function renderFrame(
-  layers: FrameLayers,
+  layers: Record<string, Buffer>,
+  bodyTop: Buffer,
+  bodyBottom: Buffer,
   offsets: AnimFrame,
   size: number
 ): Promise<Buffer> {
@@ -93,8 +90,8 @@ async function renderFrame(
   for (const cat of LAYER_ORDER) {
     const off = Math.round(offsets[cat as keyof AnimFrame]);
     if (cat === "body" && off > 0) {
-      composites.push({ input: layers.bodyTop, left: 0, top: off });
-      composites.push({ input: layers.bodyBottom, left: 0, top: NATIVE_SIZE - 1 });
+      composites.push({ input: bodyTop, left: 0, top: off });
+      composites.push({ input: bodyBottom, left: 0, top: NATIVE_SIZE - 1 });
     } else {
       composites.push({ input: layers[cat], left: 0, top: off });
     }
@@ -140,10 +137,8 @@ export async function renderAnimatedPixabot(
       .png()
       .toBuffer(),
   ]);
-  const frameLayers: FrameLayers = { ...layers, bodyTop, bodyBottom };
-
   const frameBuffers = await Promise.all(
-    ANIM_FRAMES.map((offsets) => renderFrame(frameLayers, offsets, cappedSize))
+    ANIM_FRAMES.map((offsets) => renderFrame(layers, bodyTop, bodyBottom, offsets, cappedSize))
   );
 
   const stacked = Buffer.concat(frameBuffers);

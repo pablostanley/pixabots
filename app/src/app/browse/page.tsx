@@ -4,9 +4,11 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { randomId } from "@pixabots/core";
 import { PixelIcon } from "@/components/ui/pixel-icon";
+import { useCopyToClipboard } from "@/lib/use-copy-to-clipboard";
 
 const BATCH_SIZE = 60;
 const FEATURED_EVERY = 8;
+const MAX_BOTS = 600;
 
 interface BotCell {
   id: string;
@@ -21,25 +23,19 @@ function generateBatch(count: number): BotCell[] {
 }
 
 function BotCard({ bot }: { bot: BotCell }) {
-  const [copied, setCopied] = useState(false);
-  const [hovered, setHovered] = useState(false);
-  const copyTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const [copied, copy] = useCopyToClipboard();
+  const [fastLoaded, setFastLoaded] = useState(false);
   const size = bot.featured ? 480 : 240;
   const animatedSrc = `/api/pixabot/${bot.id}?size=${size}&animated=true`;
   const fastSrc = `/api/pixabot/${bot.id}?size=${size}&animated=true&speed=2`;
 
-  useEffect(() => () => clearTimeout(copyTimerRef.current), []);
-
-  const copy = (e: React.MouseEvent) => {
+  const onCopy = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    navigator.clipboard.writeText(`${window.location.origin}/?id=${bot.id}`);
-    setCopied(true);
-    clearTimeout(copyTimerRef.current);
-    copyTimerRef.current = setTimeout(() => setCopied(false), 1500);
+    copy(`${window.location.origin}/?id=${bot.id}`);
   };
 
-  const download = (e: React.MouseEvent) => {
+  const onDownload = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     const link = document.createElement("a");
@@ -54,33 +50,33 @@ function BotCard({ bot }: { bot: BotCell }) {
       className={`group relative block bg-card border border-border overflow-hidden ${
         bot.featured ? "sm:col-span-2 sm:row-span-2" : ""
       }`}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseEnter={() => setFastLoaded(true)}
     >
       <div className="relative aspect-square">
         <img
           src={animatedSrc}
           alt={`Pixabot ${bot.id}`}
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity ${hovered ? "opacity-0" : "opacity-100"}`}
+          className="absolute inset-0 w-full h-full object-cover opacity-100 group-hover:opacity-0 transition-opacity"
           style={{ imageRendering: "pixelated" }}
           loading="lazy"
         />
-        <img
-          src={fastSrc}
-          alt=""
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity ${hovered ? "opacity-100" : "opacity-0"}`}
-          style={{ imageRendering: "pixelated" }}
-          loading="lazy"
-        />
+        {fastLoaded && (
+          <img
+            src={fastSrc}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity"
+            style={{ imageRendering: "pixelated" }}
+          />
+        )}
       </div>
 
       {/* Mobile: below image */}
       <div className="flex items-center gap-1 p-1 sm:hidden">
         <span className="font-mono text-sm text-muted-foreground mr-auto">{bot.id}</span>
-        <button onClick={copy} className="size-6 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" title="Share">
+        <button onClick={onCopy} className="size-6 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" title="Share">
           <PixelIcon name={copied ? "check" : "copy"} className="size-3" />
         </button>
-        <button onClick={download} className="size-6 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" title="Download">
+        <button onClick={onDownload} className="size-6 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" title="Download">
           <PixelIcon name="download" className="size-3" />
         </button>
       </div>
@@ -89,10 +85,10 @@ function BotCard({ bot }: { bot: BotCell }) {
       <div className="hidden sm:flex absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto items-end p-2 bg-background/80">
         <div className="flex items-center gap-1 w-full">
           <span className="font-mono text-sm text-foreground mr-auto">{bot.id}</span>
-          <button onClick={copy} className="size-7 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" title="Share">
+          <button onClick={onCopy} className="size-7 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" title="Share">
             <PixelIcon name={copied ? "check" : "copy"} className="size-3.5" />
           </button>
-          <button onClick={download} className="size-7 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" title="Download">
+          <button onClick={onDownload} className="size-7 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" title="Download">
             <PixelIcon name="download" className="size-3.5" />
           </button>
         </div>
@@ -104,11 +100,18 @@ function BotCard({ bot }: { bot: BotCell }) {
 export default function BrowsePage() {
   const [bots, setBots] = useState(() => generateBatch(BATCH_SIZE));
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const loadingRef = useRef(false);
 
-  const loadMore = useCallback(
-    () => setBots((prev) => [...prev, ...generateBatch(BATCH_SIZE)]),
-    []
-  );
+  const loadMore = useCallback(() => {
+    if (loadingRef.current) return;
+    loadingRef.current = true;
+    setBots((prev) => {
+      if (prev.length >= MAX_BOTS) return prev;
+      return [...prev, ...generateBatch(BATCH_SIZE)];
+    });
+    // Release guard after React commits. setTimeout 0 pushes past current microtask.
+    setTimeout(() => { loadingRef.current = false; }, 0);
+  }, []);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
