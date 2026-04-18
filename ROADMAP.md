@@ -26,6 +26,11 @@
 - [x] Speed param on animated API — `?speed=0.25–4` multiplier
 - [x] Feet-stay-planted in animated GIF — body bottom row fixed
 - [x] useCopyToClipboard shared hook — reused across home + browse
+- [x] OG image API — `/api/og?type=grid|single` with seeded pixabots + Pixelify Sans via opentype.js
+- [x] Per-bot pages — `/bot/[id]` with full SEO metadata, canonical URL, parts table
+- [x] Favicons — icon.png + apple-icon.png from pixabot 2156
+- [x] Sitemap + robots.txt
+- [x] Home autoplay — animation starts on mount, no checkerboard bg
 
 ## Up Next
 
