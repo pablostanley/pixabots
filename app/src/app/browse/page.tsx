@@ -32,6 +32,7 @@ function BotCard({ bot }: { bot: BotCell }) {
   const [fastRequested, setFastRequested] = useState(false);
   const [fastReady, setFastReady] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const [mainLoaded, setMainLoaded] = useState(false);
   const prefetchedRef = useRef(false);
   const size = bot.featured ? DETAIL_SIZE : 240;
   const mainSrc = reducedMotion
@@ -79,13 +80,19 @@ function BotCard({ bot }: { bot: BotCell }) {
       }}
       onMouseLeave={() => setHovered(false)}
     >
-      <div className="relative aspect-square">
+      <div className="relative aspect-square bg-muted">
+        <div
+          aria-hidden="true"
+          className={`absolute inset-0 bg-muted motion-safe:animate-pulse transition-opacity duration-300 ${mainLoaded ? "opacity-0" : "opacity-100"}`}
+        />
         <img
           src={mainSrc}
           alt={`Pixabot ${bot.id}`}
           className={`absolute inset-0 w-full h-full object-cover transition-opacity ${showFast ? "opacity-0" : "opacity-100"}`}
           style={{ imageRendering: "pixelated" }}
           loading="lazy"
+          onLoad={() => setMainLoaded(true)}
+          onError={() => setMainLoaded(true)}
         />
         {!reducedMotion && fastRequested && (
           <img
