@@ -9,6 +9,7 @@ import { PixelIcon } from "@/components/ui/pixel-icon";
 import { useShareOrCopy } from "@/lib/use-share-or-copy";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 import { ShuffleHint, dismissShuffleHint } from "@/components/shuffle-hint";
+import { BgPicker } from "@/components/bg-picker";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -43,10 +44,15 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 function drawOnCanvas(
   canvas: HTMLCanvasElement,
   images: Record<string, HTMLImageElement>,
-  offsets?: AnimFrame
+  offsets?: AnimFrame,
+  bg?: string | null
 ) {
   const ctx = canvas.getContext("2d")!;
   ctx.clearRect(0, 0, DISPLAY, DISPLAY);
+  if (bg) {
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, DISPLAY, DISPLAY);
+  }
   ctx.imageSmoothingEnabled = false;
 
   for (const category of layerOrder) {
@@ -76,6 +82,9 @@ export function Creator({ initialId }: { initialId: string | null }) {
   const reducedMotion = usePrefersReducedMotion();
   const [animating, setAnimating] = useState(true);
   const [downloadOpen, setDownloadOpen] = useState(false);
+  const [bg, setBg] = useState<string | null>(null);
+  const bgRef = useRef<string | null>(null);
+  bgRef.current = bg;
   const [locks, setLocks] = useState<Record<PartCategory, boolean>>({
     eyes: false,
     heads: false,
@@ -112,7 +121,7 @@ export function Creator({ initialId }: { initialId: string | null }) {
     if (animatingRef.current) {
       startAnimation();
     } else {
-      drawOnCanvas(canvasRef.current, loaded);
+      drawOnCanvas(canvasRef.current, loaded, undefined, bgRef.current);
     }
   }
 
@@ -121,13 +130,13 @@ export function Creator({ initialId }: { initialId: string | null }) {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       animatingRef.current = false;
       setAnimating(false);
-      if (canvasRef.current) drawOnCanvas(canvasRef.current, imagesRef.current);
+      if (canvasRef.current) drawOnCanvas(canvasRef.current, imagesRef.current, undefined, bgRef.current);
       return;
     }
     frameRef.current = 0;
     intervalRef.current = setInterval(() => {
       if (canvasRef.current) {
-        drawOnCanvas(canvasRef.current, imagesRef.current, ANIM_FRAMES[frameRef.current]);
+        drawOnCanvas(canvasRef.current, imagesRef.current, ANIM_FRAMES[frameRef.current], bgRef.current);
         frameRef.current = (frameRef.current + 1) % ANIM_FRAMES.length;
       }
     }, FRAME_MS);
@@ -140,7 +149,7 @@ export function Creator({ initialId }: { initialId: string | null }) {
     clearInterval(intervalRef.current);
     intervalRef.current = undefined;
     frameRef.current = 0;
-    if (canvasRef.current) drawOnCanvas(canvasRef.current, imagesRef.current);
+    if (canvasRef.current) drawOnCanvas(canvasRef.current, imagesRef.current, undefined, bgRef.current);
     animatingRef.current = false;
     setAnimating(false);
   }
@@ -189,6 +198,14 @@ export function Creator({ initialId }: { initialId: string | null }) {
     setLocks((l) => ({ ...l, [category]: !l[category] }));
   };
 
+  const applyBg = (color: string | null) => {
+    setBg(color);
+    bgRef.current = color;
+    if (canvasRef.current && !intervalRef.current) {
+      drawOnCanvas(canvasRef.current, imagesRef.current, undefined, color);
+    }
+  };
+
   const copyShareUrl = () => {
     share({
       url: `${window.location.origin}/?id=${pixabotId}`,
@@ -207,6 +224,10 @@ export function Creator({ initialId }: { initialId: string | null }) {
     canvas.width = size;
     canvas.height = size;
     const ctx = canvas.getContext("2d")!;
+    if (bgRef.current) {
+      ctx.fillStyle = bgRef.current;
+      ctx.fillRect(0, 0, size, size);
+    }
     ctx.imageSmoothingEnabled = false;
     for (const category of layerOrder) {
       const img = imagesRef.current[category];
@@ -388,6 +409,8 @@ export function Creator({ initialId }: { initialId: string | null }) {
           );
         })}
       </div>
+
+      <BgPicker bg={bg} onChange={applyBg} />
 
       <ShuffleHint />
 
