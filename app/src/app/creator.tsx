@@ -417,8 +417,6 @@ export function Creator({ initialId }: { initialId: string | null }) {
 
       <BgPicker bg={bg} onChange={applyBg} />
 
-      <ShuffleHint />
-
       {/* ID bar */}
       <div className="border border-border px-3 py-2 sm:px-4 sm:py-3 flex flex-wrap items-center gap-2 text-sm w-full max-w-[504px]">
         <span className="font-mono text-foreground">{pixabotId}</span>
@@ -447,6 +445,8 @@ export function Creator({ initialId }: { initialId: string | null }) {
           </a>
         </div>
       </div>
+
+      <ShuffleHint />
     </main>
   );
 }
