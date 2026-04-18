@@ -3,6 +3,7 @@ import { resolveId } from "@pixabots/core";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import { BotNav } from "@/components/bot-nav";
 import { FavoriteButton } from "@/components/favorite-button";
+import { Tilt } from "@/components/tilt";
 
 type IconName = React.ComponentProps<typeof PixelIcon>["name"];
 
@@ -48,7 +49,7 @@ export function BotDetail({ id }: { id: string }) {
 
   return (
     <div className="flex flex-col gap-4 sm:gap-6">
-      <div className="border border-border p-3">
+      <Tilt className="border border-border p-3">
         <picture>
           <source
             media="(prefers-reduced-motion: reduce)"
@@ -63,7 +64,7 @@ export function BotDetail({ id }: { id: string }) {
             style={{ imageRendering: "pixelated" }}
           />
         </picture>
-      </div>
+      </Tilt>
 
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
