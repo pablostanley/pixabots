@@ -31,6 +31,7 @@
 - [x] Favicons — icon.png + apple-icon.png from pixabot 2156
 - [x] Sitemap + robots.txt
 - [x] Home autoplay — animation starts on mount, no checkerboard bg
+- [x] Browse modal — clicking a card opens a dialog at `/bot/{id}`, ESC/outside dismisses back to grid, refresh shows full page
 
 ## Up Next
 
