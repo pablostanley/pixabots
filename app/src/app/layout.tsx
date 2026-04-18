@@ -3,6 +3,7 @@ import { Pixelify_Sans } from "next/font/google";
 import { RootProvider } from "fumadocs-ui/provider/next";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { ShortcutsOverlay } from "@/components/shortcuts-overlay";
 import { SITE_URL } from "@/lib/constants";
 import "./globals.css";
 
@@ -70,6 +71,7 @@ export default function RootLayout({
           <SiteHeader />
           <div className="flex-1 flex flex-col">{children}</div>
           <SiteFooter />
+          <ShortcutsOverlay />
         </RootProvider>
       </body>
     </html>
