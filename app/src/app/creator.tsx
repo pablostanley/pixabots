@@ -101,6 +101,7 @@ export function Creator({ initialId }: { initialId: string | null }) {
   const announcement = `Pixabot ${pixabotId}: ${partNames.eyes}, ${partNames.heads}, ${partNames.body}, ${partNames.top}.`;
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasWrapRef = useRef<HTMLDivElement>(null);
   const imagesRef = useRef<Record<string, HTMLImageElement>>({});
   const intervalRef = useRef<ReturnType<typeof setInterval>>(undefined);
   const frameRef = useRef(0);
@@ -171,6 +172,12 @@ export function Creator({ initialId }: { initialId: string | null }) {
     const nextId = encode(next);
     window.history.replaceState(null, "", `/?id=${nextId}`);
     dismissShuffleHint();
+    const el = canvasWrapRef.current;
+    if (el) {
+      el.classList.remove("part-pulse");
+      void el.offsetWidth;
+      el.classList.add("part-pulse");
+    }
   }
 
   const cycle = (category: PartCategory) => {
@@ -348,7 +355,7 @@ export function Creator({ initialId }: { initialId: string | null }) {
       {/* Canvas */}
       <ContextMenu>
         <ContextMenuTrigger asChild>
-          <div className="border border-border p-2 sm:p-3 cursor-pointer active:scale-[0.98] transition-transform w-full max-w-[504px]" onClick={shuffle}>
+          <div ref={canvasWrapRef} className="border border-border p-2 sm:p-3 cursor-pointer active:scale-[0.98] transition-transform w-full max-w-[504px]" onClick={shuffle}>
             <canvas
               ref={setCanvasRef}
               width={DISPLAY}
