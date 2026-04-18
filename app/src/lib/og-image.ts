@@ -2,18 +2,14 @@ import sharp from "sharp";
 import opentype from "opentype.js";
 import fs from "node:fs";
 import path from "node:path";
-import {
-  PARTS,
-  LAYER_ORDER,
-  seededId,
-  decode,
-  isValidId,
-} from "@pixabots/core";
-import { FONTS_DIR, PARTS_DIR } from "@/lib/paths";
+import { seededId, decode, isValidId } from "@pixabots/core";
+import { FONTS_DIR } from "@/lib/paths";
+import { renderPixabot } from "@/lib/render";
 
 const OG_W = 1200;
 const OG_H = 630;
-const NATIVE = 32;
+// opentype getPath Y = baseline. Empirical cap-height offset for Pixelify Sans.
+const ASCENDER_RATIO = 0.82;
 
 let boldFont: opentype.Font | null = null;
 function getBoldFont() {
@@ -28,30 +24,7 @@ function getBoldFont() {
 
 async function renderBot(id: string, size: number): Promise<Buffer> {
   if (!isValidId(id)) throw new Error(`Invalid pixabot ID: ${id}`);
-  const combo = decode(id);
-  const composites: sharp.OverlayOptions[] = [];
-  for (const cat of LAYER_ORDER) {
-    const part = PARTS[cat][combo[cat]];
-    const buf = await sharp(path.join(PARTS_DIR, part.path))
-      .resize(NATIVE, NATIVE, { kernel: sharp.kernel.nearest })
-      .toBuffer();
-    composites.push({ input: buf, left: 0, top: 0 });
-  }
-  const native = await sharp({
-    create: {
-      width: NATIVE,
-      height: NATIVE,
-      channels: 4,
-      background: { r: 0, g: 0, b: 0, alpha: 0 },
-    },
-  })
-    .composite(composites)
-    .png()
-    .toBuffer();
-  return sharp(native)
-    .resize(size, size, { kernel: sharp.kernel.nearest })
-    .png()
-    .toBuffer();
+  return renderPixabot(decode(id), size);
 }
 
 function buildLabel(title: string, subtitle?: string) {
@@ -79,11 +52,11 @@ function buildLabel(title: string, subtitle?: string) {
   const subX = padX + (contentW - subW) / 2;
 
   const titleD = font
-    .getPath(title, titleX, padY + titleSize * 0.82, titleSize)
+    .getPath(title, titleX, padY + titleSize * ASCENDER_RATIO, titleSize)
     .toPathData(2);
   const subD = subtitle
     ? font
-        .getPath(subtitle, subX, padY + titleSize + gap + subSize * 0.82, subSize)
+        .getPath(subtitle, subX, padY + titleSize + gap + subSize * ASCENDER_RATIO, subSize)
         .toPathData(2)
     : "";
 
@@ -113,18 +86,23 @@ async function generateGrid(
   const padding = 48;
   const cellW = (OG_W - padding * 2 - gap * (cols - 1)) / cols;
 
-  const positions: sharp.OverlayOptions[] = [];
+  const cellSize = Math.round(cellW);
+  const cells: { r: number; c: number; id: string }[] = [];
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
-      const id = seededId(`${seed}-${r}-${c}`);
-      const bot = await renderBot(id, Math.round(cellW));
-      positions.push({
-        input: bot,
-        left: Math.round(padding + c * (cellW + gap)),
-        top: Math.round(padding + r * (cellW + gap)),
-      });
+      cells.push({ r, c, id: seededId(`${seed}-${r}-${c}`) });
     }
   }
+
+  const rendered = await Promise.all(
+    cells.map(async ({ r, c, id }) => ({
+      input: await renderBot(id, cellSize),
+      left: Math.round(padding + c * (cellW + gap)),
+      top: Math.round(padding + r * (cellW + gap)),
+    }))
+  );
+
+  const positions: sharp.OverlayOptions[] = [...rendered];
 
   const label = buildLabel(title, subtitle);
   positions.push({

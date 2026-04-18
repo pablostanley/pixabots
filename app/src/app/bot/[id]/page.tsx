@@ -1,18 +1,47 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { isValidId, decode, PARTS } from "@pixabots/core";
+import { isValidId, resolveId } from "@pixabots/core";
 import { SITE_URL } from "@/lib/constants";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 
-function getParts(id: string) {
-  const combo = decode(id);
-  return {
-    eyes: PARTS.eyes[combo.eyes].name,
-    heads: PARTS.heads[combo.heads].name,
-    body: PARTS.body[combo.body].name,
-    top: PARTS.top[combo.top].name,
-  };
+type IconName = React.ComponentProps<typeof PixelIcon>["name"];
+
+function ActionButton({
+  href,
+  icon,
+  label,
+  download,
+  external,
+}: {
+  href: string;
+  icon: IconName;
+  label: string;
+  download?: string;
+  external?: boolean;
+}) {
+  const className =
+    "flex items-center gap-2 px-3 py-2 border border-border hover:bg-muted transition-colors";
+  const content = (
+    <>
+      <PixelIcon name={icon} className="size-4" />
+      {label}
+    </>
+  );
+  if (download || external) {
+    return (
+      <a
+        href={href}
+        download={download}
+        target={external ? "_blank" : undefined}
+        rel={external ? "noopener noreferrer" : undefined}
+        className={className}
+      >
+        {content}
+      </a>
+    );
+  }
+  return <Link href={href} className={className}>{content}</Link>;
 }
 
 export async function generateMetadata({
@@ -23,7 +52,7 @@ export async function generateMetadata({
   const { id } = await params;
   if (!isValidId(id)) return { title: "Not found" };
 
-  const parts = getParts(id);
+  const parts = resolveId(id);
   const partsLabel = `${parts.eyes} · ${parts.heads} · ${parts.body} · ${parts.top}`;
   const title = `Pixabot ${id}`;
   const description = `Pixel character #${id} — ${partsLabel}`;
@@ -59,7 +88,7 @@ export default async function BotPage({
   const { id } = await params;
   if (!isValidId(id)) notFound();
 
-  const parts = getParts(id);
+  const parts = resolveId(id);
 
   return (
     <main className="flex-1 flex flex-col items-center justify-center p-6 gap-6">
@@ -90,30 +119,19 @@ export default async function BotPage({
         </dl>
 
         <div className="flex flex-wrap gap-2 mt-2 text-sm">
-          <Link
-            href={`/?id=${id}`}
-            className="flex items-center gap-2 px-3 py-2 border border-border hover:bg-muted transition-colors"
-          >
-            <PixelIcon name="shuffle" className="size-4" />
-            Open in creator
-          </Link>
-          <a
+          <ActionButton href={`/?id=${id}`} icon="pen-square" label="Open in creator" />
+          <ActionButton
             href={`/api/pixabot/${id}?size=960`}
             download={`pixabot-${id}.png`}
-            className="flex items-center gap-2 px-3 py-2 border border-border hover:bg-muted transition-colors"
-          >
-            <PixelIcon name="download" className="size-4" />
-            Download PNG
-          </a>
-          <a
+            icon="download"
+            label="Download PNG"
+          />
+          <ActionButton
             href={`/api/pixabot/${id}?animated=true&size=480`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 px-3 py-2 border border-border hover:bg-muted transition-colors"
-          >
-            <PixelIcon name="play" className="size-4" />
-            Animated GIF
-          </a>
+            external
+            icon="play"
+            label="Animated GIF"
+          />
         </div>
       </div>
     </main>
