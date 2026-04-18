@@ -12,7 +12,6 @@ import {
 const NATIVE_SIZE = 32;
 const ANIM_PAD = 4;
 const PARTS_DIR = path.join(process.cwd(), "public", "parts");
-const FRAME_DELAYS = ANIM_FRAMES.map(() => FRAME_MS);
 const ANIM_MAX_SIZE = 480;
 
 export class RenderError extends Error {
@@ -77,8 +76,13 @@ export async function renderPixabot(
     .toBuffer();
 }
 
+interface FrameLayers extends Record<string, Buffer> {
+  bodyTop: Buffer;
+  bodyBottom: Buffer;
+}
+
 async function renderFrame(
-  layers: Record<string, Buffer>,
+  layers: FrameLayers,
   offsets: AnimFrame,
   size: number
 ): Promise<Buffer> {
@@ -88,21 +92,11 @@ async function renderFrame(
   // Matches client-side canvas logic in page.tsx.
   for (const cat of LAYER_ORDER) {
     const off = Math.round(offsets[cat as keyof AnimFrame]);
-    const buf = layers[cat];
-
     if (cat === "body" && off > 0) {
-      const topRows = await sharp(buf)
-        .extract({ left: 0, top: 0, width: NATIVE_SIZE, height: NATIVE_SIZE - 1 })
-        .png()
-        .toBuffer();
-      const bottomRow = await sharp(buf)
-        .extract({ left: 0, top: NATIVE_SIZE - 1, width: NATIVE_SIZE, height: 1 })
-        .png()
-        .toBuffer();
-      composites.push({ input: topRows, left: 0, top: off });
-      composites.push({ input: bottomRow, left: 0, top: NATIVE_SIZE - 1 });
+      composites.push({ input: layers.bodyTop, left: 0, top: off });
+      composites.push({ input: layers.bodyBottom, left: 0, top: NATIVE_SIZE - 1 });
     } else {
-      composites.push({ input: buf, left: 0, top: off });
+      composites.push({ input: layers[cat], left: 0, top: off });
     }
   }
 
@@ -135,13 +129,27 @@ export async function renderAnimatedPixabot(
   const cappedSize = Math.min(size, ANIM_MAX_SIZE);
   const layers = await loadLayers(combo);
 
+  // Precompute body top/bottom once; reused across all frames with body offset > 0
+  const [bodyTop, bodyBottom] = await Promise.all([
+    sharp(layers.body)
+      .extract({ left: 0, top: 0, width: NATIVE_SIZE, height: NATIVE_SIZE - 1 })
+      .png()
+      .toBuffer(),
+    sharp(layers.body)
+      .extract({ left: 0, top: NATIVE_SIZE - 1, width: NATIVE_SIZE, height: 1 })
+      .png()
+      .toBuffer(),
+  ]);
+  const frameLayers: FrameLayers = { ...layers, bodyTop, bodyBottom };
+
   const frameBuffers = await Promise.all(
-    ANIM_FRAMES.map((offsets) => renderFrame(layers, offsets, cappedSize))
+    ANIM_FRAMES.map((offsets) => renderFrame(frameLayers, offsets, cappedSize))
   );
 
   const stacked = Buffer.concat(frameBuffers);
   const totalHeight = cappedSize * ANIM_FRAMES.length;
-  const delays = ANIM_FRAMES.map(() => Math.max(20, Math.round(FRAME_MS / speed)));
+  const delay = Math.max(20, Math.round(FRAME_MS / speed));
+  const delays = ANIM_FRAMES.map(() => delay);
 
   return sharp(stacked, {
     raw: {
