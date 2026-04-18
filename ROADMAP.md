@@ -59,6 +59,7 @@
 - [x] GIF encoding — `effort: 10` on Sharp's `.gif()` for smaller palette-optimized files. Immutable cache means render-once, serve-forever. (PR #37)
 - [x] Compare view — `/compare?ids=a,b,…` renders up to 6 BotDetails side by side; Favorites page gets a Compare CTA. (PR #38)
 - [x] Footer discovery copy — "9,856 combos · SPACE · ? for shortcuts" in footer. (PR #39)
+- [x] Background color picker — 9-swatch row paints behind the canvas + bakes into downloaded PNGs. (PR #40)
 
 ## Up Next
 
@@ -107,7 +108,6 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 ## Polish
 
 ### UI
-- [ ] **Background color picker** — transparent by default, but let users pick a color for exports
 - [ ] **Custom pixel tooltips** — replace native browser tooltips with styled ones using our pixel font
 - [ ] **Loading state** — skeleton/shimmer on creator canvas and browse grid while first images load
 - [ ] **Animated part transitions** — smooth fade/slide between parts instead of instant swap
