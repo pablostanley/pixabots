@@ -36,6 +36,7 @@
 - [x] Prev/next bot navigation — `<` `>` buttons + ArrowLeft/ArrowRight on BotDetail. Works in dialog and on full page. Combo-index walks 9,856 bots in stable order with wrap. `router.replace` so back still returns to `/browse`. (PR #14)
 - [x] Mobile bottom sheet — dialog anchors to bottom edge and slides up on mobile, stays centered on desktop. Drag-handle affordance. ESC + outside tap dismiss. Drag-to-dismiss tracked as ticket #15. (PR #15)
 - [x] Sticky header — `SiteHeader` is `sticky top-0`, hides on scroll down past 20px, reveals on scroll up, backdrop-blur + bg/80 when scrolled. Scroll tracked via useSyncExternalStore. Respects prefers-reduced-motion. (PR #16)
+- [x] Browse prefetch — `mouseenter` on non-featured cards fires background fetch for the 480 animated the detail view renders. Click → cache-hit. (PR #17)
 
 ## Up Next
 
@@ -47,9 +48,7 @@ Prioritized tickets to work through. Each is self-contained and shippable.
 
 ### 3. ~~Sticky header with scroll behavior~~ — **shipped (PR #16)**
 
-### 4. Prefetch bot PNG on browse card hover — **in review ([PR #17](https://github.com/pablostanley/pixabots/pull/17))**
-On `mouseenter` of a browse card, kick off a fetch for the detail-size GIF so clicking feels instant.
-- **Acceptance met:** 480 animated prefetched on first hover; idempotent via `prefetchedRef`; featured cards skipped (already 480)
+### 4. ~~Prefetch bot PNG on browse card hover~~ — **shipped (PR #17)**
 
 ### 5. Preload sprite parts on creator mount
 On creator mount, fire parallel `fetch` for all 42 sprite PNGs (`/parts/**/*.png`). Browser cache means every subsequent shuffle draws without network. Same sprites serve browse, bot pages, OG images — cache is hot across the site.
