@@ -47,11 +47,22 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "fixed left-1/2 top-1/2 z-50 w-full max-w-[560px] -translate-x-1/2 -translate-y-1/2 border border-border bg-background p-4 sm:p-6 shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+          // Layout: bottom sheet on mobile, centered modal on desktop
+          "fixed z-50 border border-border bg-background shadow-lg",
+          "bottom-0 left-0 right-0 max-h-[92vh] overflow-y-auto p-4 pt-6",
+          "sm:inset-auto sm:left-1/2 sm:top-1/2 sm:right-auto sm:bottom-auto sm:w-full sm:max-w-[560px] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:p-6 sm:max-h-[85vh]",
+          // Animations
+          "data-[state=open]:animate-in data-[state=closed]:animate-out",
+          "data-[state=open]:slide-in-from-bottom data-[state=closed]:slide-out-to-bottom",
+          "sm:data-[state=open]:slide-in-from-bottom-0 sm:data-[state=closed]:slide-out-to-bottom-0",
+          "data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0",
+          "sm:data-[state=open]:zoom-in-95 sm:data-[state=closed]:zoom-out-95",
           className
         )}
         {...props}
       >
+        {/* Drag-handle affordance on mobile */}
+        <div aria-hidden="true" className="sm:hidden absolute top-2 left-1/2 -translate-x-1/2 h-1 w-10 bg-muted-foreground/30" />
         {children}
       </DialogPrimitive.Content>
     </DialogPortal>
