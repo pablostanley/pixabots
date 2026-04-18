@@ -50,9 +50,9 @@ Prioritized tickets to work through. Each is self-contained and shippable.
 
 ### 4. ~~Prefetch bot PNG on browse card hover~~ — **shipped (PR #17)**
 
-### 5. Preload sprite parts on creator mount
-On creator mount, fire parallel `fetch` for all 42 sprite PNGs (`/parts/**/*.png`). Browser cache means every subsequent shuffle draws without network. Same sprites serve browse, bot pages, OG images — cache is hot across the site.
-- **Acceptance:** DevTools Network shows no sprite requests on 2nd+ shuffle; first meaningful paint not regressed
+### 5. Preload sprite parts on creator mount — **in review ([PR #18](https://github.com/pablostanley/pixabots/pull/18))**
+Server-rendered `<link rel="preload">` on home page for all 42 sprites. React 19 hoists to head; browser preloads during HTML parse, before hydration.
+- **Acceptance met:** sprites preload during HTML parse (not post-mount); no runtime JS needed; first paint unchanged since preloads are async
 
 ### 6. 404 page with lost pixabot
 Create `app/not-found.tsx` with a random animated pixabot, personality copy ("this pixabot got lost"), and links to Home + Browse. Caught by invalid `/bot/{id}` too.
