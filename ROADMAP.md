@@ -33,18 +33,15 @@
 - [x] Home autoplay — animation starts on mount, no checkerboard bg
 - [x] Browse modal — clicking a card opens a dialog at `/bot/{id}`, ESC/outside dismisses back to grid, refresh shows full page
 - [x] API hardening — 60 sizes (multiple of 32 up to 1920), animations all sizes, `/random` forwards `animated`/`speed`, strict input validation (size/speed return 400 on invalid), render memory cut ~8x at large sizes, OpenAPI gaps closed (/api/og documented)
+- [x] Prev/next bot navigation — `<` `>` buttons + ArrowLeft/ArrowRight on BotDetail. Works in dialog and on full page. Combo-index walks 9,856 bots in stable order with wrap. `router.replace` so back still returns to `/browse`. (PR #14)
 
 ## Up Next
 
 Prioritized tickets to work through. Each is self-contained and shippable.
 
-### 1. Prev / next navigation in browse dialog — **in review ([PR #14](https://github.com/pablostanley/pixabots/pull/14))**
-When the bot dialog is open on `/browse`, left/right arrow keys (and visible `<` `>` buttons) move to the prev/next bot in the current grid order. URL updates to the new `/bot/{id}`.
-- **Acceptance:** arrow keys + on-screen buttons navigate; ESC still dismisses back to grid; deep-linking `/bot/{id}` directly (full page) unaffected
-- **Scope change:** implemented on shared `BotDetail`, so it also covers the Polish "Prev / next on bot page" item for free
-- **Approach:** combo-index linearization walks all 9,856 bots in stable order, wraps at boundaries. `router.replace` keeps back button returning to `/browse`.
+### 1. ~~Prev / next navigation in browse dialog~~ — **shipped (PR #14)**
 
-### 2. Mobile bottom sheet for bot detail
+### 2. Mobile bottom sheet for bot detail — **in progress**
 Below the `sm` breakpoint, render the dialog as a bottom sheet that slides up from the edge and can be drag-dismissed. Desktop keeps the centered dialog.
 - **Acceptance:** touch targets ≥ 44px; slide is 60fps; dismissible via drag, ESC, and outside tap; scroll inside sheet when content taller than viewport
 
@@ -113,7 +110,6 @@ Floating input triggered by ⌘K / Ctrl+K. Fuzzy-search actions:
 - [ ] **Sticky header with scroll behavior** — hide on scroll down, reveal on scroll up; backdrop blur
 - [ ] **Focus rings everywhere** — audit all interactive elements for visible keyboard focus
 - [ ] **Favorite / pin pixabots** — star icon persists IDs in localStorage, "Favorites" tab in browse
-- [ ] **Prev / next on bot page** — arrows to walk neighbor IDs (`/bot/2155` → `/bot/2156` → `/bot/2157`)
 - [ ] **"You might also like"** — on bot page, show 4 one-part-different variants
 - [ ] **Compare view** — side-by-side two pixabots at `?compare=2156,f76a`
 - [ ] **Gallery mode** — fullscreen single-bot view with background color options, big animation
