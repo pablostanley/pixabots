@@ -48,6 +48,8 @@
 - [x] Shortcuts help overlay + C to copy — `?` opens per-route help dialog, `C` copies share URL in creator. (PR #26)
 - [x] Command palette — `⌘K` / `Ctrl+K` opens a filtered action list: navigation, jump-by-ID, copy URL, random. (PR #27)
 - [x] Theme without useEffect — `useTheme` hook (useSyncExternalStore) + pre-hydration script kills flash-of-wrong-theme; localStorage persistence added. (PR #28)
+- [x] D opens Download menu — controlled DropdownMenu in creator + `D` keydown. (PR #29)
+- [x] Drag-to-dismiss — mobile bottom sheet can be swiped down to close; 80px / 0.5 px/ms threshold, scrollTop gate. No new deps. (PR #30)
 
 ## Up Next
 
@@ -87,9 +89,8 @@ Shipped: `?` help overlay, `C` copy URL in creator. Descoped: `D` download menu 
 ### 16. ~~SiteHeader theme detection via useEffect~~ — **shipped (PR #28)**
 Shipped: `useTheme` hook (useSyncExternalStore), pre-hydration inline script in layout `<head>` prevents flash of wrong theme, `localStorage` persistence added as a bonus.
 
-### 15. Drag-to-dismiss on mobile bottom sheet (descoped from #2)
-Add touch-drag gesture to dismiss the mobile sheet. Either bring in `vaul` (shadcn's recommended drawer) or wire up `pointerdown`/`pointermove`/`pointerup` manually with a translate + velocity check.
-- **Acceptance:** swipe-down on the sheet closes it with momentum; threshold feels natural (≥80px or >0.5 velocity); doesn't conflict with internal scroll
+### 15. ~~Drag-to-dismiss on mobile bottom sheet~~ — **shipped (PR #30)**
+Custom pointer-event implementation — no vaul dependency. 80px or 0.5 px/ms velocity threshold. scrollTop gate prevents scroll conflict.
 
 ### 14. ~~Command palette (⌘K)~~ — **shipped (PR #27)**
 Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (valid 4-char surfaces open action), copy URL. Descoped (creator-state-coupled actions): part-picking, download, play/stop — would require lifting creator state into context. Leave as future enhancement if requested.
