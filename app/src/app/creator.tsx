@@ -10,6 +10,7 @@ import { useShareOrCopy } from "@/lib/use-share-or-copy";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 import { ShuffleHint, dismissShuffleHint } from "@/components/shuffle-hint";
 import { BgPicker } from "@/components/bg-picker";
+import { useSfx } from "@/lib/use-sfx";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -92,6 +93,7 @@ export function Creator({ initialId }: { initialId: string | null }) {
     top: false,
   });
   const [copied, share] = useShareOrCopy();
+  const sfx = useSfx();
 
   const pixabotId = encode(selection);
   const apiUrl = `/api/pixabot/${pixabotId}`;
@@ -177,6 +179,7 @@ export function Creator({ initialId }: { initialId: string | null }) {
       ...prev,
       [category]: (prev[category] + 1) % parts[category].length,
     });
+    sfx.play("cycle");
   };
 
   const pick = (category: PartCategory, index: number) => {
@@ -192,6 +195,7 @@ export function Creator({ initialId }: { initialId: string | null }) {
       body: locks.body ? prev.body : rand.body,
       top: locks.top ? prev.top : rand.top,
     });
+    sfx.play("shuffle");
   };
 
   const toggleLock = (category: PartCategory) => {
@@ -212,6 +216,7 @@ export function Creator({ initialId }: { initialId: string | null }) {
       title: `Pixabot ${pixabotId}`,
       text: `Check out pixabot ${pixabotId}`,
     });
+    sfx.play("copy");
   };
 
   const toggleAnimation = () => {
