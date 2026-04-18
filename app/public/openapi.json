@@ -86,8 +86,10 @@
                         "top": { "type": "string", "example": "mohawk" }
                       }
                     },
-                    "png": { "type": "string", "format": "uri" }
-                  }
+                    "png": { "type": "string", "format": "uri", "description": "Static PNG URL at the requested size" },
+                    "gif": { "type": "string", "format": "uri", "description": "Animated GIF URL at the requested size" }
+                  },
+                  "required": ["id", "combo", "parts", "png", "gif"]
                 }
               }
             }
@@ -141,10 +143,28 @@
                   "type": "object",
                   "properties": {
                     "id": { "type": "string", "example": "d632" },
-                    "combo": { "type": "object" },
-                    "parts": { "type": "object" },
-                    "png": { "type": "string", "format": "uri" }
-                  }
+                    "combo": {
+                      "type": "object",
+                      "properties": {
+                        "eyes": { "type": "integer" },
+                        "heads": { "type": "integer" },
+                        "body": { "type": "integer" },
+                        "top": { "type": "integer" }
+                      }
+                    },
+                    "parts": {
+                      "type": "object",
+                      "properties": {
+                        "eyes": { "type": "string" },
+                        "heads": { "type": "string" },
+                        "body": { "type": "string" },
+                        "top": { "type": "string" }
+                      }
+                    },
+                    "png": { "type": "string", "format": "uri", "description": "Static PNG URL for the random pixabot" },
+                    "gif": { "type": "string", "format": "uri", "description": "Animated GIF URL for the random pixabot" }
+                  },
+                  "required": ["id", "combo", "parts", "png", "gif"]
                 }
               }
             }
