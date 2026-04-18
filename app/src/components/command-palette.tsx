@@ -28,6 +28,7 @@ export function CommandPalette() {
     () => [
       { id: "home", label: "Go to Create", hint: "/", keywords: ["home", "creator"], run: () => router.push("/") },
       { id: "browse", label: "Go to Browse", hint: "/browse", run: () => router.push("/browse") },
+      { id: "favorites", label: "Go to Favorites", hint: "/favorites", keywords: ["stars", "saved"], run: () => router.push("/favorites") },
       { id: "docs", label: "Go to Docs", hint: "/docs", run: () => router.push("/docs") },
       { id: "api", label: "API reference", hint: "/docs/api", keywords: ["api", "rest"], run: () => router.push("/docs/api") },
       { id: "sdk", label: "SDK reference", hint: "/docs/sdk", run: () => router.push("/docs/sdk") },
