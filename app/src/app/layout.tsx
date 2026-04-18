@@ -4,6 +4,7 @@ import { RootProvider } from "fumadocs-ui/provider/next";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ShortcutsOverlay } from "@/components/shortcuts-overlay";
+import { CommandPalette } from "@/components/command-palette";
 import { SITE_URL } from "@/lib/constants";
 import "./globals.css";
 
@@ -72,6 +73,7 @@ export default function RootLayout({
           <div className="flex-1 flex flex-col">{children}</div>
           <SiteFooter />
           <ShortcutsOverlay />
+          <CommandPalette />
         </RootProvider>
       </body>
     </html>
