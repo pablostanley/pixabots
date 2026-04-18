@@ -49,7 +49,7 @@ function BotCard({ bot }: { bot: BotCell }) {
 
   return (
     <Link
-      href={`/?id=${bot.id}`}
+      href={`/bot/${bot.id}`}
       className={`group relative block bg-card border border-border overflow-hidden ${
         bot.featured ? "sm:col-span-2 sm:row-span-2" : ""
       }`}
