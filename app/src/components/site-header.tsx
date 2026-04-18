@@ -6,12 +6,14 @@ import { Button } from "@/components/ui/button";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import { useScrollDirection } from "@/lib/use-scroll-direction";
 import { useTheme } from "@/lib/use-theme";
+import { useSfx } from "@/lib/use-sfx";
 
 export function SiteHeader() {
   const pathname = usePathname();
   const { direction, scrolled } = useScrollDirection();
   const hide = scrolled && direction === "down";
   const [dark, toggleTheme] = useTheme();
+  const sfx = useSfx();
 
   const navLink = (href: string, label: string, className?: string) => {
     const isActive = pathname === href;
@@ -35,7 +37,19 @@ export function SiteHeader() {
         Pixabots
       </Link>
       <nav className="flex items-center gap-2 sm:gap-4 ml-auto">
-        <Button variant="ghost" size="icon" onClick={toggleTheme} title={dark ? "Light mode" : "Dark mode"}>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={sfx.toggle}
+          aria-pressed={sfx.enabled}
+          aria-label={sfx.enabled ? "Sound on — click to mute" : "Sound off — click to enable"}
+          data-tooltip={sfx.enabled ? "Sound on" : "Sound off"}
+        >
+          <span aria-hidden="true" className={`font-mono text-sm ${sfx.enabled ? "" : "opacity-40 line-through"}`}>
+            ♪
+          </span>
+        </Button>
+        <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={dark ? "Light mode" : "Dark mode"} data-tooltip={dark ? "Light mode" : "Dark mode"}>
           <PixelIcon name={dark ? "lightbulb" : "moon"} className="size-4" />
         </Button>
         {navLink("/", "create")}
