@@ -1,4 +1,5 @@
 import { Creator } from "./creator";
+import { SpritePreload } from "@/components/sprite-preload";
 
 export default async function Home({
   searchParams,
@@ -6,5 +7,10 @@ export default async function Home({
   searchParams: Promise<{ id?: string }>;
 }) {
   const { id } = await searchParams;
-  return <Creator initialId={typeof id === "string" ? id : null} />;
+  return (
+    <>
+      <SpritePreload />
+      <Creator initialId={typeof id === "string" ? id : null} />
+    </>
+  );
 }
