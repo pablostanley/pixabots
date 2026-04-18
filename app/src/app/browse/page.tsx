@@ -24,10 +24,13 @@ function generateBatch(count: number): BotCell[] {
 
 function BotCard({ bot }: { bot: BotCell }) {
   const [copied, copy] = useCopyToClipboard();
-  const [fastLoaded, setFastLoaded] = useState(false);
+  const [fastRequested, setFastRequested] = useState(false);
+  const [fastReady, setFastReady] = useState(false);
+  const [hovered, setHovered] = useState(false);
   const size = bot.featured ? 480 : 240;
   const animatedSrc = `/api/pixabot/${bot.id}?size=${size}&animated=true`;
   const fastSrc = `/api/pixabot/${bot.id}?size=${size}&animated=true&speed=2`;
+  const showFast = hovered && fastReady;
 
   const onCopy = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -50,22 +53,27 @@ function BotCard({ bot }: { bot: BotCell }) {
       className={`group relative block bg-card border border-border overflow-hidden ${
         bot.featured ? "sm:col-span-2 sm:row-span-2" : ""
       }`}
-      onMouseEnter={() => setFastLoaded(true)}
+      onMouseEnter={() => {
+        setHovered(true);
+        setFastRequested(true);
+      }}
+      onMouseLeave={() => setHovered(false)}
     >
       <div className="relative aspect-square">
         <img
           src={animatedSrc}
           alt={`Pixabot ${bot.id}`}
-          className="absolute inset-0 w-full h-full object-cover opacity-100 group-hover:opacity-0 transition-opacity"
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity ${showFast ? "opacity-0" : "opacity-100"}`}
           style={{ imageRendering: "pixelated" }}
           loading="lazy"
         />
-        {fastLoaded && (
+        {fastRequested && (
           <img
             src={fastSrc}
             alt=""
-            className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity"
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity ${showFast ? "opacity-100" : "opacity-0"}`}
             style={{ imageRendering: "pixelated" }}
+            onLoad={() => setFastReady(true)}
           />
         )}
       </div>
