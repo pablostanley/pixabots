@@ -82,11 +82,29 @@ async function renderFrame(
   offsets: AnimFrame,
   size: number
 ): Promise<Buffer> {
-  const composites = LAYER_ORDER.map((cat) => ({
-    input: layers[cat],
-    left: 0,
-    top: Math.round(offsets[cat as keyof AnimFrame]),
-  }));
+  const composites: sharp.OverlayOptions[] = [];
+
+  // Feet-stay-planted: body bottom row fixed at y=31, top 31 rows shifted.
+  // Matches client-side canvas logic in page.tsx.
+  for (const cat of LAYER_ORDER) {
+    const off = Math.round(offsets[cat as keyof AnimFrame]);
+    const buf = layers[cat];
+
+    if (cat === "body" && off > 0) {
+      const topRows = await sharp(buf)
+        .extract({ left: 0, top: 0, width: NATIVE_SIZE, height: NATIVE_SIZE - 1 })
+        .png()
+        .toBuffer();
+      const bottomRow = await sharp(buf)
+        .extract({ left: 0, top: NATIVE_SIZE - 1, width: NATIVE_SIZE, height: 1 })
+        .png()
+        .toBuffer();
+      composites.push({ input: topRows, left: 0, top: off });
+      composites.push({ input: bottomRow, left: 0, top: NATIVE_SIZE - 1 });
+    } else {
+      composites.push({ input: buf, left: 0, top: off });
+    }
+  }
 
   // Two-step pipeline: sharp can't chain extract→resize on a created canvas
   const native = await sharp({

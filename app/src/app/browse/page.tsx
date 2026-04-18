@@ -30,14 +30,18 @@ function BotCard({ bot }: { bot: BotCell }) {
 
   useEffect(() => () => clearTimeout(copyTimerRef.current), []);
 
-  const copy = () => {
+  const copy = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     navigator.clipboard.writeText(`${window.location.origin}/?id=${bot.id}`);
     setCopied(true);
     clearTimeout(copyTimerRef.current);
     copyTimerRef.current = setTimeout(() => setCopied(false), 1500);
   };
 
-  const download = () => {
+  const download = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     const link = document.createElement("a");
     link.href = `/api/pixabot/${bot.id}?size=960`;
     link.download = `pixabot-${bot.id}.png`;
@@ -45,14 +49,15 @@ function BotCard({ bot }: { bot: BotCell }) {
   };
 
   return (
-    <div
-      className={`group relative bg-card border border-border overflow-hidden ${
+    <Link
+      href={`/?id=${bot.id}`}
+      className={`group relative block bg-card border border-border overflow-hidden ${
         bot.featured ? "sm:col-span-2 sm:row-span-2" : ""
       }`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <Link href={`/?id=${bot.id}`} className="block relative aspect-square">
+      <div className="relative aspect-square">
         <img
           src={animatedSrc}
           alt={`Pixabot ${bot.id}`}
@@ -67,9 +72,9 @@ function BotCard({ bot }: { bot: BotCell }) {
           style={{ imageRendering: "pixelated" }}
           loading="lazy"
         />
-      </Link>
+      </div>
 
-      {/* Mobile: below image. Desktop: absolute overlay, bottom-aligned, hover reveal */}
+      {/* Mobile: below image */}
       <div className="flex items-center gap-1 p-1 sm:hidden">
         <span className="font-mono text-sm text-muted-foreground mr-auto">{bot.id}</span>
         <button onClick={copy} className="size-6 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" title="Share">
@@ -78,10 +83,9 @@ function BotCard({ bot }: { bot: BotCell }) {
         <button onClick={download} className="size-6 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" title="Download">
           <PixelIcon name="download" className="size-3" />
         </button>
-        <Link href={`/?id=${bot.id}`} className="size-6 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors" title="Edit">
-          <PixelIcon name="pen-square" className="size-3" />
-        </Link>
       </div>
+
+      {/* Desktop: absolute overlay on hover */}
       <div className="hidden sm:flex absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto items-end p-2 bg-gradient-to-t from-background/90 via-background/40 to-transparent">
         <div className="flex items-center gap-1 w-full">
           <span className="font-mono text-sm text-foreground mr-auto">{bot.id}</span>
@@ -91,12 +95,9 @@ function BotCard({ bot }: { bot: BotCell }) {
           <button onClick={download} className="size-7 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" title="Download">
             <PixelIcon name="download" className="size-3.5" />
           </button>
-          <Link href={`/?id=${bot.id}`} className="size-7 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors" title="Edit">
-            <PixelIcon name="pen-square" className="size-3.5" />
-          </Link>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 
