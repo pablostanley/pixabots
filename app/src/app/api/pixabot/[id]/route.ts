@@ -1,15 +1,16 @@
 import { type NextRequest } from "next/server";
 import { decode, isValidId, resolve } from "@pixabots/core";
 import { renderPixabot, renderAnimatedPixabot, RenderError } from "@/lib/render";
-import { CORS_HEADERS, optionsResponse, imageResponse } from "@/lib/api";
-
-const MIN_SIZE = 32;
-const MAX_SIZE = 1920;
-const SIZE_STEP = 32;
-
-function isValidSize(n: number) {
-  return Number.isInteger(n) && n >= MIN_SIZE && n <= MAX_SIZE && n % SIZE_STEP === 0;
-}
+import {
+  CORS_HEADERS,
+  optionsResponse,
+  imageResponse,
+  isValidSize,
+  INVALID_SIZE_MESSAGE,
+  DEFAULT_SIZE,
+  MIN_SPEED,
+  MAX_SPEED,
+} from "@/lib/api";
 
 export const OPTIONS = optionsResponse;
 
@@ -20,7 +21,7 @@ export async function GET(
   const { id } = await params;
   const format = request.nextUrl.searchParams.get("format");
   const sizeParam = request.nextUrl.searchParams.get("size");
-  const size = sizeParam ? parseInt(sizeParam, 10) : 128;
+  const size = sizeParam ? Number(sizeParam) : DEFAULT_SIZE;
 
   if (!isValidId(id)) {
     return Response.json(
@@ -31,7 +32,7 @@ export async function GET(
 
   if (!isValidSize(size)) {
     return Response.json(
-      { error: `Invalid size. Must be a multiple of ${SIZE_STEP} between ${MIN_SIZE} and ${MAX_SIZE}.` },
+      { error: INVALID_SIZE_MESSAGE },
       { status: 400, headers: CORS_HEADERS }
     );
   }
@@ -39,7 +40,17 @@ export async function GET(
   const combo = decode(id);
   const animated = request.nextUrl.searchParams.get("animated") === "true";
   const speedParam = request.nextUrl.searchParams.get("speed");
-  const speed = speedParam ? Math.min(4, Math.max(0.25, parseFloat(speedParam))) : 1;
+  let speed = 1;
+  if (speedParam !== null) {
+    const parsed = Number(speedParam);
+    if (!Number.isFinite(parsed)) {
+      return Response.json(
+        { error: `Invalid speed. Must be a number between ${MIN_SPEED} and ${MAX_SPEED}.` },
+        { status: 400, headers: CORS_HEADERS }
+      );
+    }
+    speed = Math.min(MAX_SPEED, Math.max(MIN_SPEED, parsed));
+  }
 
   if (format === "json") {
     const origin = request.nextUrl.origin;
