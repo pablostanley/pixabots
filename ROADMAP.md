@@ -72,6 +72,8 @@
 - [x] Canvas pulse on part change — subtle 180ms scale pulse on shuffle/cycle/pick. (PR #50)
 - [x] Special-ID captions — small note on BotDetail for curated IDs (2156, 1337, 0000, f76a, 0001). (PR #51)
 - [x] WebP animated output — `?webp=true` on API returns animated WebP via Sharp; smaller + alpha preserved. Random forwards it. Docs + OpenAPI synced. (PR #52)
+- [x] Musical SFX — per-action pentatonic scales, softer triangle + lowpass voice, download jingle, color swatches as ascending notes. (PR #53)
+- [x] Batch API — `/api/pixabot/batch?ids=...` (100 max) or `?count=N` for bulk metadata. (PR #54)
 
 ## Up Next
 
@@ -161,7 +163,6 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 - [ ] Accessories — new category layer (hats, items, etc.)
 - [ ] Animation variants — wave, jump, spin, etc.
 - [ ] Social cards — `GET /api/pixabot/{id}/og` for Open Graph images with name/title
-- [ ] Batch API — generate multiple pixabots in one request
 - [ ] SVG output — vector version alongside PNG
 - [ ] Embed widget — `<script>` tag or iframe for embedding a pixabot in any site
 - [ ] Browse filters — filter by part (e.g., all bots with glasses)
