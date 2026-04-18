@@ -67,6 +67,9 @@
 - [x] Opt-in SFX — ♪ header toggle + Web Audio square-wave blips on shuffle/copy/cycle, off by default. (PR #45)
 - [x] Service worker — cache-first for `/api/pixabot/*` (excl random) + `/parts/*`; instant repeat loads and partial offline. (PR #46)
 - [x] Gallery mode — fullscreen single-bot dialog with Edit + Get PNG actions. (PR #47)
+- [x] Size=240 regression fix — API validator widened to any integer 32–1920 (dropped multiple-of-32 requirement). Restored browse card rendering. (PR #48)
+- [x] Shuffle hint position — moved below the ID bar so actions lead. (PR #49)
+- [x] Canvas pulse on part change — subtle 180ms scale pulse on shuffle/cycle/pick. (PR #50)
 
 ## Up Next
 
@@ -115,7 +118,6 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 ## Polish
 
 ### UI
-- [ ] **Animated part transitions** — smooth fade/slide between parts instead of instant swap
 - [ ] **Mobile bottom sheet** — use a bottom sheet instead of centered dialog on mobile for bot detail
 - [ ] **Sticky header with scroll behavior** — hide on scroll down, reveal on scroll up; backdrop blur
 - [ ] **Focus rings everywhere** — audit all interactive elements for visible keyboard focus
