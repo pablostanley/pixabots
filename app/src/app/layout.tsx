@@ -70,6 +70,14 @@ const THEME_SCRIPT = `
 })();
 `;
 
+const SW_SCRIPT = `
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js').catch(function() {});
+  });
+}
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -79,6 +87,7 @@ export default function RootLayout({
     <html lang="en" className={pixelify.variable} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: SW_SCRIPT }} />
       </head>
       <body className="min-h-dvh flex flex-col font-[family-name:var(--font-pixel)]">
         <RootProvider>
