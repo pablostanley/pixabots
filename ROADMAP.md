@@ -82,9 +82,7 @@ Expanded beyond dark mode: light mode also had a muted-foreground regression (~4
 ### 13. ~~Expanded keyboard shortcuts + help overlay~~ — **shipped (PR #26)**
 Shipped: `?` help overlay, `C` copy URL in creator. Descoped: `D` download menu (imperative radix) → ticket #17; `/` command palette focus → bundled with ticket #14.
 
-### 17. `D` shortcut to open download menu (follow-up from #13)
-Radix `DropdownMenu` doesn't have a declarative open prop on the trigger; we'd need to lift state with `open` / `onOpenChange` and focus trigger imperatively.
-- **Acceptance:** pressing `D` on the creator opens the Download dropdown with keyboard focus inside; ESC closes
+### 17. ~~`D` shortcut to open download menu~~ — **shipped (PR #29)**
 
 ### 16. ~~SiteHeader theme detection via useEffect~~ — **shipped (PR #28)**
 Shipped: `useTheme` hook (useSyncExternalStore), pre-hydration inline script in layout `<head>` prevents flash of wrong theme, `localStorage` persistence added as a bonus.
