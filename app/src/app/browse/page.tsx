@@ -6,6 +6,7 @@ import { randomId } from "@pixabots/core";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import { useShareOrCopy } from "@/lib/use-share-or-copy";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
+import { FavoriteButton } from "@/components/favorite-button";
 
 const BATCH_SIZE = 60;
 const FEATURED_EVERY = 8;
@@ -101,6 +102,7 @@ function BotCard({ bot }: { bot: BotCell }) {
       {/* Mobile: below image */}
       <div className="flex items-center gap-1 p-1 sm:hidden">
         <span className="font-mono text-sm text-muted-foreground mr-auto">{bot.id}</span>
+        <FavoriteButton id={bot.id} size="sm" />
         <button onClick={onCopy} className="size-6 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" title={copied ? "Copied!" : "Share"}>
           <PixelIcon
             key={copied ? "copied" : "idle"}
@@ -117,6 +119,7 @@ function BotCard({ bot }: { bot: BotCell }) {
       <div className="hidden sm:flex absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto items-end p-2 bg-background/80">
         <div className="flex items-center gap-1 w-full">
           <span className="font-mono text-sm text-foreground mr-auto">{bot.id}</span>
+          <FavoriteButton id={bot.id} />
           <button onClick={onCopy} className="size-7 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" title={copied ? "Copied!" : "Share"}>
             <PixelIcon
               key={copied ? "copied" : "idle"}
