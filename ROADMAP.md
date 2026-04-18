@@ -47,6 +47,7 @@
 - [x] Contrast audit — `--muted-foreground` raised in both themes (light 0.556→0.45, dark 0.708→0.76) so every muted label passes WCAG AA. (PR #25)
 - [x] Shortcuts help overlay + C to copy — `?` opens per-route help dialog, `C` copies share URL in creator. (PR #26)
 - [x] Command palette — `⌘K` / `Ctrl+K` opens a filtered action list: navigation, jump-by-ID, copy URL, random. (PR #27)
+- [x] Theme without useEffect — `useTheme` hook (useSyncExternalStore) + pre-hydration script kills flash-of-wrong-theme; localStorage persistence added. (PR #28)
 
 ## Up Next
 
@@ -85,9 +86,8 @@ Shipped: `?` help overlay, `C` copy URL in creator. Descoped: `D` download menu 
 Radix `DropdownMenu` doesn't have a declarative open prop on the trigger; we'd need to lift state with `open` / `onOpenChange` and focus trigger imperatively.
 - **Acceptance:** pressing `D` on the creator opens the Download dropdown with keyboard focus inside; ESC closes
 
-### 16. SiteHeader theme detection via useEffect (follow-up from #3)
-`SiteHeader` reads `prefers-color-scheme` inside a `useEffect`. Swap to useSyncExternalStore reading `matchMedia`, or pre-hydration inline script that sets `documentElement.classList` before React mounts — avoids flash and complies with "no useEffect" rule.
-- **Acceptance:** theme set before first paint; matches `prefers-color-scheme` reactively; toggle button still works
+### 16. ~~SiteHeader theme detection via useEffect~~ — **shipped (PR #28)**
+Shipped: `useTheme` hook (useSyncExternalStore), pre-hydration inline script in layout `<head>` prevents flash of wrong theme, `localStorage` persistence added as a bonus.
 
 ### 15. Drag-to-dismiss on mobile bottom sheet (descoped from #2)
 Add touch-drag gesture to dismiss the mobile sheet. Either bring in `vaul` (shadcn's recommended drawer) or wire up `pointerdown`/`pointermove`/`pointerup` manually with a translate + velocity check.
