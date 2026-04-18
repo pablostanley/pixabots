@@ -3,13 +3,22 @@ import { isValidId } from "@pixabots/core";
 import { generateOgImage } from "@/lib/og-image";
 import { CORS_HEADERS, optionsResponse, imageResponse } from "@/lib/api";
 
+const MAX_TITLE_LEN = 60;
+const MAX_SUBTITLE_LEN = 100;
+const MAX_SEED_LEN = 80;
+
 export const OPTIONS = optionsResponse;
+
+function clampText(v: string | null, max: number): string | undefined {
+  if (v == null) return undefined;
+  return v.length > max ? v.slice(0, max) : v;
+}
 
 export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
   const type = params.get("type") ?? "grid";
-  const title = params.get("title") ?? "Pixabots";
-  const subtitle = params.get("subtitle") ?? undefined;
+  const title = clampText(params.get("title"), MAX_TITLE_LEN) ?? "Pixabots";
+  const subtitle = clampText(params.get("subtitle"), MAX_SUBTITLE_LEN);
 
   try {
     if (type === "single") {
@@ -31,7 +40,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const seed = params.get("seed") ?? title;
+    const seed = clampText(params.get("seed"), MAX_SEED_LEN) ?? title;
     const buffer = await generateOgImage({ type: "grid", title, subtitle, seed });
     return imageResponse(buffer, "image/png");
   } catch (e) {

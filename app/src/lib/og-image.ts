@@ -9,13 +9,11 @@ import {
   decode,
   isValidId,
 } from "@pixabots/core";
+import { FONTS_DIR, PARTS_DIR } from "@/lib/paths";
 
 const OG_W = 1200;
 const OG_H = 630;
 const NATIVE = 32;
-
-const FONTS_DIR = path.join(process.cwd(), "src", "lib", "fonts");
-const PARTS_DIR = path.join(process.cwd(), "public", "parts");
 
 let boldFont: opentype.Font | null = null;
 function getBoldFont() {
@@ -180,13 +178,3 @@ async function generateSingle(
     .toBuffer();
 }
 
-/** Resolve a pixabot ID to a "part1 · part2 · part3 · part4" string. */
-export function resolvePartsLabel(id: string): string {
-  const combo = decode(id);
-  return [
-    PARTS.eyes[combo.eyes].name,
-    PARTS.heads[combo.heads].name,
-    PARTS.body[combo.body].name,
-    PARTS.top[combo.top].name,
-  ].join(" · ");
-}

@@ -8,10 +8,10 @@ import {
   type PixabotCombo,
   type AnimFrame,
 } from "@pixabots/core";
+import { PARTS_DIR } from "@/lib/paths";
 
 const NATIVE_SIZE = 32;
 const ANIM_PAD = 4;
-const PARTS_DIR = path.join(process.cwd(), "public", "parts");
 const ANIM_MAX_SIZE = 480;
 
 export class RenderError extends Error {
