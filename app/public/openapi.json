@@ -51,6 +51,13 @@
             "required": false,
             "description": "Animation speed multiplier (0.25–4). Only applies when `animated=true`.",
             "schema": { "type": "number", "minimum": 0.25, "maximum": 4, "default": 1 }
+          },
+          {
+            "name": "webp",
+            "in": "query",
+            "required": false,
+            "description": "Set to `true` (together with `animated=true`) to get a lossless animated WebP instead of GIF. Smaller files, preserves alpha.",
+            "schema": { "type": "string", "enum": ["true", "false"] }
           }
         ],
         "responses": {
@@ -62,6 +69,9 @@
               },
               "image/gif": {
                 "schema": { "type": "string", "format": "binary", "description": "Animated GIF (when animated=true)" }
+              },
+              "image/webp": {
+                "schema": { "type": "string", "format": "binary", "description": "Animated WebP (when animated=true and webp=true)" }
               },
               "application/json": {
                 "schema": {
@@ -210,6 +220,13 @@
             "required": false,
             "description": "Forwarded to the redirect target. Animation speed multiplier (0.25–4).",
             "schema": { "type": "number", "minimum": 0.25, "maximum": 4, "default": 1 }
+          },
+          {
+            "name": "webp",
+            "in": "query",
+            "required": false,
+            "description": "Forwarded to the redirect target. Set to `true` with `animated=true` for lossless animated WebP.",
+            "schema": { "type": "string", "enum": ["true", "false"] }
           },
           {
             "name": "format",

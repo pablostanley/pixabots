@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 
 export const OPTIONS = optionsResponse;
 
-const FORWARDED_PARAMS = ["size", "animated", "speed"] as const;
+const FORWARDED_PARAMS = ["size", "animated", "speed", "webp"] as const;
 
 export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams;

@@ -112,11 +112,14 @@ async function renderFrameNative(
   return sharp(png).raw().toBuffer();
 }
 
-/** Render an animated GIF of the bounce animation. */
+export type AnimatedFormat = "gif" | "webp";
+
+/** Render an animated GIF or WebP of the bounce animation. */
 export async function renderAnimatedPixabot(
   combo: PixabotCombo,
   size: number = NATIVE_SIZE,
-  speed: number = 1
+  speed: number = 1,
+  format: AnimatedFormat = "gif"
 ): Promise<Buffer> {
   const layers = await loadLayers(combo);
 
@@ -154,17 +157,24 @@ export async function renderAnimatedPixabot(
   const delay = Math.max(20, Math.round(FRAME_MS / speed));
   const delays = ANIM_FRAMES.map(() => delay);
 
-  return sharp(targetStripped, {
+  const pipeline = sharp(targetStripped, {
     raw: {
       width: size,
       height: targetStripHeight,
       channels: 4,
       pageHeight: size,
     } as sharp.CreateRaw,
-  })
-    // effort: 10 maxes palette optimization — slower encode, smaller file.
-    // Immutable cached URL means render happens once per unique URL, then
-    // the CDN serves forever. Worth the extra ms at encode time.
-    .gif({ delay: delays, loop: 0, effort: 10 })
-    .toBuffer();
+  });
+
+  if (format === "webp") {
+    // Animated WebP: alpha preserved, smaller than GIF, better quality.
+    return pipeline
+      .webp({ delay: delays, loop: 0, lossless: true, effort: 6 })
+      .toBuffer();
+  }
+
+  // effort: 10 maxes palette optimization — slower encode, smaller file.
+  // Immutable cached URL means render happens once per unique URL, then
+  // the CDN serves forever. Worth the extra ms at encode time.
+  return pipeline.gif({ delay: delays, loop: 0, effort: 10 }).toBuffer();
 }
