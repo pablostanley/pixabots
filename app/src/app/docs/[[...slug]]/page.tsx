@@ -50,7 +50,12 @@ export async function generateMetadata({
   const description =
     page.data.description ??
     "Pixabots documentation — API reference, SDK guide, and parts catalog.";
-  const url = `${SITE_URL}/docs/${slug?.join("/") ?? ""}`;
+  const slugStr = slug?.join("/") ?? "";
+  const url = `${SITE_URL}/docs/${slugStr}`;
+
+  const ogTitle = `Pixabots ${title}`;
+  const seed = `docs-${slugStr || "index"}`;
+  const ogUrl = `${SITE_URL}/api/og?type=grid&title=${encodeURIComponent(ogTitle)}&seed=${encodeURIComponent(seed)}`;
 
   return {
     title,
@@ -61,20 +66,13 @@ export async function generateMetadata({
       description,
       url,
       siteName: "Pixabots",
-      images: [
-        {
-          url: `${SITE_URL}/api/pixabot/2156?size=960`,
-          width: 960,
-          height: 960,
-          alt: "Pixabot 2156",
-        },
-      ],
+      images: [{ url: ogUrl, width: 1200, height: 630, alt: ogTitle }],
     },
     twitter: {
-      card: "summary",
+      card: "summary_large_image",
       title: `${title} — Pixabots`,
       description,
-      images: [`${SITE_URL}/api/pixabot/2156?size=480`],
+      images: [ogUrl],
       creator: "@pablostanley",
     },
   };
