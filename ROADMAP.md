@@ -32,6 +32,7 @@
 - [x] Sitemap + robots.txt
 - [x] Home autoplay — animation starts on mount, no checkerboard bg
 - [x] Browse modal — clicking a card opens a dialog at `/bot/{id}`, ESC/outside dismisses back to grid, refresh shows full page
+- [x] API hardening — 60 sizes (multiple of 32 up to 1920), animations all sizes, `/random` forwards `animated`/`speed`, strict input validation (size/speed return 400 on invalid), render memory cut ~8x at large sizes, OpenAPI gaps closed (/api/og documented)
 
 ## Up Next
 
