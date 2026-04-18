@@ -76,6 +76,12 @@ export function Creator({ initialId }: { initialId: string | null }) {
   const reducedMotion = usePrefersReducedMotion();
   const [animating, setAnimating] = useState(true);
   const [downloadOpen, setDownloadOpen] = useState(false);
+  const [locks, setLocks] = useState<Record<PartCategory, boolean>>({
+    eyes: false,
+    heads: false,
+    body: false,
+    top: false,
+  });
   const [copied, share] = useShareOrCopy();
 
   const pixabotId = encode(selection);
@@ -167,7 +173,20 @@ export function Creator({ initialId }: { initialId: string | null }) {
     updateSelection({ ...selRef.current, [category]: index });
   };
 
-  const shuffle = () => updateSelection(randomCombo());
+  const shuffle = () => {
+    const rand = randomCombo();
+    const prev = selRef.current;
+    updateSelection({
+      eyes: locks.eyes ? prev.eyes : rand.eyes,
+      heads: locks.heads ? prev.heads : rand.heads,
+      body: locks.body ? prev.body : rand.body,
+      top: locks.top ? prev.top : rand.top,
+    });
+  };
+
+  const toggleLock = (category: PartCategory) => {
+    setLocks((l) => ({ ...l, [category]: !l[category] }));
+  };
 
   const copyShareUrl = () => {
     share({
@@ -305,27 +324,42 @@ export function Creator({ initialId }: { initialId: string | null }) {
 
       {/* Part selectors — 2x2 on mobile, 4 in a row on desktop */}
       <div className="grid grid-cols-2 sm:flex gap-1 w-full max-w-[504px]">
-        {layerOrder.map((category) => (
-          <div key={category} className="flex flex-1 min-w-0">
-            <Button variant="outline" size="lg" onClick={() => cycle(category)} className="rounded-none border-r-0 flex-1 text-sm">
-              {layerLabel[category]}
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon-lg" className="rounded-none shrink-0 text-muted-foreground">
-                  <PixelIcon name="chevron-down" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {parts[category].map((option, i) => (
-                  <DropdownMenuItem key={option.name} onClick={() => pick(category, i)} className={`text-sm ${i === selection[category] ? "bg-accent" : ""}`}>
-                    {option.name}
+        {layerOrder.map((category) => {
+          const locked = locks[category];
+          return (
+            <div key={category} className="flex flex-1 min-w-0">
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => cycle(category)}
+                aria-pressed={locked}
+                className={`rounded-none border-r-0 flex-1 text-sm gap-1.5 ${
+                  locked ? "bg-foreground/10 border-foreground/60" : ""
+                }`}
+              >
+                {locked && <span aria-hidden="true" className="text-xs leading-none">●</span>}
+                {layerLabel[category]}
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="icon-lg" className={`rounded-none shrink-0 text-muted-foreground ${locked ? "border-foreground/60" : ""}`}>
+                    <PixelIcon name="chevron-down" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => toggleLock(category)} className="text-sm font-medium">
+                    {locked ? "Unlock" : "Lock"} {layerLabel[category]}
                   </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        ))}
+                  {parts[category].map((option, i) => (
+                    <DropdownMenuItem key={option.name} onClick={() => pick(category, i)} className={`text-sm ${i === selection[category] ? "bg-accent" : ""}`}>
+                      {option.name}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          );
+        })}
       </div>
 
       <ShuffleHint />
