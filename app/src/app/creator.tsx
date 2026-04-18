@@ -206,6 +206,9 @@ export function Creator({ initialId }: { initialId: string | null }) {
       case "p":
         toggleAnimation();
         break;
+      case "c":
+        copyShareUrl();
+        break;
       case "ArrowRight":
         e.preventDefault();
         cycle(layerOrder[0]);
