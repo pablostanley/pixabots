@@ -5,10 +5,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { PixelIcon } from "@/components/ui/pixel-icon";
+import { useScrollDirection } from "@/lib/use-scroll-direction";
 
 export function SiteHeader() {
   const [dark, setDark] = useState(true);
   const pathname = usePathname();
+  const { direction, scrolled } = useScrollDirection();
+  const hide = scrolled && direction === "down";
 
   useEffect(() => {
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -37,7 +40,11 @@ export function SiteHeader() {
   };
 
   return (
-    <header className="flex items-center gap-2 sm:gap-4 px-4 sm:px-6 h-12 border-b border-border text-sm">
+    <header
+      className={`sticky top-0 z-40 flex items-center gap-2 sm:gap-4 px-4 sm:px-6 h-12 border-b border-border text-sm transition-[transform,backdrop-filter,background-color] duration-200 motion-reduce:transition-none ${
+        hide ? "-translate-y-full" : "translate-y-0"
+      } ${scrolled ? "backdrop-blur bg-background/80" : "bg-background"}`}
+    >
       <Link href="/" className="font-bold text-lg tracking-wide hover:text-foreground transition-colors">
         Pixabots
       </Link>
