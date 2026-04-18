@@ -166,6 +166,16 @@
     from { opacity: 0; transform: translateX(-50%) translateY(2px); }
     to   { opacity: 1; transform: translateX(-50%) translateY(0); }
   }
+  @media (prefers-reduced-motion: no-preference) {
+    .part-pulse {
+      animation: part-pulse 180ms ease-out;
+    }
+  }
+  @keyframes part-pulse {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.015); }
+    100% { transform: scale(1); }
+  }
 }
 
 /* Terminal-core: Fumadocs overrides */
