@@ -1,31 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import { useScrollDirection } from "@/lib/use-scroll-direction";
+import { useTheme } from "@/lib/use-theme";
 
 export function SiteHeader() {
-  const [dark, setDark] = useState(true);
   const pathname = usePathname();
   const { direction, scrolled } = useScrollDirection();
   const hide = scrolled && direction === "down";
-
-  useEffect(() => {
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    setDark(prefersDark);
-    document.documentElement.classList.toggle("dark", prefersDark);
-  }, []);
-
-  const toggleTheme = () => {
-    setDark((d) => {
-      const next = !d;
-      document.documentElement.classList.toggle("dark", next);
-      return next;
-    });
-  };
+  const [dark, toggleTheme] = useTheme();
 
   const navLink = (href: string, label: string, className?: string) => {
     const isActive = pathname === href;
