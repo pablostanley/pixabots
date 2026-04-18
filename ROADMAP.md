@@ -53,6 +53,7 @@
 - [x] Bot-page embed tabs — URL / HTML / Markdown / React snippets with copy buttons on `/bot/[id]`. (PR #31)
 - [x] PWA manifest — `app/manifest.ts` emits `/manifest.webmanifest`; installable on iOS and Android with the pixabot icon. (PR #32)
 - [x] First-shuffle hint — coachmark above ID bar dismissed on first selection change, persisted via localStorage. (PR #33)
+- [x] Lock layers — per-category lock gate on shuffle, toggled from each category dropdown. (PR #34)
 
 ## Up Next
 
@@ -104,7 +105,6 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 - [ ] **Background color picker** — transparent by default, but let users pick a color for exports
 - [ ] **Custom pixel tooltips** — replace native browser tooltips with styled ones using our pixel font
 - [ ] **Loading state** — skeleton/shimmer on creator canvas and browse grid while first images load
-- [ ] **Lock layers** — lock icon per category so shuffle keeps locked layers fixed (shuffle "eyes only", etc.)
 - [ ] **Animated part transitions** — smooth fade/slide between parts instead of instant swap
 - [ ] **Mobile bottom sheet** — use a bottom sheet instead of centered dialog on mobile for bot detail
 - [ ] **Sticky header with scroll behavior** — hide on scroll down, reveal on scroll up; backdrop blur

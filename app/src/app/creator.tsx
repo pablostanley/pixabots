@@ -97,6 +97,7 @@ export function Creator({ initialId }: { initialId: string | null }) {
   const selRef = useRef(selection);
   const mountedRef = useRef(false);
   const animatingRef = useRef(true);
+  const konamiRef = useRef<string[]>([]);
 
   async function loadAndDraw(sel: Record<PartCategory, number>) {
     const gen = ++genRef.current;
@@ -217,9 +218,35 @@ export function Creator({ initialId }: { initialId: string | null }) {
     link.click();
   };
 
+  const KONAMI = [
+    "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown",
+    "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight",
+    "b", "a",
+  ];
+
+  const runKonami = () => {
+    let count = 0;
+    const interval = setInterval(() => {
+      updateSelection(randomCombo());
+      count++;
+      if (count >= 20) clearInterval(interval);
+    }, 80);
+  };
+
   // Empty deps is safe — cycle/shuffle/toggleAnimation all use refs internally
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+    // Track Konami sequence in parallel with normal shortcuts
+    const seq = konamiRef.current;
+    seq.push(e.key);
+    if (seq.length > KONAMI.length) seq.shift();
+    if (seq.length === KONAMI.length && seq.every((k, i) => k === KONAMI[i])) {
+      konamiRef.current = [];
+      runKonami();
+      return;
+    }
+
     switch (e.key) {
       case " ":
         e.preventDefault();
