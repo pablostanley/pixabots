@@ -22,6 +22,10 @@
 - [x] designteam.app integration merged — PR #3 merged, `@pixabots/core` swapped in as real dep
 - [x] Housekeeping — removed GeistPixel, @phosphor-icons/react, fixed AGENTS.md, generate-grids.mjs
 - [x] Clearer ID bar UX — redesigned with labeled PNG/GIF/JSON links and Copy URL button
+- [x] Browse page — `/browse` grid, animated pixabots, 2x speed on hover, infinite scroll, hover actions
+- [x] Speed param on animated API — `?speed=0.25–4` multiplier
+- [x] Feet-stay-planted in animated GIF — body bottom row fixed
+- [x] useCopyToClipboard shared hook — reused across home + browse
 
 ## Up Next
 
@@ -31,7 +35,6 @@ Pick from Polish or Ideas below.
 
 - [ ] **Background color picker** — transparent by default, but let users pick a color for exports
 - [ ] **Custom pixel tooltips** — replace native browser tooltips with styled ones using our pixel font
-- [ ] **Body clipping in animated GIF** — client-side animation keeps the body's bottom row planted ("feet stay planted"), but the GIF renderer doesn't replicate this
 - [x] **Active nav state** — header highlights current page
 - [ ] **Loading state** — show a skeleton or spinner while the canvas loads images on first render
 - [x] **Keyboard shortcuts** — space to shuffle, P to play, arrows to cycle parts
@@ -49,8 +52,8 @@ Pick from Polish or Ideas below.
 - [ ] Batch API — generate multiple pixabots in one request
 - [ ] SVG output — vector version alongside PNG
 - [ ] WebP animated output — smaller than GIF, better quality
-- [ ] Gallery page — browse all 9,856 combinations, search/filter by parts
 - [ ] Embed widget — `<script>` tag or iframe for embedding a pixabot in any site
+- [ ] Browse filters — filter by part (e.g., all bots with glasses)
 - [ ] GitHub avatar integration — use as profile pic via URL
 - [ ] Rate limiting — protect the API from abuse (especially animated endpoint)
 - [ ] Analytics — track which pixabots are most popular, API usage stats
