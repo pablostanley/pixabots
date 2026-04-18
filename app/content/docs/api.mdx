@@ -93,6 +93,41 @@ curl https://pixabots.com/api/pixabot/zzzz
 
 ---
 
+## GET /api/pixabot/batch
+
+Get metadata (id, combo, parts, png, gif URLs) for many pixabots in one JSON response.
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ids` | query | — | Comma-separated list of up to 100 IDs. Mutually exclusive with `count`. |
+| `count` | query | — | Return N random pixabots (1–100). Mutually exclusive with `ids`. |
+| `size` | query | `128` | Size used in the returned `png` / `gif` URLs. |
+
+```bash
+curl "https://pixabots.com/api/pixabot/batch?ids=2156,f76a,0000"
+curl "https://pixabots.com/api/pixabot/batch?count=20&size=240"
+```
+
+```json
+{
+  "count": 3,
+  "pixabots": [
+    {
+      "id": "2156",
+      "combo": { "eyes": 2, "heads": 1, "body": 5, "top": 6 },
+      "parts": { "eyes": "glasses", "heads": "blob", "body": "wings", "top": "mohawk" },
+      "png": "https://pixabots.com/api/pixabot/2156?size=128",
+      "gif": "https://pixabots.com/api/pixabot/2156?size=128&animated=true"
+    },
+    ...
+  ]
+}
+```
+
+With `ids`, responses are cached immutably (same input → same output). With `count`, `Cache-Control: no-store` so each call returns a fresh batch.
+
+---
+
 ## GET /api/pixabot/random
 
 Returns a random pixabot. Redirects (302) to the deterministic URL so the image gets cached. The redirect itself is sent with `Cache-Control: no-store` so each call returns a different bot.
