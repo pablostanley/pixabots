@@ -50,6 +50,7 @@
 - [x] Theme without useEffect — `useTheme` hook (useSyncExternalStore) + pre-hydration script kills flash-of-wrong-theme; localStorage persistence added. (PR #28)
 - [x] D opens Download menu — controlled DropdownMenu in creator + `D` keydown. (PR #29)
 - [x] Drag-to-dismiss — mobile bottom sheet can be swiped down to close; 80px / 0.5 px/ms threshold, scrollTop gate. No new deps. (PR #30)
+- [x] Bot-page embed tabs — URL / HTML / Markdown / React snippets with copy buttons on `/bot/[id]`. (PR #31)
 
 ## Up Next
 
@@ -110,7 +111,6 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 - [ ] **"You might also like"** — on bot page, show 4 one-part-different variants
 - [ ] **Compare view** — side-by-side two pixabots at `?compare=2156,f76a`
 - [ ] **Gallery mode** — fullscreen single-bot view with background color options, big animation
-- [ ] **Embed code on bot page** — tabbed snippet generator: HTML / Markdown / React / URL
 
 ### Speed & perf
 - [ ] **Prefetch bot detail on browse hover** — Next.js `<Link prefetch>` already partial; extend to PNG preload
