@@ -42,6 +42,7 @@
 - [x] Animated copy feedback — check icon pops via `animate-in zoom-in-50 fade-in-0`; creator label slides + fades to "Copied!". Auto-resets 1.5s later. (PR #20)
 - [x] Web Share API — `useShareOrCopy` calls `navigator.share()` when available (mobile native sheet), falls back to clipboard. Old `useCopyToClipboard` removed. (PR #21)
 - [x] `prefers-reduced-motion` — creator freezes to static frame; browse serves static PNG + skips fast GIF; bot detail + 404 use `<picture>` with media source so the browser swaps to PNG server-side. (PR #22)
+- [x] aria-live shuffle announcement — sr-only polite region in creator reads out the new ID + parts on every selection change. (PR #23)
 
 ## Up Next
 
@@ -65,9 +66,8 @@ Prioritized tickets to work through. Each is self-contained and shippable.
 
 ### 9. ~~a11y — `prefers-reduced-motion`~~ — **shipped (PR #22)**
 
-### 10. a11y — aria-live shuffle announcement
-Visually-hidden `aria-live="polite"` region announces the new ID after each shuffle ("Pixabot 2156, glasses blob wings mohawk"). Fires on both creator and browse-hover.
-- **Acceptance:** VoiceOver/NVDA speaks the new ID within ~1s of shuffle
+### 10. ~~a11y — aria-live shuffle announcement~~ — **shipped (PR #23)**
+Browse-hover announcement deemed out of scope: hovering each card in a grid of 60 would spam the screen reader. Kept to creator where intent matches user action.
 
 ### 11. a11y — focus ring audit
 Every interactive element (buttons, links, cards, dialog close, dropdown triggers) has a visible keyboard-only focus ring at AA contrast in both themes.
