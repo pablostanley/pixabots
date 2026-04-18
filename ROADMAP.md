@@ -64,6 +64,7 @@
 - [x] Browse skeleton — muted pulse layer until each card's GIF loads; motion-safe pulse. (PR #42)
 - [x] Creator boot fade — motion-safe soft reveal on mount. (PR #43)
 - [x] Pixel tooltips — CSS-only `data-tooltip` with styled popover + fade; icon buttons swapped from `title=`. (PR #44)
+- [x] Opt-in SFX — ♪ header toggle + Web Audio square-wave blips on shuffle/copy/cycle, off by default. (PR #45)
 
 ## Up Next
 
@@ -141,7 +142,6 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 ### Delight
 - [ ] **Easter-egg IDs** — specific IDs trigger special animations (`pxlb` → author credit). Konami rapid-shuffle is done in PR #35.
 - [ ] **Pixel-by-pixel materialize animation** — first-paint progressively reveals the character (simple creator fade shipped in PR #43; full materialize still open)
-- [ ] **Opt-in 8-bit sound effects** — chiptune blip on shuffle/copy, toggled off by default
 
 ### Done
 - [x] **Active nav state** — header highlights current page
