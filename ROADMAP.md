@@ -65,6 +65,7 @@
 - [x] Creator boot fade — motion-safe soft reveal on mount. (PR #43)
 - [x] Pixel tooltips — CSS-only `data-tooltip` with styled popover + fade; icon buttons swapped from `title=`. (PR #44)
 - [x] Opt-in SFX — ♪ header toggle + Web Audio square-wave blips on shuffle/copy/cycle, off by default. (PR #45)
+- [x] Service worker — cache-first for `/api/pixabot/*` (excl random) + `/parts/*`; instant repeat loads and partial offline. (PR #46)
 
 ## Up Next
 
@@ -125,7 +126,6 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 - [ ] **Preload sprite parts on creator mount** — 42 tiny PNGs fetched in parallel so first shuffle is instant
 - [ ] **Next shuffle preloaded** — generate+preload the next random ID behind the scenes; shuffle becomes 0ms
 - [ ] **WebP animated output** — smaller than GIF with alpha support (see Ideas)
-- [ ] **Service worker** — cache API responses and parts for repeat visits / offline
 
 ### Messaging & copy
 - [ ] **Personality in empty states / 404** — "this pixabot got lost" + random pixabot on 404 page
