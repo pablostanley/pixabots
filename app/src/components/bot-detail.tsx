@@ -71,18 +71,18 @@ export function BotDetail({ id }: { id: string }) {
         </dl>
 
         <div className="flex flex-wrap gap-2 mt-2">
-          <ActionButton href={`/?id=${id}`} icon="pen-square" label="Open in creator" />
+          <ActionButton href={`/?id=${id}`} icon="pen-square" label="Edit" />
           <ActionButton
             href={`/api/pixabot/${id}?size=960`}
             download={`pixabot-${id}.png`}
             icon="download"
-            label="Download PNG"
+            label="Get PNG"
           />
           <ActionButton
             href={`/api/pixabot/${id}?animated=true&size=480`}
             external
             icon="play"
-            label="Animated GIF"
+            label="Get GIF"
           />
         </div>
       </div>
