@@ -1,0 +1,79 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { isValidId } from "@pixabots/core";
+import { BotDetail } from "@/components/bot-detail";
+import { SITE_URL } from "@/lib/constants";
+
+export const metadata: Metadata = {
+  title: "Compare",
+  description: "Compare multiple pixabots side-by-side.",
+  alternates: { canonical: `${SITE_URL}/compare` },
+};
+
+const MAX_IDS = 6;
+
+function parseIds(raw: string | undefined): string[] {
+  if (!raw) return [];
+  return raw
+    .split(",")
+    .map((s) => s.trim().toLowerCase())
+    .filter((s) => isValidId(s))
+    .slice(0, MAX_IDS);
+}
+
+export default async function ComparePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ ids?: string }>;
+}) {
+  const { ids: raw } = await searchParams;
+  const ids = parseIds(raw);
+
+  if (ids.length === 0) {
+    return (
+      <main className="flex-1 flex flex-col items-center justify-center gap-4 p-6 text-center">
+        <h1 className="text-2xl font-bold">Compare pixabots</h1>
+        <p className="text-muted-foreground max-w-prose">
+          Pass two or more IDs in the URL, e.g.{" "}
+          <Link href="/compare?ids=2156,f76a" className="font-mono text-foreground underline">
+            /compare?ids=2156,f76a
+          </Link>
+          .
+        </p>
+        <div className="flex gap-2">
+          <Link href="/browse" className="px-3 py-2 border border-border hover:bg-muted text-sm">
+            Browse
+          </Link>
+          <Link href="/favorites" className="px-3 py-2 border border-border hover:bg-muted text-sm">
+            Favorites
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
+  const colClass =
+    ids.length === 1
+      ? "grid-cols-1 max-w-[504px]"
+      : ids.length === 2
+      ? "grid-cols-1 sm:grid-cols-2 max-w-[1040px]"
+      : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 max-w-[1600px]";
+
+  return (
+    <main className="flex-1 p-4 sm:p-6 flex flex-col items-center">
+      <header className="w-full max-w-[1600px] flex items-center justify-between mb-4 px-1">
+        <h1 className="text-lg font-bold">
+          Comparing {ids.length} pixabot{ids.length === 1 ? "" : "s"}
+        </h1>
+        <Link href="/browse" className="text-sm text-muted-foreground hover:text-foreground">
+          back to browse
+        </Link>
+      </header>
+      <div className={`w-full grid gap-6 ${colClass}`}>
+        {ids.map((id) => (
+          <BotDetail key={id} id={id} />
+        ))}
+      </div>
+    </main>
+  );
+}

@@ -12,6 +12,14 @@ export default function FavoritesPage() {
       <header className="flex items-center gap-2 mb-3 sm:mb-4 px-2">
         <h1 className="text-lg font-bold">Favorites</h1>
         <span className="text-sm text-muted-foreground">{ids.length}</span>
+        {ids.length >= 2 && (
+          <Link
+            href={`/compare?ids=${ids.slice(0, 6).join(",")}`}
+            className="ml-auto px-3 py-1.5 border border-border hover:bg-muted transition-colors text-sm"
+          >
+            Compare
+          </Link>
+        )}
       </header>
 
       {ids.length === 0 ? (
