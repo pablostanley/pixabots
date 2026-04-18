@@ -307,8 +307,17 @@ export function Creator({ initialId }: { initialId: string | null }) {
       <div className="border border-border px-3 py-2 sm:px-4 sm:py-3 flex flex-wrap items-center gap-2 text-sm w-full max-w-[504px]">
         <span className="font-mono text-foreground">{pixabotId}</span>
         <button onClick={copyShareUrl} className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer flex items-center gap-1">
-          <PixelIcon name={copied ? "check" : "copy"} className="size-4" />
-          {copied ? "Copied!" : "Share"}
+          <PixelIcon
+            key={copied ? "copied" : "idle"}
+            name={copied ? "check" : "copy"}
+            className={`size-4 ${copied ? "animate-in zoom-in-50 fade-in-0 duration-200" : ""}`}
+          />
+          <span
+            key={copied ? "c" : "i"}
+            className={`${copied ? "text-foreground animate-in fade-in-0 slide-in-from-bottom-1 duration-200" : ""}`}
+          >
+            {copied ? "Copied!" : "Share"}
+          </span>
         </button>
         <div className="flex items-center gap-2 ml-auto">
           <a href={apiUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
