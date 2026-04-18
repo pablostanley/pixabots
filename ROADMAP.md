@@ -52,6 +52,7 @@
 - [x] Drag-to-dismiss — mobile bottom sheet can be swiped down to close; 80px / 0.5 px/ms threshold, scrollTop gate. No new deps. (PR #30)
 - [x] Bot-page embed tabs — URL / HTML / Markdown / React snippets with copy buttons on `/bot/[id]`. (PR #31)
 - [x] PWA manifest — `app/manifest.ts` emits `/manifest.webmanifest`; installable on iOS and Android with the pixabot icon. (PR #32)
+- [x] First-shuffle hint — coachmark above ID bar dismissed on first selection change, persisted via localStorage. (PR #33)
 
 ## Up Next
 
@@ -123,7 +124,6 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 
 ### Messaging & copy
 - [ ] **Personality in empty states / 404** — "this pixabot got lost" + random pixabot on 404 page
-- [ ] **First-shuffle hint** — tiny coachmark on first visit: "press SPACE to shuffle"
 - [ ] **Copy-button state polish** — animated check that fades back to copy icon, accompanied by "Copied URL"
 - [ ] **Error messages match voice** — API 400s stay plain, but UI error states use the pixel vibe
 - [ ] **Share via Web Share API on mobile** — native share sheet instead of copy-URL-only
