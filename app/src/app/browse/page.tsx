@@ -74,6 +74,7 @@ function BotCard({ bot }: { bot: BotCell }) {
             className={`absolute inset-0 w-full h-full object-cover transition-opacity ${showFast ? "opacity-100" : "opacity-0"}`}
             style={{ imageRendering: "pixelated" }}
             onLoad={() => setFastReady(true)}
+            onError={() => setFastReady(true)}
           />
         )}
       </div>
