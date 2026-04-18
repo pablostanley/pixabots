@@ -4,6 +4,7 @@ import { PixelIcon } from "@/components/ui/pixel-icon";
 import { BotNav } from "@/components/bot-nav";
 import { FavoriteButton } from "@/components/favorite-button";
 import { Tilt } from "@/components/tilt";
+import { GalleryDialog } from "@/components/gallery-dialog";
 
 type IconName = React.ComponentProps<typeof PixelIcon>["name"];
 
@@ -70,6 +71,7 @@ export function BotDetail({ id }: { id: string }) {
         <div className="flex items-center gap-2">
           <h2 className="text-3xl font-bold font-mono mr-auto">{id}</h2>
           <FavoriteButton id={id} />
+          <GalleryDialog id={id} />
           <BotNav id={id} />
         </div>
         <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
