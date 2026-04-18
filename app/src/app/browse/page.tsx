@@ -5,6 +5,7 @@ import Link from "next/link";
 import { randomId } from "@pixabots/core";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import { useShareOrCopy } from "@/lib/use-share-or-copy";
+import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 
 const BATCH_SIZE = 60;
 const FEATURED_EVERY = 8;
@@ -26,14 +27,17 @@ const DETAIL_SIZE = 480;
 
 function BotCard({ bot }: { bot: BotCell }) {
   const [copied, share] = useShareOrCopy();
+  const reducedMotion = usePrefersReducedMotion();
   const [fastRequested, setFastRequested] = useState(false);
   const [fastReady, setFastReady] = useState(false);
   const [hovered, setHovered] = useState(false);
   const prefetchedRef = useRef(false);
   const size = bot.featured ? DETAIL_SIZE : 240;
-  const animatedSrc = `/api/pixabot/${bot.id}?size=${size}&animated=true`;
+  const mainSrc = reducedMotion
+    ? `/api/pixabot/${bot.id}?size=${size}`
+    : `/api/pixabot/${bot.id}?size=${size}&animated=true`;
   const fastSrc = `/api/pixabot/${bot.id}?size=${size}&animated=true&speed=2`;
-  const showFast = hovered && fastReady;
+  const showFast = !reducedMotion && hovered && fastReady;
 
   const prefetchDetail = () => {
     if (prefetchedRef.current || size === DETAIL_SIZE) return;
@@ -69,20 +73,20 @@ function BotCard({ bot }: { bot: BotCell }) {
       }`}
       onMouseEnter={() => {
         setHovered(true);
-        setFastRequested(true);
+        if (!reducedMotion) setFastRequested(true);
         prefetchDetail();
       }}
       onMouseLeave={() => setHovered(false)}
     >
       <div className="relative aspect-square">
         <img
-          src={animatedSrc}
+          src={mainSrc}
           alt={`Pixabot ${bot.id}`}
           className={`absolute inset-0 w-full h-full object-cover transition-opacity ${showFast ? "opacity-0" : "opacity-100"}`}
           style={{ imageRendering: "pixelated" }}
           loading="lazy"
         />
-        {fastRequested && (
+        {!reducedMotion && fastRequested && (
           <img
             src={fastSrc}
             alt=""

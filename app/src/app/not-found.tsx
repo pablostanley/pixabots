@@ -6,14 +6,20 @@ export default function NotFound() {
   return (
     <main className="flex-1 flex flex-col items-center justify-center gap-6 p-6 text-center">
       <div className="border border-border p-3">
-        <img
-          src={`/api/pixabot/${id}?size=240&animated=true`}
-          alt="Lost pixabot"
-          width={240}
-          height={240}
-          className="block"
-          style={{ imageRendering: "pixelated" }}
-        />
+        <picture>
+          <source
+            media="(prefers-reduced-motion: reduce)"
+            srcSet={`/api/pixabot/${id}?size=240`}
+          />
+          <img
+            src={`/api/pixabot/${id}?size=240&animated=true`}
+            alt="Lost pixabot"
+            width={240}
+            height={240}
+            className="block"
+            style={{ imageRendering: "pixelated" }}
+          />
+        </picture>
       </div>
 
       <div className="flex flex-col gap-2">

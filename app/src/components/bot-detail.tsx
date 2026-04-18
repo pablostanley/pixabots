@@ -48,14 +48,20 @@ export function BotDetail({ id }: { id: string }) {
   return (
     <div className="flex flex-col gap-4 sm:gap-6">
       <div className="border border-border p-3">
-        <img
-          src={`/api/pixabot/${id}?size=480&animated=true`}
-          alt={`Pixabot ${id}`}
-          width={480}
-          height={480}
-          className="block w-full h-auto"
-          style={{ imageRendering: "pixelated" }}
-        />
+        <picture>
+          <source
+            media="(prefers-reduced-motion: reduce)"
+            srcSet={`/api/pixabot/${id}?size=480`}
+          />
+          <img
+            src={`/api/pixabot/${id}?size=480&animated=true`}
+            alt={`Pixabot ${id}`}
+            width={480}
+            height={480}
+            className="block w-full h-auto"
+            style={{ imageRendering: "pixelated" }}
+          />
+        </picture>
       </div>
 
       <div className="flex flex-col gap-3">

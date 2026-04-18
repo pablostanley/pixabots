@@ -7,6 +7,7 @@ import { encode, decode, isValidId, randomCombo, ANIM_FRAMES, FRAME_MS, type Ani
 import { Button } from "@/components/ui/button";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import { useShareOrCopy } from "@/lib/use-share-or-copy";
+import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -71,6 +72,7 @@ export function Creator({ initialId }: { initialId: string | null }) {
     if (initialId && isValidId(initialId)) return decode(initialId);
     return randomCombo();
   });
+  const reducedMotion = usePrefersReducedMotion();
   const [animating, setAnimating] = useState(true);
   const [copied, share] = useShareOrCopy();
 
@@ -105,6 +107,12 @@ export function Creator({ initialId }: { initialId: string | null }) {
 
   function startAnimation() {
     if (intervalRef.current) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      animatingRef.current = false;
+      setAnimating(false);
+      if (canvasRef.current) drawOnCanvas(canvasRef.current, imagesRef.current);
+      return;
+    }
     frameRef.current = 0;
     intervalRef.current = setInterval(() => {
       if (canvasRef.current) {
