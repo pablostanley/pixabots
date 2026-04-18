@@ -71,6 +71,7 @@
 - [x] Shuffle hint position — moved below the ID bar so actions lead. (PR #49)
 - [x] Canvas pulse on part change — subtle 180ms scale pulse on shuffle/cycle/pick. (PR #50)
 - [x] Special-ID captions — small note on BotDetail for curated IDs (2156, 1337, 0000, f76a, 0001). (PR #51)
+- [x] WebP animated output — `?webp=true` on API returns animated WebP via Sharp; smaller + alpha preserved. Random forwards it. Docs + OpenAPI synced. (PR #52)
 
 ## Up Next
 
@@ -162,7 +163,6 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 - [ ] Social cards — `GET /api/pixabot/{id}/og` for Open Graph images with name/title
 - [ ] Batch API — generate multiple pixabots in one request
 - [ ] SVG output — vector version alongside PNG
-- [ ] WebP animated output — smaller than GIF, better quality
 - [ ] Embed widget — `<script>` tag or iframe for embedding a pixabot in any site
 - [ ] Browse filters — filter by part (e.g., all bots with glasses)
 - [ ] GitHub avatar integration — use as profile pic via URL
