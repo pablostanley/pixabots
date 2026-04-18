@@ -46,7 +46,7 @@ function BotCard({ bot }: { bot: BotCell }) {
 
   return (
     <div
-      className={`group bg-card border border-border overflow-hidden ${
+      className={`group relative bg-card border border-border overflow-hidden ${
         bot.featured ? "sm:col-span-2 sm:row-span-2" : ""
       }`}
       onMouseEnter={() => setHovered(true)}
@@ -69,29 +69,32 @@ function BotCard({ bot }: { bot: BotCell }) {
         />
       </Link>
 
-      <div className="flex items-center gap-1 p-1 sm:max-h-0 sm:overflow-hidden sm:group-hover:max-h-12 sm:group-hover:p-1.5 transition-all duration-200">
+      {/* Mobile: below image. Desktop: absolute overlay, bottom-aligned, hover reveal */}
+      <div className="flex items-center gap-1 p-1 sm:hidden">
         <span className="font-mono text-xs text-muted-foreground mr-auto">{bot.id}</span>
-        <button
-          onClick={copy}
-          className="size-6 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer"
-          title="Share"
-        >
+        <button onClick={copy} className="size-6 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" title="Share">
           <PixelIcon name={copied ? "check" : "copy"} className="size-3" />
         </button>
-        <button
-          onClick={download}
-          className="size-6 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer"
-          title="Download"
-        >
+        <button onClick={download} className="size-6 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" title="Download">
           <PixelIcon name="download" className="size-3" />
         </button>
-        <Link
-          href={`/?id=${bot.id}`}
-          className="size-6 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors"
-          title="Edit"
-        >
+        <Link href={`/?id=${bot.id}`} className="size-6 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors" title="Edit">
           <PixelIcon name="pen-square" className="size-3" />
         </Link>
+      </div>
+      <div className="hidden sm:flex absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto items-end p-2 bg-gradient-to-t from-background/90 via-background/40 to-transparent">
+        <div className="flex items-center gap-1 w-full">
+          <span className="font-mono text-xs text-foreground mr-auto">{bot.id}</span>
+          <button onClick={copy} className="size-7 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" title="Share">
+            <PixelIcon name={copied ? "check" : "copy"} className="size-3.5" />
+          </button>
+          <button onClick={download} className="size-7 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" title="Download">
+            <PixelIcon name="download" className="size-3.5" />
+          </button>
+          <Link href={`/?id=${bot.id}`} className="size-7 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors" title="Edit">
+            <PixelIcon name="pen-square" className="size-3.5" />
+          </Link>
+        </div>
       </div>
     </div>
   );
@@ -119,7 +122,7 @@ export default function BrowsePage() {
 
   return (
     <main className="flex-1 p-2 sm:p-4">
-      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-1 sm:gap-2" style={{ gridAutoFlow: "dense" }}>
+      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4" style={{ gridAutoFlow: "dense" }}>
         {bots.map((bot) => (
           <BotCard key={bot.id} bot={bot} />
         ))}
