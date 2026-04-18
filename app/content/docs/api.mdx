@@ -3,7 +3,7 @@ title: API
 description: REST API for fetching pixabot images, animations, and metadata
 ---
 
-All endpoints support CORS and return immutable cache headers for deterministic URLs.
+All endpoints are **CORS-enabled** (`Access-Control-Allow-Origin: *`) and return immutable cache headers for deterministic URLs. You can embed pixabots directly from any site — no proxy, no key, no auth.
 
 ## GET /api/pixabot/\{id\}
 
@@ -14,9 +14,9 @@ Returns a pixabot image or metadata.
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `id` | path | required | 4-char base36 pixabot ID (e.g. `2156`, `f76a`) |
-| `size` | query | `128` | Image size in pixels: `32`, `64`, `128`, `240`, `480`, `960`, `1920` |
+| `size` | query | `128` | Image size in pixels. Any multiple of 32 between 32 and 1920 (60 sizes). Nearest-neighbor scaled from the 32×32 source. |
 | `format` | query | — | Set to `json` for metadata instead of image |
-| `animated` | query | — | Set to `true` for an animated GIF |
+| `animated` | query | — | Set to `true` for an animated GIF. Supports all sizes. |
 | `speed` | query | `1` | Animation speed multiplier (`0.25`–`4`). Only works with `animated=true`. |
 
 ### PNG (default)
@@ -24,20 +24,35 @@ Returns a pixabot image or metadata.
 ```bash
 curl https://pixabots.com/api/pixabot/2156 -o pixabot.png
 curl https://pixabots.com/api/pixabot/2156?size=480 -o pixabot-480.png
+curl https://pixabots.com/api/pixabot/2156?size=1920 -o pixabot-huge.png
 ```
+
+### Sizes
+
+Any multiple of 32 from 32 to 1920 works — that's **60 discrete sizes**. Common choices:
+
+| Size | Use case |
+|------|----------|
+| `32` | Native source, crispest for small avatars |
+| `64`, `96` | Favicons, dense lists |
+| `128`, `192`, `240` | Default avatars, chat UIs |
+| `256`, `384`, `480` | Profile cards, hero avatars |
+| `512`, `768`, `960` | High-DPI, retina displays |
+| `1920` | Posters, social banners |
 
 ### Animated GIF
 
-Add `?animated=true` to get the idle bounce animation:
+Add `?animated=true` to get the idle bounce animation. **All 60 sizes** are supported — including 1920px:
 
 ```bash
 curl https://pixabots.com/api/pixabot/2156?animated=true -o bounce.gif
 curl https://pixabots.com/api/pixabot/2156?animated=true&size=480 -o bounce-480.gif
+curl https://pixabots.com/api/pixabot/2156?animated=true&size=1920 -o bounce-huge.gif
 ```
 
 <img src="/api/pixabot/2156?animated=true&size=128" alt="Animated pixabot" width="128" height="128" style={{imageRendering: 'pixelated'}} />
 
-Animated GIFs are capped at **480px** max. The animation is 8 frames at 72ms (~14fps).
+The animation is 8 frames at 72ms (~14fps). Tune speed with `?speed=0.25` (slow-mo) through `?speed=4` (fast).
 
 ### JSON metadata
 
@@ -71,23 +86,90 @@ curl https://pixabots.com/api/pixabot/zzzz
 
 ## GET /api/pixabot/random
 
-Returns a random pixabot. Redirects to the deterministic URL so the image gets cached.
+Returns a random pixabot. Redirects (302) to the deterministic URL so the image gets cached. The redirect itself is sent with `Cache-Control: no-store` so each call returns a different bot.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `size` | query | `128` | Forwarded to the redirect target |
+| `animated` | query | — | Set to `true` for an animated GIF. Forwarded to the redirect target. |
+| `speed` | query | `1` | Forwarded to the redirect target. Animation speed multiplier (`0.25`–`4`). |
 | `format` | query | — | Set to `json` to get the random ID directly (no redirect) |
 
 ```bash
 curl -L https://pixabots.com/api/pixabot/random -o random.png
+curl -L "https://pixabots.com/api/pixabot/random?animated=true&size=480" -o random.gif
 curl https://pixabots.com/api/pixabot/random?format=json
 ```
 
 ---
 
+## Embedding
+
+Drop a pixabot anywhere — any site, any framework. CORS is wide open and images cache on the CDN forever.
+
+### HTML
+
+```html
+<img
+  src="https://pixabots.com/api/pixabot/2156?size=240"
+  alt="pixabot 2156"
+  width="240"
+  height="240"
+  style="image-rendering: pixelated"
+/>
+```
+
+### React / Next.js
+
+```tsx
+<img
+  src={`https://pixabots.com/api/pixabot/${id}?size=240&animated=true`}
+  alt={`pixabot ${id}`}
+  width={240}
+  height={240}
+  style={{ imageRendering: "pixelated" }}
+/>
+```
+
+### Markdown
+
+```markdown
+![pixabot](https://pixabots.com/api/pixabot/2156?size=240)
+```
+
+### CSS background
+
+```css
+.avatar {
+  background-image: url("https://pixabots.com/api/pixabot/2156?size=240");
+  image-rendering: pixelated;
+}
+```
+
+### Fetch from JS
+
+```js
+const res = await fetch("https://pixabots.com/api/pixabot/2156?format=json");
+const { png, gif, parts } = await res.json();
+```
+
+Always use `image-rendering: pixelated` in CSS so browsers don't antialias the pixel art.
+
 ## Caching
 
-Deterministic endpoints return `Cache-Control: public, max-age=31536000, immutable`. Same ID + size always produces the same image, so CDNs cache it forever. The `/random` endpoint never caches (302 redirect).
+Deterministic endpoints return `Cache-Control: public, max-age=31536000, immutable`. Same ID + size + flags always produces the same image, so CDNs cache it forever. The `/random` endpoint never caches (302 redirect, target cached normally).
+
+## CORS
+
+Every response includes:
+
+```
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: GET, OPTIONS
+Access-Control-Allow-Headers: Content-Type
+```
+
+Works from any origin, including `file://` for local prototyping.
 
 ## OpenAPI Spec
 

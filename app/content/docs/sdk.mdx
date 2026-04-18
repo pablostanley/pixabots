@@ -20,7 +20,7 @@ pnpm add @pixabots/core
 Convert between part indices and 4-char IDs:
 
 ```typescript
-import { encode, decode, resolve } from "@pixabots/core";
+import { encode, decode, resolve, resolveId } from "@pixabots/core";
 
 // Indices → ID
 const id = encode({ eyes: 2, heads: 1, body: 5, top: 6 });
@@ -30,8 +30,12 @@ const id = encode({ eyes: 2, heads: 1, body: 5, top: 6 });
 const combo = decode("2156");
 // { eyes: 2, heads: 1, body: 5, top: 6 }
 
-// ID → part names
+// ID → part names (combo)
 const parts = resolve(combo);
+// { eyes: "glasses", heads: "blob", body: "wings", top: "mohawk" }
+
+// ID → part names (one-step shortcut for decode + resolve)
+const direct = resolveId("2156");
 // { eyes: "glasses", heads: "blob", body: "wings", top: "mohawk" }
 ```
 

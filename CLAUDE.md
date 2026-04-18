@@ -51,7 +51,7 @@ designteam.app currently inlines `randomPixabotId()` — should swap for `@pixab
 
 ## API
 
-- `GET /api/pixabot/{id}` — PNG image. `?size=32|64|128|240|480|960`, `?format=json` for metadata, `?animated=true` for animated GIF (capped at 480px)
+- `GET /api/pixabot/{id}` — PNG image. `?size=<multiple-of-32 from 32 to 1920>` (60 sizes), `?format=json` for metadata, `?animated=true` for animated GIF (all sizes supported), `?speed=0.25–4` for animation speed
 - `GET /api/pixabot/random` — 302 redirect to random pixabot (or `?format=json`)
 - JSON responses include `png` and `gif` URLs
 - OpenAPI 3.1 spec at `/openapi.json`

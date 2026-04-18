@@ -12,7 +12,6 @@ import { PARTS_DIR } from "@/lib/paths";
 
 const NATIVE_SIZE = 32;
 const ANIM_PAD = 4;
-const ANIM_MAX_SIZE = 480;
 
 export class RenderError extends Error {
   status: number;
@@ -76,17 +75,16 @@ export async function renderPixabot(
     .toBuffer();
 }
 
-async function renderFrame(
+async function renderFrameNative(
   layers: Record<string, Buffer>,
   bodyTop: Buffer,
   bodyBottom: Buffer,
-  offsets: AnimFrame,
-  size: number
+  offsets: AnimFrame
 ): Promise<Buffer> {
   const composites: sharp.OverlayOptions[] = [];
 
   // Feet-stay-planted: body bottom row fixed at y=31, top 31 rows shifted.
-  // Matches client-side canvas logic in page.tsx.
+  // Matches client-side canvas logic in creator.tsx.
   for (const cat of LAYER_ORDER) {
     const off = Math.round(offsets[cat as keyof AnimFrame]);
     if (cat === "body" && off > 0) {
@@ -97,8 +95,8 @@ async function renderFrame(
     }
   }
 
-  // Two-step pipeline: sharp can't chain extract→resize on a created canvas
-  const native = await sharp({
+  // Two-step pipeline: sharp can't chain extract→raw on a created canvas
+  const png = await sharp({
     create: {
       width: NATIVE_SIZE,
       height: NATIVE_SIZE + ANIM_PAD,
@@ -111,10 +109,7 @@ async function renderFrame(
     .png()
     .toBuffer();
 
-  return sharp(native)
-    .resize(size, size, { kernel: sharp.kernel.nearest })
-    .raw()
-    .toBuffer();
+  return sharp(png).raw().toBuffer();
 }
 
 /** Render an animated GIF of the bounce animation. */
@@ -123,7 +118,6 @@ export async function renderAnimatedPixabot(
   size: number = NATIVE_SIZE,
   speed: number = 1
 ): Promise<Buffer> {
-  const cappedSize = Math.min(size, ANIM_MAX_SIZE);
   const layers = await loadLayers(combo);
 
   // Precompute body top/bottom once; reused across all frames with body offset > 0
@@ -137,21 +131,35 @@ export async function renderAnimatedPixabot(
       .png()
       .toBuffer(),
   ]);
-  const frameBuffers = await Promise.all(
-    ANIM_FRAMES.map((offsets) => renderFrame(layers, bodyTop, bodyBottom, offsets, cappedSize))
-  );
 
-  const stacked = Buffer.concat(frameBuffers);
-  const totalHeight = cappedSize * ANIM_FRAMES.length;
+  // Composite each frame at native 32x32. Stack all 8 (32x256 raw, ~32KB)
+  // and resize once. Cuts memory ~size² vs upscaling each frame independently.
+  const nativeFrames = await Promise.all(
+    ANIM_FRAMES.map((offsets) => renderFrameNative(layers, bodyTop, bodyBottom, offsets))
+  );
+  const nativeStacked = Buffer.concat(nativeFrames);
+  const nativeStripHeight = NATIVE_SIZE * ANIM_FRAMES.length;
+
+  const targetStripHeight = size * ANIM_FRAMES.length;
+  const targetStripped =
+    size === NATIVE_SIZE
+      ? nativeStacked
+      : await sharp(nativeStacked, {
+          raw: { width: NATIVE_SIZE, height: nativeStripHeight, channels: 4 },
+        })
+          .resize(size, targetStripHeight, { kernel: sharp.kernel.nearest })
+          .raw()
+          .toBuffer();
+
   const delay = Math.max(20, Math.round(FRAME_MS / speed));
   const delays = ANIM_FRAMES.map(() => delay);
 
-  return sharp(stacked, {
+  return sharp(targetStripped, {
     raw: {
-      width: cappedSize,
-      height: totalHeight,
+      width: size,
+      height: targetStripHeight,
       channels: 4,
-      pageHeight: cappedSize,
+      pageHeight: size,
     } as sharp.CreateRaw,
   })
     .gif({ delay: delays, loop: 0 })

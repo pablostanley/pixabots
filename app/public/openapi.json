@@ -28,8 +28,8 @@
             "name": "size",
             "in": "query",
             "required": false,
-            "description": "Image size in pixels",
-            "schema": { "type": "integer", "enum": [32, 64, 128, 240, 480, 960, 1920], "default": 128 }
+            "description": "Image size in pixels. Must be a multiple of 32 between 32 and 1920 (60 discrete sizes). Nearest-neighbor scaled from the 32×32 source — pixel-perfect at every step.",
+            "schema": { "type": "integer", "minimum": 32, "maximum": 1920, "multipleOf": 32, "default": 128 }
           },
           {
             "name": "format",
@@ -42,8 +42,8 @@
             "name": "animated",
             "in": "query",
             "required": false,
-            "description": "Set to `true` to get an animated GIF of the bounce animation instead of a static PNG.",
-            "schema": { "type": "string", "enum": ["true"] }
+            "description": "Set to `true` to get an animated GIF of the bounce animation instead of a static PNG. Any other value (or absent) returns a static PNG. All sizes supported.",
+            "schema": { "type": "string", "enum": ["true", "false"] }
           },
           {
             "name": "speed",
@@ -86,8 +86,10 @@
                         "top": { "type": "string", "example": "mohawk" }
                       }
                     },
-                    "png": { "type": "string", "format": "uri" }
-                  }
+                    "png": { "type": "string", "format": "uri", "description": "Static PNG URL at the requested size" },
+                    "gif": { "type": "string", "format": "uri", "description": "Animated GIF URL at the requested size" }
+                  },
+                  "required": ["id", "combo", "parts", "png", "gif"]
                 }
               }
             }
@@ -108,18 +110,106 @@
         }
       }
     },
+    "/api/og": {
+      "get": {
+        "operationId": "getOgImage",
+        "summary": "Generate an Open Graph image",
+        "description": "Returns a 1200×630 PNG suitable for social cards. Used by Pixabots' own pages but exposed publicly. Two layouts: a grid of seeded pixabots, or a single hero pixabot with title/subtitle.",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "description": "Layout. `grid` (default) renders a 4×2 grid seeded by the `seed` param. `single` renders one large pixabot, requires `id`.",
+            "schema": { "type": "string", "enum": ["grid", "single"], "default": "grid" }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "description": "Pixabot ID (required when `type=single`)",
+            "schema": { "type": "string", "pattern": "^[0-9a-z]{4}$", "example": "2156" }
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "required": false,
+            "description": "Headline text (max 60 chars, longer is truncated)",
+            "schema": { "type": "string", "maxLength": 60, "default": "Pixabots" }
+          },
+          {
+            "name": "subtitle",
+            "in": "query",
+            "required": false,
+            "description": "Subtitle text (max 100 chars, longer is truncated)",
+            "schema": { "type": "string", "maxLength": 100 }
+          },
+          {
+            "name": "seed",
+            "in": "query",
+            "required": false,
+            "description": "Seed for the grid layout's pixabot selection (max 80 chars). Defaults to `title` when omitted.",
+            "schema": { "type": "string", "maxLength": 80 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "1200×630 PNG image",
+            "content": {
+              "image/png": { "schema": { "type": "string", "format": "binary" } }
+            }
+          },
+          "400": {
+            "description": "Invalid type or missing/invalid id for single layout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "error": { "type": "string" } }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "OG render failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "error": { "type": "string" } }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/pixabot/random": {
       "get": {
         "operationId": "getRandomPixabot",
         "summary": "Get a random pixabot",
-        "description": "Returns a 302 redirect to a random pixabot's canonical URL (for caching). Use `?format=json` to get the random ID and metadata without redirect.",
+        "description": "Returns a 302 redirect to a random pixabot's canonical URL (for caching). The `size`, `animated`, and `speed` query params are forwarded to the redirect target. Use `?format=json` to get the random ID and metadata without redirect. The redirect itself is not cached (`Cache-Control: no-store`).",
         "parameters": [
           {
             "name": "size",
             "in": "query",
             "required": false,
-            "description": "Image size in pixels (forwarded to the redirect target)",
-            "schema": { "type": "integer", "enum": [32, 64, 128, 240, 480, 960, 1920], "default": 128 }
+            "description": "Image size in pixels, forwarded to the redirect target. Must be a multiple of 32 between 32 and 1920.",
+            "schema": { "type": "integer", "minimum": 32, "maximum": 1920, "multipleOf": 32, "default": 128 }
+          },
+          {
+            "name": "animated",
+            "in": "query",
+            "required": false,
+            "description": "Forwarded to the redirect target. Set to `true` for an animated GIF.",
+            "schema": { "type": "string", "enum": ["true", "false"] }
+          },
+          {
+            "name": "speed",
+            "in": "query",
+            "required": false,
+            "description": "Forwarded to the redirect target. Animation speed multiplier (0.25–4).",
+            "schema": { "type": "number", "minimum": 0.25, "maximum": 4, "default": 1 }
           },
           {
             "name": "format",
@@ -131,7 +221,27 @@
         ],
         "responses": {
           "302": {
-            "description": "Redirect to the random pixabot's canonical PNG URL"
+            "description": "Redirect to the random pixabot's canonical URL (PNG by default, or GIF if `animated=true`). Sent with `Cache-Control: no-store` so each call returns a different pixabot.",
+            "headers": {
+              "Location": {
+                "description": "Canonical URL of the chosen pixabot",
+                "schema": { "type": "string", "format": "uri" }
+              },
+              "Cache-Control": {
+                "schema": { "type": "string", "example": "no-store" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid forwarded size or speed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "error": { "type": "string" } }
+                }
+              }
+            }
           },
           "200": {
             "description": "Random pixabot metadata (when format=json)",
@@ -141,10 +251,28 @@
                   "type": "object",
                   "properties": {
                     "id": { "type": "string", "example": "d632" },
-                    "combo": { "type": "object" },
-                    "parts": { "type": "object" },
-                    "png": { "type": "string", "format": "uri" }
-                  }
+                    "combo": {
+                      "type": "object",
+                      "properties": {
+                        "eyes": { "type": "integer" },
+                        "heads": { "type": "integer" },
+                        "body": { "type": "integer" },
+                        "top": { "type": "integer" }
+                      }
+                    },
+                    "parts": {
+                      "type": "object",
+                      "properties": {
+                        "eyes": { "type": "string" },
+                        "heads": { "type": "string" },
+                        "body": { "type": "string" },
+                        "top": { "type": "string" }
+                      }
+                    },
+                    "png": { "type": "string", "format": "uri", "description": "Static PNG URL for the random pixabot" },
+                    "gif": { "type": "string", "format": "uri", "description": "Animated GIF URL for the random pixabot" }
+                  },
+                  "required": ["id", "combo", "parts", "png", "gif"]
                 }
               }
             }
