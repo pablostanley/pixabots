@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import { useKeydown } from "@/lib/use-keydown";
+import { usePaste } from "@/lib/use-paste";
 import { parts, layerOrder, layerLabel, type PartCategory } from "@/lib/parts";
 import { encode, decode, isValidId, randomCombo, resolve, ANIM_FRAMES, FRAME_MS, type AnimFrame } from "@pixabots/core";
 import { Button } from "@/components/ui/button";
@@ -459,6 +460,22 @@ export function Creator({
   }, []);
 
   useKeydown(handleKeyDown);
+
+  // Paste a URL or bare 4-char ID anywhere on the creator to jump to it.
+  // Ignores pastes inside form fields so hex-color input still works.
+  usePaste(
+    useCallback((e: ClipboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      const raw = e.clipboardData?.getData("text")?.trim();
+      if (!raw) return;
+      // Match bare id, ?id=XXXX, /bot/XXXX, or /?id=XXXX
+      const match = raw.match(/(?:^|[/=])([0-9a-z]{4})(?:[?&/#]|$)/i);
+      const candidate = match?.[1]?.toLowerCase();
+      if (!candidate || !isValidId(candidate)) return;
+      e.preventDefault();
+      updateSelection(decode(candidate));
+    }, [])
+  );
 
   const fxActive = hue !== 0 || saturate !== 1 || bg !== null;
 
