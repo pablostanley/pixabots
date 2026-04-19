@@ -427,6 +427,10 @@ export function Creator({
         e.preventDefault();
         setInspectorOpen((o) => !o);
         break;
+      case "r":
+        e.preventDefault();
+        randomPalette();
+        break;
       case "u":
         e.preventDefault();
         undo();
