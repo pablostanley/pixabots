@@ -33,6 +33,14 @@ const DISPLAY = 480;
 const NATIVE = 32;
 const PX = DISPLAY / NATIVE;
 
+function paletteQs(p: { hue: number; saturate: number }, hasExisting: boolean): string {
+  const parts: string[] = [];
+  if (p.hue !== 0) parts.push(`hue=${p.hue}`);
+  if (p.saturate !== 1) parts.push(`saturate=${p.saturate.toFixed(2)}`);
+  if (parts.length === 0) return "";
+  return (hasExisting ? "&" : "?") + parts.join("&");
+}
+
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -89,6 +97,9 @@ export function Creator({ initialId }: { initialId: string | null }) {
   const [hue, setHue] = useState(0);
   const hueRef = useRef(0);
   hueRef.current = hue;
+  const [saturate, setSaturate] = useState(1);
+  const saturateRef = useRef(1);
+  saturateRef.current = saturate;
   const [locks, setLocks] = useState<Record<PartCategory, boolean>>({
     eyes: false,
     heads: false,
@@ -247,9 +258,12 @@ export function Creator({ initialId }: { initialId: string | null }) {
       ctx.fillRect(0, 0, size, size);
     }
     ctx.imageSmoothingEnabled = false;
-    if (hueRef.current !== 0) {
+    const filters: string[] = [];
+    if (hueRef.current !== 0) filters.push(`hue-rotate(${hueRef.current}deg)`);
+    if (saturateRef.current !== 1) filters.push(`saturate(${saturateRef.current})`);
+    if (filters.length) {
       // Canvas filter applies to subsequent drawImage calls. Alpha preserved.
-      ctx.filter = `hue-rotate(${hueRef.current}deg)`;
+      ctx.filter = filters.join(" ");
     }
     for (const category of layerOrder) {
       const img = imagesRef.current[category];
@@ -372,7 +386,13 @@ export function Creator({ initialId }: { initialId: string | null }) {
               width={DISPLAY}
               height={DISPLAY}
               className="block w-full h-auto"
-              style={{ imageRendering: "pixelated", filter: hue !== 0 ? `hue-rotate(${hue}deg)` : undefined }}
+              style={{
+                imageRendering: "pixelated",
+                filter:
+                  hue !== 0 || saturate !== 1
+                    ? `${hue !== 0 ? `hue-rotate(${hue}deg)` : ""} ${saturate !== 1 ? `saturate(${saturate})` : ""}`.trim()
+                    : undefined,
+              }}
             />
           </div>
         </ContextMenuTrigger>
@@ -436,26 +456,48 @@ export function Creator({ initialId }: { initialId: string | null }) {
         </div>
       </div>
 
-      {/* Hue slider */}
-      <div className="w-full max-w-[504px] flex items-center gap-3 text-xs text-muted-foreground">
-        <span>Hue</span>
-        <input
-          type="range"
-          min={0}
-          max={359}
-          step={1}
-          value={hue}
-          onChange={(e) => setHue(Number(e.target.value))}
-          onDoubleClick={() => setHue(0)}
-          aria-label="Hue rotation (0–359 degrees)"
-          className="flex-1 h-6 appearance-none bg-transparent cursor-pointer
-            [&::-webkit-slider-runnable-track]:h-4 [&::-webkit-slider-runnable-track]:border [&::-webkit-slider-runnable-track]:border-border
-            [&::-webkit-slider-runnable-track]:bg-[linear-gradient(to_right,#ff0000_0%,#ffff00_17%,#00ff00_33%,#00ffff_50%,#0000ff_67%,#ff00ff_83%,#ff0000_100%)]
-            [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:bg-foreground [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-background [&::-webkit-slider-thumb]:-mt-0
-            [&::-moz-range-track]:h-4 [&::-moz-range-track]:border [&::-moz-range-track]:border-border
-            [&::-moz-range-thumb]:size-4 [&::-moz-range-thumb]:bg-foreground [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-background [&::-moz-range-thumb]:rounded-none"
-        />
-        <span className="font-mono w-10 text-right">{hue}°</span>
+      {/* Palette sliders */}
+      <div className="w-full max-w-[504px] flex flex-col gap-2 text-xs text-muted-foreground">
+        <div className="flex items-center gap-3">
+          <span className="w-16">Hue</span>
+          <input
+            type="range"
+            min={0}
+            max={359}
+            step={1}
+            value={hue}
+            onChange={(e) => setHue(Number(e.target.value))}
+            onDoubleClick={() => setHue(0)}
+            aria-label="Hue rotation (0–359 degrees)"
+            className="flex-1 h-6 appearance-none bg-transparent cursor-pointer
+              [&::-webkit-slider-runnable-track]:h-4 [&::-webkit-slider-runnable-track]:border [&::-webkit-slider-runnable-track]:border-border
+              [&::-webkit-slider-runnable-track]:bg-[linear-gradient(to_right,#ff0000_0%,#ffff00_17%,#00ff00_33%,#00ffff_50%,#0000ff_67%,#ff00ff_83%,#ff0000_100%)]
+              [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:bg-foreground [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-background [&::-webkit-slider-thumb]:-mt-0
+              [&::-moz-range-track]:h-4 [&::-moz-range-track]:border [&::-moz-range-track]:border-border
+              [&::-moz-range-thumb]:size-4 [&::-moz-range-thumb]:bg-foreground [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-background [&::-moz-range-thumb]:rounded-none"
+          />
+          <span className="font-mono w-10 text-right">{hue}°</span>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="w-16">Saturation</span>
+          <input
+            type="range"
+            min={0}
+            max={2}
+            step={0.05}
+            value={saturate}
+            onChange={(e) => setSaturate(Number(e.target.value))}
+            onDoubleClick={() => setSaturate(1)}
+            aria-label="Saturation multiplier (0 to 2)"
+            className="flex-1 h-6 appearance-none bg-transparent cursor-pointer
+              [&::-webkit-slider-runnable-track]:h-4 [&::-webkit-slider-runnable-track]:border [&::-webkit-slider-runnable-track]:border-border
+              [&::-webkit-slider-runnable-track]:bg-[linear-gradient(to_right,var(--muted)_0%,var(--foreground)_100%)]
+              [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:bg-foreground [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-background
+              [&::-moz-range-track]:h-4 [&::-moz-range-track]:border [&::-moz-range-track]:border-border
+              [&::-moz-range-thumb]:size-4 [&::-moz-range-thumb]:bg-foreground [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-background [&::-moz-range-thumb]:rounded-none"
+          />
+          <span className="font-mono w-10 text-right">{saturate.toFixed(2)}</span>
+        </div>
       </div>
 
       {/* ID bar */}
@@ -475,10 +517,20 @@ export function Creator({ initialId }: { initialId: string | null }) {
           </span>
         </button>
         <div className="flex items-center gap-2 ml-auto">
-          <a href={`${apiUrl}${hue !== 0 ? `?hue=${hue}` : ""}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+          <a
+            href={`${apiUrl}${paletteQs({ hue, saturate }, false)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
             PNG
           </a>
-          <a href={`${apiUrl}?animated=true${hue !== 0 ? `&hue=${hue}` : ""}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+          <a
+            href={`${apiUrl}?animated=true${paletteQs({ hue, saturate }, true)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
             GIF
           </a>
           <a href={`${apiUrl}?format=json`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
