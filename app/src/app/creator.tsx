@@ -84,10 +84,12 @@ export function Creator({
   initialId,
   initialHue = 0,
   initialSaturate = 1,
+  initialBg = null,
 }: {
   initialId: string | null;
   initialHue?: number;
   initialSaturate?: number;
+  initialBg?: string | null;
 }) {
   const [selection, setSelection] = useState(() => {
     if (initialId && isValidId(initialId)) return decode(initialId);
@@ -97,8 +99,8 @@ export function Creator({
   const [animating, setAnimating] = useState(true);
   const [downloadOpen, setDownloadOpen] = useState(false);
   const [inspectorOpen, setInspectorOpen] = useState(false);
-  const [bg, setBg] = useState<string | null>(null);
-  const bgRef = useRef<string | null>(null);
+  const [bg, setBg] = useState<string | null>(initialBg);
+  const bgRef = useRef<string | null>(initialBg);
   bgRef.current = bg;
   const [hue, setHueState] = useState(initialHue);
   const hueRef = useRef(initialHue);
@@ -182,14 +184,20 @@ export function Creator({
     if (node && !mountedRef.current) {
       mountedRef.current = true;
       loadAndDraw(selRef.current);
+      // If URL had no id/seed, we picked a random combo — write it to the URL
+      // so refresh reproduces the same pixabot instead of re-rolling.
+      if (!initialId) {
+        syncUrl(encode(selRef.current), hueRef.current, saturateRef.current, bgRef.current);
+      }
     }
   }
 
-  function syncUrl(id: string, h: number, s: number) {
+  function syncUrl(id: string, h: number, s: number, b: string | null) {
     const qs = new URLSearchParams();
     qs.set("id", id);
     if (h !== 0) qs.set("hue", String(h));
     if (s !== 1) qs.set("saturate", s.toFixed(2));
+    if (b) qs.set("bg", b);
     window.history.replaceState(null, "", `/?${qs.toString()}`);
   }
 
@@ -217,7 +225,7 @@ export function Creator({
     setSelection(next);
     loadAndDraw(next);
     const nextId = encode(next);
-    syncUrl(nextId, hueRef.current, saturateRef.current);
+    syncUrl(nextId, hueRef.current, saturateRef.current, bgRef.current);
     dismissShuffleHint();
     const el = canvasWrapRef.current;
     if (el) {
@@ -275,13 +283,13 @@ export function Creator({
   const setHue = (v: number) => {
     setHueState(v);
     hueRef.current = v;
-    syncUrl(encode(selRef.current), v, saturateRef.current);
+    syncUrl(encode(selRef.current), v, saturateRef.current, bgRef.current);
   };
 
   const setSaturate = (v: number) => {
     setSaturateState(v);
     saturateRef.current = v;
-    syncUrl(encode(selRef.current), hueRef.current, v);
+    syncUrl(encode(selRef.current), hueRef.current, v, bgRef.current);
   };
 
   const randomPalette = () => {
@@ -293,7 +301,6 @@ export function Creator({
     hueRef.current = h;
     setSaturateState(s);
     saturateRef.current = s;
-    syncUrl(encode(selRef.current), h, s);
     const bgIdx = Math.floor(Math.random() * BG_CHOICES.length);
     applyBg(BG_CHOICES[bgIdx], bgIdx);
   };
@@ -303,7 +310,6 @@ export function Creator({
     hueRef.current = 0;
     setSaturateState(1);
     saturateRef.current = 1;
-    syncUrl(encode(selRef.current), 0, 1);
     applyBg(null);
   };
 
@@ -314,6 +320,7 @@ export function Creator({
       drawOnCanvas(canvasRef.current, imagesRef.current, undefined, color);
     }
     if (typeof index === "number" && index >= 0) sfx.play({ kind: "bg", index });
+    syncUrl(encode(selRef.current), hueRef.current, saturateRef.current, color);
   };
 
   const copyShareUrl = () => {
