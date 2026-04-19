@@ -24,10 +24,10 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Lint app
-        run: pnpm --filter pixabots lint
+        run: pnpm --filter pixabots-app lint
 
       - name: Build + test @pixabots/core
         run: pnpm --filter @pixabots/core test
 
       - name: Build app
-        run: pnpm --filter pixabots build
+        run: pnpm --filter pixabots-app build
