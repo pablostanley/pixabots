@@ -5,6 +5,17 @@ description: Drop a pixabot into READMEs, dashboards, Discord, avatars, and more
 
 Every pixabot URL is a plain image served with open CORS and immutable caching. That means you can embed one almost anywhere a remote image is allowed.
 
+## Share a seeded creator link
+
+Drop a `?seed=` onto the homepage to land a visitor on a deterministic pixabot without picking an ID:
+
+```
+https://pixabots.com/?seed=team-pablo
+https://pixabots.com/?seed=launch-2026&hue=120&saturate=1.2
+```
+
+The seed is hashed server-side (via `@pixabots/core`'s `seededId`), so the same seed always resolves to the same starting bot — handy for team identity links, campaign URLs, or teaser drops. An explicit `id` param still wins when both are present.
+
 ## GitHub README avatar
 
 Shields and GitHub READMEs render markdown images from any HTTPS source. Pick an ID and drop it in:

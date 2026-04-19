@@ -113,6 +113,7 @@
 - [x] Favorites Clear all — confirm-guarded "Clear all" button; `useFavorites.clear()`. (PR #91)
 - [x] Browse "Compare top 6" — one-click link from the filtered grid to `/compare` with the six visible bots. (PR #92)
 - [x] BotDetail palette shuffle — shuffle-icon button in the bot-detail header rolls a random `hue`+`saturate` (sat 0.6–1.4 for recognizability). (PR #93)
+- [x] BotDetail palette reset — companion ↺ button next to shuffle; shows only when a palette is applied. (PR #94)
 
 ## Up Next
 
