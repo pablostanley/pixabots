@@ -9,7 +9,7 @@ import { PixelIcon } from "@/components/ui/pixel-icon";
 import { useShareOrCopy } from "@/lib/use-share-or-copy";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 import { ShuffleHint, dismissShuffleHint } from "@/components/shuffle-hint";
-import { PalettePicker } from "@/components/palette-picker";
+import { Inspector } from "@/components/inspector";
 import { useSfx } from "@/lib/use-sfx";
 import {
   DropdownMenu,
@@ -99,6 +99,7 @@ export function Creator({
   const reducedMotion = usePrefersReducedMotion();
   const [animating, setAnimating] = useState(true);
   const [downloadOpen, setDownloadOpen] = useState(false);
+  const [inspectorOpen, setInspectorOpen] = useState(false);
   const [bg, setBg] = useState<string | null>(null);
   const bgRef = useRef<string | null>(null);
   bgRef.current = bg;
@@ -394,9 +395,13 @@ export function Creator({
 
   useKeydown(handleKeyDown);
 
+  const fxActive = hue !== 0 || saturate !== 1 || bg !== null;
+
   return (
-    <main className="flex flex-col items-center justify-center flex-1 gap-3 p-4 sm:gap-4 sm:p-6 motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-500">
+    <main className="flex-1 flex justify-center p-4 sm:p-6 motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-500">
       <div aria-live="polite" aria-atomic="true" className="sr-only">{announcement}</div>
+      <div className="flex flex-col lg:flex-row items-start justify-center gap-4 lg:gap-6 w-full max-w-[820px]">
+      <div className="flex flex-col items-center gap-3 sm:gap-4 w-full max-w-[504px] mx-auto lg:mx-0">
       {/* Toolbar */}
       <div className="flex items-center gap-2 w-full max-w-[504px]">
         <span className="text-lg font-bold mr-auto">Create</span>
@@ -506,16 +511,18 @@ export function Creator({
           );
         })}
         </div>
-        <PalettePicker
-          hue={hue}
-          saturate={saturate}
-          onHueChange={setHue}
-          onSaturateChange={setSaturate}
-          onRandom={randomPalette}
-          onReset={resetPalette}
-          bg={bg}
-          onBgChange={applyBg}
-        />
+        <button
+          type="button"
+          onClick={() => setInspectorOpen((v) => !v)}
+          aria-pressed={inspectorOpen}
+          aria-label="Effects inspector"
+          data-tooltip={fxActive ? `Fx · ${hue}° · ${saturate.toFixed(2)}` : "Effects"}
+          className={`h-9 min-w-9 px-2 border ${
+            fxActive || inspectorOpen ? "border-foreground/60 bg-foreground/10" : "border-border"
+          } hover:bg-muted transition-colors cursor-pointer shrink-0 flex items-center justify-center font-mono text-sm font-bold`}
+        >
+          Fx
+        </button>
       </div>
 
       {/* ID bar */}
@@ -558,6 +565,22 @@ export function Creator({
       </div>
 
       <ShuffleHint />
+      </div>
+
+      {inspectorOpen && (
+        <Inspector
+          hue={hue}
+          saturate={saturate}
+          onHueChange={setHue}
+          onSaturateChange={setSaturate}
+          onRandom={randomPalette}
+          onReset={resetPalette}
+          bg={bg}
+          onBgChange={applyBg}
+          onClose={() => setInspectorOpen(false)}
+        />
+      )}
+      </div>
     </main>
   );
 }

@@ -51,15 +51,16 @@ function subscribe(cb: () => void) {
 }
 
 function getSnapshot(): boolean {
+  // Default to on. User's explicit "0" preference wins; missing key = on.
   try {
-    return localStorage.getItem(KEY) === "1";
+    return localStorage.getItem(KEY) !== "0";
   } catch {
-    return false;
+    return true;
   }
 }
 
 function getServerSnapshot(): boolean {
-  return false;
+  return true;
 }
 
 type VoiceOpts = {
