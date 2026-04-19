@@ -1,26 +1,25 @@
 "use client";
 
-import { useRef, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 import { isValidId } from "@pixabots/core";
 import { isTypingTarget } from "@/lib/use-keydown";
 
 /**
- * Subscribe to window `paste` events without useEffect. Mirrors useKeydown.
+ * Subscribe to window `paste` events without useEffect. Mirrors useKeydown —
+ * callers should wrap `handler` with useCallback so the subscribe identity
+ * is stable across renders.
  */
 export function usePaste(handler: (e: ClipboardEvent) => void) {
-  const handlerRef = useRef(handler);
-  handlerRef.current = handler;
-
   useSyncExternalStore(
     (notify) => {
-      const fn = (e: ClipboardEvent) => handlerRef.current(e);
-      window.addEventListener("paste", fn);
+      window.addEventListener("paste", handler);
       void notify;
-      return () => window.removeEventListener("paste", fn);
+      return () => window.removeEventListener("paste", handler);
     },
     () => null,
     () => null
   );
+  void handler;
 }
 
 /**

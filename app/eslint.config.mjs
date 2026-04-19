@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Fumadocs-generated MDX source index — ships with @ts-nocheck.
+    ".source/**",
   ]),
 ]);
 
