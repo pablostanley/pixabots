@@ -62,7 +62,15 @@ export function Inspector({
   return (
     <aside
       aria-label="Effects inspector"
-      className="w-full lg:w-[280px] lg:shrink-0 border border-border bg-background p-4 flex flex-col gap-4 self-start"
+      className="
+        fixed lg:static left-0 right-0 bottom-0 z-40
+        h-[55vh] lg:h-auto lg:max-h-[calc(100dvh-6rem)]
+        w-full lg:w-[280px] lg:shrink-0
+        border-t lg:border border-border bg-background
+        p-4 flex flex-col gap-4 overflow-y-auto
+        shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.15)] lg:shadow-none
+        motion-safe:animate-in motion-safe:slide-in-from-bottom lg:motion-safe:slide-in-from-bottom-0 motion-safe:fade-in-0 motion-safe:duration-200
+      "
     >
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-bold uppercase tracking-wide">Effects</h2>
