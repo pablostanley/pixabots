@@ -78,6 +78,8 @@
 - [x] Embed widget — `/embed/[id]` iframe-ready route with size/animated/bg params; BotEmbed gains Iframe tab. (PR #56)
 - [x] SVG output — `?format=svg` returns pixel-perfect vector; one rect per opaque pixel, scales without interpolation. (PR #57)
 - [x] `@pixabots/react` package — new workspace package exporting `<Pixabot>` component with full prop API. Built, not yet published. (PR #58)
+- [x] BgPicker popover — single swatch next to part selectors opens a popover with HSL picker, hex input, and preset swatches. react-colorful dep. (PR #59)
+- [x] `pixabots` CLI — new workspace package; ANSI truecolor terminal render, --info, --save, --json. (PR #60)
 
 ## Up Next
 
@@ -162,7 +164,6 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 
 - [ ] More parts — new variations for each category. Append-only to keep IDs stable.
 - [ ] Color/palette system — tint or recolor layers (expand beyond 9,856 combos)
-- [ ] `npx pixabots` CLI — generate random pixabots from the terminal
 - [ ] Accessories — new category layer (hats, items, etc.)
 - [ ] Animation variants — wave, jump, spin, etc.
 - [ ] Social cards — `GET /api/pixabot/{id}/og` for Open Graph images with name/title
