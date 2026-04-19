@@ -6,6 +6,7 @@ import { PixelIcon } from "@/components/ui/pixel-icon";
 import { useKeydown } from "@/lib/use-keydown";
 import { nextId, prevId } from "@/lib/bot-nav";
 import { neighborInOrder, useBrowseOrder } from "@/lib/browse-order";
+import { botHref } from "@/lib/bot-href";
 
 /**
  * Fixed-position left + right arrows. Used inside the browse bot-detail
@@ -42,8 +43,7 @@ export function BotEdgeNav({
 
   const go = useCallback(
     (target: string) => {
-      const qs = searchParams?.toString();
-      window.history.replaceState(null, "", `/bot/${target}${qs ? `?${qs}` : ""}`);
+      window.history.replaceState(null, "", botHref(target, searchParams));
       onNavigate(target);
     },
     [searchParams, onNavigate]
@@ -69,10 +69,9 @@ export function BotEdgeNav({
   const palette = searchParams?.toString();
   const preloadSrc = (target: string) =>
     `/api/pixabot/${target}?size=480&animated=true${palette ? `&${palette}` : ""}`;
+  const prevPreload = preloadSrc(prev);
+  const nextPreload = preloadSrc(next);
 
-  // Invisible hit area is 56×56 (sm:64×64) for fat-finger tolerance; only
-  // the chevron glyph is drawn. No bg, no border, no backdrop — just the
-  // icon. Hover darkens the icon; press scales. Nothing else.
   const btn =
     "pointer-events-auto fixed top-1/2 -translate-y-1/2 z-[60] " +
     "size-14 sm:size-16 flex items-center justify-center cursor-pointer " +
@@ -81,9 +80,10 @@ export function BotEdgeNav({
 
   return (
     <>
-      {/* Preload both neighbors so the next nav is cache-hit instant */}
-      <link rel="preload" as="image" href={preloadSrc(prev)} />
-      <link rel="preload" as="image" href={preloadSrc(next)} />
+      {/* key on href forces fresh preload on every nav; mutating the
+          attribute in place doesn't reliably retrigger the fetch hint. */}
+      <link key={prevPreload} rel="preload" as="image" href={prevPreload} />
+      <link key={nextPreload} rel="preload" as="image" href={nextPreload} />
 
       <button
         type="button"

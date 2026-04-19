@@ -384,9 +384,6 @@ function BrowseInner() {
   const compareHref =
     bots.length >= 2 ? `/compare?ids=${bots.slice(0, 6).map((b) => b.id).join(",")}` : null;
 
-  // Publish the visible grid order so the intercepted bot dialog can page
-  // through "what the user sees" instead of the canonical combo index.
-  // Idempotent on unchanged lists (see lib/browse-order).
   setBrowseOrder(bots.map((b) => b.id));
 
   const deepScrolled = useSyncExternalStore(subscribeScroll, isDeep, isDeepSsr);

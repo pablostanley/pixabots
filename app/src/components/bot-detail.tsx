@@ -70,7 +70,7 @@ export function BotDetail({
       <BotPasteNav id={id} />
       {/* aspect-square stops the container from collapsing between img
           swaps (prev/next nav), so nothing reflows below. */}
-      <div className="relative aspect-square border border-border p-3">
+      <div className="aspect-square border border-border p-3">
         <picture>
           <source
             media="(prefers-reduced-motion: reduce)"
