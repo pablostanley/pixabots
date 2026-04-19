@@ -15,6 +15,7 @@ const GLOBAL: Shortcut[] = [
   { keys: ["?"], label: "Show this help" },
   { keys: ["⌘K", "Ctrl+K"], label: "Open command palette" },
   { keys: ["M"], label: "Toggle sound" },
+  { keys: ["T"], label: "Toggle theme" },
 ];
 
 const CREATOR: Shortcut[] = [
