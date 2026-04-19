@@ -190,19 +190,25 @@ export function Creator({
     window.history.replaceState(null, "", `/?${qs.toString()}`);
   }
 
-  // Ring buffer of previous combos for U undo. Capped at HISTORY_MAX.
+  // Ring buffers for U undo / Shift+U redo. Capped at HISTORY_MAX each.
   const historyRef = useRef<Record<PartCategory, number>[]>([]);
+  const redoRef = useRef<Record<PartCategory, number>[]>([]);
   const HISTORY_MAX = 20;
 
   function updateSelection(
     next: Record<PartCategory, number>,
-    opts: { fromUndo?: boolean } = {}
+    opts: { fromUndo?: boolean; fromRedo?: boolean } = {}
   ) {
-    // Only push the *previous* combo when the change is user-initiated, not
-    // a replay from undo itself (otherwise the stack would grow endlessly).
-    if (!opts.fromUndo) {
+    // On user-initiated changes: push prev onto undo stack, and clear redo
+    // (standard editor semantics — a new action invalidates redo history).
+    // From-undo pushes onto redo instead. From-redo pushes onto undo.
+    if (opts.fromUndo) {
+      redoRef.current.push(selRef.current);
+      if (redoRef.current.length > HISTORY_MAX) redoRef.current.shift();
+    } else {
       historyRef.current.push(selRef.current);
       if (historyRef.current.length > HISTORY_MAX) historyRef.current.shift();
+      if (!opts.fromRedo) redoRef.current.length = 0;
     }
     selRef.current = next;
     setSelection(next);
@@ -222,6 +228,13 @@ export function Creator({
     const prev = historyRef.current.pop();
     if (!prev) return;
     updateSelection(prev, { fromUndo: true });
+    sfx.play({ kind: "cycle", category: "eyes", index: 0 });
+  };
+
+  const redo = () => {
+    const next = redoRef.current.pop();
+    if (!next) return;
+    updateSelection(next, { fromRedo: true });
     sfx.play({ kind: "cycle", category: "eyes", index: 0 });
   };
 
@@ -417,6 +430,10 @@ export function Creator({
       case "u":
         e.preventDefault();
         undo();
+        break;
+      case "U":
+        e.preventDefault();
+        redo();
         break;
       case "ArrowRight":
         e.preventDefault();
