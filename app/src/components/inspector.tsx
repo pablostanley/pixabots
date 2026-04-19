@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { HexColorPicker } from "react-colorful";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import { useSfx } from "@/lib/use-sfx";
@@ -61,6 +61,25 @@ export function Inspector({
   const [hexInput, setHexInput] = useState(bg ?? "");
   const [tab, setTab] = useState<"bg" | "adj">("bg");
   const sfx = useSfx();
+  const bgTabBtnRef = useRef<HTMLButtonElement>(null);
+  const adjTabBtnRef = useRef<HTMLButtonElement>(null);
+
+  const onTabKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+      e.preventDefault();
+      const next = tab === "bg" ? "adj" : "bg";
+      setTab(next);
+      (next === "bg" ? bgTabBtnRef : adjTabBtnRef).current?.focus();
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      setTab("bg");
+      bgTabBtnRef.current?.focus();
+    } else if (e.key === "End") {
+      e.preventDefault();
+      setTab("adj");
+      adjTabBtnRef.current?.focus();
+    }
+  };
 
   const setBgColor = (color: string) => {
     setHexInput(color);
@@ -122,10 +141,13 @@ export function Inspector({
       {/* Mobile tabs */}
       <div role="tablist" aria-label="Inspector sections" className="lg:hidden flex gap-1 px-4 pb-3 border-b border-border">
         <button
+          ref={bgTabBtnRef}
           type="button"
           role="tab"
           aria-selected={tab === "bg"}
+          tabIndex={tab === "bg" ? 0 : -1}
           onClick={() => setTab("bg")}
+          onKeyDown={onTabKeyDown}
           className={`flex-1 px-3 py-1.5 text-sm border border-border transition-colors cursor-pointer ${
             tab === "bg" ? "bg-muted text-foreground" : "bg-background text-muted-foreground"
           }`}
@@ -133,10 +155,13 @@ export function Inspector({
           Background
         </button>
         <button
+          ref={adjTabBtnRef}
           type="button"
           role="tab"
           aria-selected={tab === "adj"}
+          tabIndex={tab === "adj" ? 0 : -1}
           onClick={() => setTab("adj")}
+          onKeyDown={onTabKeyDown}
           className={`flex-1 px-3 py-1.5 text-sm border border-border transition-colors cursor-pointer ${
             tab === "adj" ? "bg-muted text-foreground" : "bg-background text-muted-foreground"
           }`}
@@ -150,7 +175,9 @@ export function Inspector({
         className={`grid transition-[grid-template-rows] duration-200 ease-out lg:!grid-rows-[1fr] ${
           tab === "bg" ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
         }`}
-        aria-hidden={tab !== "bg"}
+        role="tabpanel"
+        aria-label="Background"
+        inert={tab !== "bg" ? true : undefined}
       >
       <section className="flex flex-col gap-3 overflow-hidden min-h-0">
         <h3 className="text-xs uppercase tracking-wide text-muted-foreground hidden lg:block">Background</h3>
@@ -184,7 +211,8 @@ export function Inspector({
             type="button"
             onClick={() => {
               setHexInput("");
-              onBgChange(null, -1);
+              // Index 0 so transparent plays the lowest note of BG_SCALE.
+              onBgChange(null, 0);
             }}
             title="Transparent"
             className={`relative aspect-square border ${
@@ -202,7 +230,7 @@ export function Inspector({
               className="absolute inset-0 pointer-events-none"
               style={{
                 backgroundImage:
-                  "linear-gradient(to top right, transparent calc(50% - 1px), var(--border) calc(50% - 1px), var(--border) calc(50% + 1px), transparent calc(50% + 1px))",
+                  "linear-gradient(to top right, transparent calc(50% - 1px), var(--muted-foreground) calc(50% - 1px), var(--muted-foreground) calc(50% + 1px), transparent calc(50% + 1px))",
               }}
             />
           </button>
@@ -214,7 +242,8 @@ export function Inspector({
                 type="button"
                 onClick={() => {
                   setHexInput(color);
-                  onBgChange(color, i);
+                  // Swatches start at BG_SCALE index 1 (transparent took 0).
+                  onBgChange(color, i + 1);
                 }}
                 title={color}
                 className={`aspect-square border ${
@@ -232,7 +261,9 @@ export function Inspector({
         className={`grid transition-[grid-template-rows] duration-200 ease-out lg:!grid-rows-[1fr] ${
           tab === "adj" ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
         }`}
-        aria-hidden={tab !== "adj"}
+        role="tabpanel"
+        aria-label="Adjustments"
+        inert={tab !== "adj" ? true : undefined}
       >
       <section className="flex flex-col gap-3 overflow-hidden min-h-0">
         <h3 className="text-xs uppercase tracking-wide text-muted-foreground hidden lg:block">Adjustments</h3>
