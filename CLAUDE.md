@@ -33,17 +33,19 @@ pixabots/
 - **Animation**: 8-frame bounce at 72ms/frame. Data lives in `packages/core/src/animation.ts` — always import from there, never duplicate.
 - **Shared API helpers**: CORS headers, OPTIONS handler, imageResponse() live in `app/src/lib/api.ts`
 
-## npm package
+## npm packages
 
-`@pixabots/core` is published on npm. **Publishing is automated** via `.github/workflows/publish-core.yml` — the agent can release new versions end-to-end by pushing a git tag. No local `npm login` / `npm publish` needed; the `NPM_TOKEN` lives only in the GitHub repo secret.
+`@pixabots/core` and `@pixabots/react` are published on npm. **Publishing is automated** via `.github/workflows/publish-{core,react}.yml` — the agent can release new versions end-to-end by pushing a git tag. No local `npm login` / `npm publish` needed; the `NPM_TOKEN` lives only in the GitHub repo secret.
 
-After changes to `packages/core/`:
-1. Bump `version` in `packages/core/package.json`.
+Release flow (per package):
+1. Bump `version` in the package's `package.json`.
 2. Commit + push to main (via PR).
-3. `git tag core-v<new-version> && git push origin core-v<new-version>`.
-4. Workflow builds, runs `pnpm --filter @pixabots/core test` (smoke tests in `packages/core/test/smoke.mjs`), and publishes.
+3. `git tag {pkg}-v<new-version> && git push origin {pkg}-v<new-version>` — where `{pkg}` is `core` or `react`.
+4. Workflow builds, runs smoke tests (core only), and publishes.
 
-Monitor with `gh run list --workflow=publish-core.yml`.
+Monitor with `gh run list --workflow=publish-core.yml` or `publish-react.yml`.
+
+The CLI at `packages/cli/` is not yet wired for auto-publish.
 
 designteam.app currently inlines `randomPixabotId()` — should swap for `@pixabots/core`'s `randomId()` now that it's on npm.
 
