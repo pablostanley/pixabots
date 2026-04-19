@@ -177,7 +177,7 @@ export function Inspector({
         }`}
         role="tabpanel"
         aria-label="Background"
-        inert={tab !== "bg" ? true : undefined}
+        aria-hidden={tab !== "bg" || undefined}
       >
       <section className="flex flex-col gap-3 overflow-hidden min-h-0">
         <h3 className="text-xs uppercase tracking-wide text-muted-foreground hidden lg:block">Background</h3>
@@ -266,7 +266,7 @@ export function Inspector({
         }`}
         role="tabpanel"
         aria-label="Adjustments"
-        inert={tab !== "adj" ? true : undefined}
+        aria-hidden={tab !== "adj" || undefined}
       >
       <section className="flex flex-col gap-3 overflow-hidden min-h-0">
         <h3 className="text-xs uppercase tracking-wide text-muted-foreground hidden lg:block">Adjustments</h3>
