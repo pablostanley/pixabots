@@ -3,6 +3,7 @@ import { isValidId } from "@pixabots/core";
 import { generateOgImage } from "@/lib/og-image";
 import { CORS_HEADERS, optionsResponse, imageResponse } from "@/lib/api";
 import { checkRate, clientKey } from "@/lib/rate-limit";
+import { parseIdsCsv } from "@/lib/ids";
 
 const OG_LIMIT = 20;
 const OG_WINDOW_MS = 60_000;
@@ -74,9 +75,21 @@ export async function GET(request: NextRequest) {
       return imageResponse(buffer, "image/png");
     }
 
+    if (type === "compare") {
+      const ids = parseIdsCsv(params.get("ids"), 6);
+      if (ids.length === 0) {
+        return Response.json(
+          { error: "Missing or invalid ids (expected comma-separated list of up to 6 valid pixabot IDs)" },
+          { status: 400, headers: CORS_HEADERS }
+        );
+      }
+      const buffer = await generateOgImage({ type: "compare", ids, title, subtitle, palette });
+      return imageResponse(buffer, "image/png");
+    }
+
     if (type !== "grid") {
       return Response.json(
-        { error: "type must be 'grid' or 'single'" },
+        { error: "type must be 'grid', 'single', or 'compare'" },
         { status: 400, headers: CORS_HEADERS }
       );
     }
