@@ -223,7 +223,7 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 
 ### Delight
 - [ ] **Easter-egg special animations** — Konami rapid-shuffle (PR #35) and ID captions (PR #51) done. Full special-animations-per-ID still open as a stretch.
-- [ ] **Pixel-by-pixel materialize animation** — first-paint progressively reveals the character (simple creator fade shipped in PR #43; full materialize still open)
+- [x] **Pixel-by-pixel materialize animation** — shipped as `<PixelMaterialize />` canvas overlay in PR #131. Runs once on first mount (creator, `/bot/[id]`, browse dialog); skipped on shuffle / prev-next / palette change. Reduced-motion users opt out.
 
 ### Done
 - [x] **Active nav state** — header highlights current page
@@ -251,4 +251,9 @@ Ship Phase 1 first. Phase 2 and 3 only if someone actually asks.
 - [ ] More parts — new variations for each category. Append-only to keep IDs stable.
 - [ ] Accessories — new category layer (hats, items, etc.)
 - [ ] Animation variants — wave, jump, spin, etc. (infra shipped via multi-frame sprites; still needs artwork + scheduled `FRAME_INDICES`)
-- [ ] Social cards — `GET /api/pixabot/{id}/og` for Open Graph images with name/title
+- [x] Social cards — shipped via `/api/og?type=single|grid|compare` across PRs #79, #68, #108. `twitter:site` + `image:alt` added in PR #138.
+
+## Bugs
+
+- [ ] **Home refresh shuffles hue + bg.** Reloading `/` re-randomizes palette/background instead of keeping whatever the user set. Likely an initial-state mistake — should default to none on refresh unless `?hue=`/`?saturate=`/`?bg=` are in the URL.
+- [ ] **Materialize overlay sizing.** `<PixelMaterialize />` is painting at a smaller size than its container and then appears to stretch in, instead of starting at full container size with 32×32 blocks and dithering away. Likely `node.getBoundingClientRect()` firing before layout settles, or a `clientWidth === 0` on mount.
