@@ -431,7 +431,7 @@ export function Creator({
   const fxActive = hue !== 0 || saturate !== 1 || bg !== null;
 
   return (
-    <main className={`flex-1 flex justify-center items-center p-4 sm:p-6 motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-500 ${inspectorOpen ? "pb-[calc(55vh+1rem)] lg:pb-6" : ""}`}>
+    <main className={`flex-1 flex justify-center items-center p-4 sm:p-6 motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-500 ${inspectorOpen ? "pb-[calc(42vh+1rem)] lg:pb-6" : ""}`}>
       <div aria-live="polite" aria-atomic="true" className="sr-only">{announcement}</div>
       <div className="flex flex-col lg:flex-row items-center lg:items-center justify-center gap-4 lg:gap-6 w-full max-w-[820px]">
       <div className="flex flex-col items-center gap-3 sm:gap-4 w-full max-w-[504px] mx-auto">

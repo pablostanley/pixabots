@@ -76,7 +76,7 @@ export function Inspector({
       aria-label="Effects inspector"
       className="
         fixed lg:static left-0 right-0 bottom-0 z-40
-        h-[55vh] lg:h-auto lg:max-h-[calc(100dvh-6rem)]
+        h-[42vh] lg:h-auto lg:max-h-[calc(100dvh-6rem)]
         w-full lg:w-[280px] lg:shrink-0
         border-t lg:border border-border bg-background
         flex flex-col
@@ -84,7 +84,7 @@ export function Inspector({
         motion-safe:animate-in motion-safe:slide-in-from-bottom lg:motion-safe:slide-in-from-bottom-0 motion-safe:fade-in-0 motion-safe:duration-200
       "
     >
-      <div className="flex items-center justify-between px-4 pt-4 pb-3">
+      <div className="flex items-center justify-between px-4 pt-3 pb-2 lg:pt-4 lg:pb-3">
         <h2 className="text-sm font-bold uppercase tracking-wide">Effects</h2>
         <div className="flex items-center gap-1">
           <button
@@ -145,14 +145,16 @@ export function Inspector({
         </button>
       </div>
 
-      <div className="flex flex-col gap-7 overflow-y-auto px-4 pb-4 pt-2 lg:pt-0 flex-1">
+      <div className="flex flex-col gap-4 lg:gap-7 overflow-y-auto px-4 pb-3 lg:pb-4 pt-2 lg:pt-0 flex-1">
       <section className={`flex-col gap-3 ${tab === "bg" ? "flex" : "hidden"} lg:flex`}>
         <h3 className="text-xs uppercase tracking-wide text-muted-foreground hidden lg:block">Background</h3>
-        <HexColorPicker
-          color={bg ?? "#ffffff"}
-          onChange={setBgColor}
-          style={{ width: "100%", height: 140 }}
-        />
+        <div className="h-[90px] lg:h-[140px]">
+          <HexColorPicker
+            color={bg ?? "#ffffff"}
+            onChange={setBgColor}
+            style={{ width: "100%", height: "100%" }}
+          />
+        </div>
         <div className="flex items-center gap-2">
           <span className="text-xs text-muted-foreground font-mono">HEX</span>
           <input
