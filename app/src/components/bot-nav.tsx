@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import { useKeydown } from "@/lib/use-keydown";
@@ -8,12 +8,14 @@ import { nextId, prevId } from "@/lib/bot-nav";
 
 export function BotNav({ id }: { id: string }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const go = useCallback(
     (target: string) => {
-      router.replace(`/bot/${target}`, { scroll: false });
+      const qs = searchParams?.toString();
+      router.replace(`/bot/${target}${qs ? `?${qs}` : ""}`, { scroll: false });
     },
-    [router]
+    [router, searchParams]
   );
 
   useKeydown(

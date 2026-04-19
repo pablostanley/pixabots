@@ -14,11 +14,31 @@ function clampText(v: string | null, max: number): string | undefined {
   return v.length > max ? v.slice(0, max) : v;
 }
 
+function parsePalette(
+  params: URLSearchParams
+): { hue?: number; saturate?: number } | undefined {
+  const hueRaw = params.get("hue");
+  const satRaw = params.get("saturate");
+  let hue: number | undefined;
+  let saturate: number | undefined;
+  if (hueRaw !== null) {
+    const n = Number(hueRaw);
+    if (Number.isFinite(n)) hue = ((Math.round(n) % 360) + 360) % 360;
+  }
+  if (satRaw !== null) {
+    const n = Number(satRaw);
+    if (Number.isFinite(n)) saturate = Math.max(0, Math.min(4, n));
+  }
+  if (hue === undefined && saturate === undefined) return undefined;
+  return { hue, saturate };
+}
+
 export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
   const type = params.get("type") ?? "grid";
   const title = clampText(params.get("title"), MAX_TITLE_LEN) ?? "Pixabots";
   const subtitle = clampText(params.get("subtitle"), MAX_SUBTITLE_LEN);
+  const palette = parsePalette(params);
 
   try {
     if (type === "single") {
@@ -29,7 +49,7 @@ export async function GET(request: NextRequest) {
           { status: 400, headers: CORS_HEADERS }
         );
       }
-      const buffer = await generateOgImage({ type: "single", id, title, subtitle });
+      const buffer = await generateOgImage({ type: "single", id, title, subtitle, palette });
       return imageResponse(buffer, "image/png");
     }
 
@@ -41,7 +61,7 @@ export async function GET(request: NextRequest) {
     }
 
     const seed = clampText(params.get("seed"), MAX_SEED_LEN) ?? title;
-    const buffer = await generateOgImage({ type: "grid", title, subtitle, seed });
+    const buffer = await generateOgImage({ type: "grid", title, subtitle, seed, palette });
     return imageResponse(buffer, "image/png");
   } catch (e) {
     return Response.json(
