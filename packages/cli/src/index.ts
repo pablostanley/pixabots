@@ -18,6 +18,7 @@ Usage:
   pixabots random --json           Print random pixabot as JSON
   pixabots <id> --hue <deg>        Apply hue rotation (0–359)
   pixabots <id> --saturate <mult>  Apply saturation multiplier (0–4)
+  pixabots <id> --bg <#rrggbb>     Flatten transparent pixels onto a bg color
   pixabots --help                  Show this help
 
 Env:
@@ -94,10 +95,11 @@ function renderAnsi(grid: RGBA[][]): string {
   return lines.join("\n");
 }
 
-function paletteSuffix(hue?: number, saturate?: number): string {
+function paletteSuffix(hue?: number, saturate?: number, bg?: string): string {
   const parts: string[] = [];
   if (hue !== undefined && hue !== 0) parts.push(`hue=${hue}`);
   if (saturate !== undefined && saturate !== 1) parts.push(`saturate=${saturate}`);
+  if (bg) parts.push(`bg=${encodeURIComponent(bg)}`);
   return parts.length ? `&${parts.join("&")}` : "";
 }
 
@@ -115,14 +117,21 @@ async function fetchJson(id: string): Promise<unknown> {
   return await res.json();
 }
 
-async function downloadPng(id: string, path: string, size = 480, hue?: number, saturate?: number): Promise<void> {
-  const res = await fetch(`${ORIGIN}/api/pixabot/${id}?size=${size}${paletteSuffix(hue, saturate)}`);
+async function downloadPng(
+  id: string,
+  path: string,
+  size = 480,
+  hue?: number,
+  saturate?: number,
+  bg?: string
+): Promise<void> {
+  const res = await fetch(`${ORIGIN}/api/pixabot/${id}?size=${size}${paletteSuffix(hue, saturate, bg)}`);
   if (!res.ok) throw new Error(`API ${res.status} ${res.statusText}`);
   const buf = Buffer.from(await res.arrayBuffer());
   await writeFile(path, buf);
 }
 
-async function printBot(id: string, hue?: number, saturate?: number) {
+async function printBot(id: string, hue?: number, saturate?: number, bg?: string) {
   const svg = await fetchSvg(id);
   const grid = parseSvg(svg);
   const art = renderAnsi(grid);
@@ -133,10 +142,10 @@ async function printBot(id: string, hue?: number, saturate?: number) {
   console.log(
     `  ${parts.eyes} · ${parts.heads} · ${parts.body} · ${parts.top}`
   );
-  if (hue !== undefined || saturate !== undefined) {
-    console.log(`  (palette applies to --save PNG, not terminal render)`);
+  if (hue !== undefined || saturate !== undefined || bg !== undefined) {
+    console.log(`  (palette / bg apply to --save PNG, not terminal render)`);
   }
-  const urlQs = paletteSuffix(hue, saturate).replace(/^&/, "?");
+  const urlQs = paletteSuffix(hue, saturate, bg).replace(/^&/, "?");
   console.log(`  ${ORIGIN}/bot/${id}${urlQs}`);
 }
 
@@ -192,6 +201,17 @@ async function main() {
     saturate = n;
   }
 
+  let bg: string | undefined;
+  const bgVal = valueFlag(args, "--bg");
+  if (bgVal !== undefined) {
+    const raw = bgVal.trim().replace(/^#/, "");
+    if (!/^[0-9a-fA-F]{6}$/.test(raw)) {
+      console.error("--bg must be a #rrggbb hex color");
+      process.exit(1);
+    }
+    bg = `#${raw.toLowerCase()}`;
+  }
+
   if (flags.has("--json")) {
     const data = await fetchJson(id);
     console.log(JSON.stringify(data, null, 2));
@@ -207,7 +227,8 @@ async function main() {
     console.log(`top:   ${parts.top}`);
     if (hue !== undefined) console.log(`hue:   ${hue}°`);
     if (saturate !== undefined) console.log(`sat:   ${saturate}`);
-    const urlQs = paletteSuffix(hue, saturate).replace(/^&/, "?");
+    if (bg !== undefined) console.log(`bg:    ${bg}`);
+    const urlQs = paletteSuffix(hue, saturate, bg).replace(/^&/, "?");
     console.log(`url:   ${ORIGIN}/bot/${id}${urlQs}`);
     return;
   }
@@ -218,12 +239,12 @@ async function main() {
       console.error("--save requires a filename");
       process.exit(1);
     }
-    await downloadPng(id, file, 480, hue, saturate);
+    await downloadPng(id, file, 480, hue, saturate, bg);
     console.log(`Saved ${id} → ${file}`);
     return;
   }
 
-  await printBot(id, hue, saturate);
+  await printBot(id, hue, saturate, bg);
 }
 
 main().catch((err) => {
