@@ -10,10 +10,11 @@ npx pixabots 2156                          # print a specific pixabot
 npx pixabots 2156 --info                   # print metadata
 npx pixabots 2156 --save bot.png           # download PNG (480px default)
 npx pixabots 2156 --hue 200 --save bot.png # recolored PNG
+npx pixabots 2156 --bg '#fde68a' --save bot.png # yellow background baked in
 npx pixabots random --json                 # random pixabot as JSON
 ```
 
-Palette (`--hue`, `--saturate`) applies to `--save`. The terminal ANSI render shows base colors.
+Palette (`--hue`, `--saturate`) and `--bg` apply to `--save`. The terminal ANSI render shows base colors.
 
 Renders via ANSI truecolor using half-block characters (`▀`). Works in any modern terminal emulator (iTerm2, Terminal.app, Windows Terminal, most Linux terminals).
 

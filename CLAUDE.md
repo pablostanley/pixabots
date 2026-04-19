@@ -35,17 +35,15 @@ pixabots/
 
 ## npm packages
 
-`@pixabots/core` and `@pixabots/react` are published on npm. **Publishing is automated** via `.github/workflows/publish-{core,react}.yml` — the agent can release new versions end-to-end by pushing a git tag. No local `npm login` / `npm publish` needed; the `NPM_TOKEN` lives only in the GitHub repo secret.
+`@pixabots/core`, `@pixabots/react`, and `pixabots` (CLI) all publish to npm. **Publishing is automated** via `.github/workflows/publish-{core,react,cli}.yml` — the agent can release new versions end-to-end by pushing a git tag. No local `npm login` / `npm publish` needed; the `NPM_TOKEN` lives only in the GitHub repo secret.
 
 Release flow (per package):
 1. Bump `version` in the package's `package.json`.
 2. Commit + push to main (via PR).
-3. `git tag {pkg}-v<new-version> && git push origin {pkg}-v<new-version>` — where `{pkg}` is `core` or `react`.
+3. `git tag {pkg}-v<new-version> && git push origin {pkg}-v<new-version>` — where `{pkg}` is `core`, `react`, or `cli`.
 4. Workflow builds, runs smoke tests (core only), and publishes.
 
-Monitor with `gh run list --workflow=publish-core.yml` or `publish-react.yml`.
-
-The CLI at `packages/cli/` is not yet wired for auto-publish.
+Monitor with `gh run list --workflow=publish-{core,react,cli}.yml`.
 
 designteam.app currently inlines `randomPixabotId()` — should swap for `@pixabots/core`'s `randomId()` now that it's on npm.
 
