@@ -217,7 +217,7 @@ export function Creator({ initialId }: { initialId: string | null }) {
     if (canvasRef.current && !intervalRef.current) {
       drawOnCanvas(canvasRef.current, imagesRef.current, undefined, color);
     }
-    if (typeof index === "number") sfx.play({ kind: "bg", index });
+    if (typeof index === "number" && index >= 0) sfx.play({ kind: "bg", index });
   };
 
   const copyShareUrl = () => {
@@ -386,8 +386,10 @@ export function Creator({ initialId }: { initialId: string | null }) {
         </ContextMenuContent>
       </ContextMenu>
 
-      {/* Part selectors — 2x2 on mobile, 4 in a row on desktop */}
-      <div className="grid grid-cols-2 sm:flex gap-1 w-full max-w-[504px]">
+      {/* Part selectors — swatch + 2x2 on mobile, 4 in a row on desktop */}
+      <div className="flex items-stretch gap-1 w-full max-w-[504px]">
+        <BgPicker bg={bg} onChange={applyBg} />
+        <div className="grid grid-cols-2 sm:flex gap-1 flex-1 min-w-0">
         {layerOrder.map((category) => {
           const locked = locks[category];
           return (
@@ -424,9 +426,8 @@ export function Creator({ initialId }: { initialId: string | null }) {
             </div>
           );
         })}
+        </div>
       </div>
-
-      <BgPicker bg={bg} onChange={applyBg} />
 
       {/* ID bar */}
       <div className="border border-border px-3 py-2 sm:px-4 sm:py-3 flex flex-wrap items-center gap-2 text-sm w-full max-w-[504px]">
