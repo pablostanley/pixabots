@@ -82,10 +82,12 @@ export function Creator({
   initialId,
   initialHue = 0,
   initialSaturate = 1,
+  initialBg = null,
 }: {
   initialId: string | null;
   initialHue?: number;
   initialSaturate?: number;
+  initialBg?: string | null;
 }) {
   const [selection, setSelection] = useState(() => {
     if (initialId && isValidId(initialId)) return decode(initialId);
@@ -95,8 +97,8 @@ export function Creator({
   const [animating, setAnimating] = useState(true);
   const [downloadOpen, setDownloadOpen] = useState(false);
   const [inspectorOpen, setInspectorOpen] = useState(false);
-  const [bg, setBg] = useState<string | null>(null);
-  const bgRef = useRef<string | null>(null);
+  const [bg, setBg] = useState<string | null>(initialBg);
+  const bgRef = useRef<string | null>(initialBg);
   bgRef.current = bg;
   const [hue, setHueState] = useState(initialHue);
   const hueRef = useRef(initialHue);
@@ -183,11 +185,14 @@ export function Creator({
     }
   }
 
-  function syncUrl(id: string, h: number, s: number) {
+  function syncUrl(id: string, h: number, s: number, b: string | null = bgRef.current) {
     const qs = new URLSearchParams();
     qs.set("id", id);
     if (h !== 0) qs.set("hue", String(h));
     if (s !== 1) qs.set("saturate", s.toFixed(2));
+    // Drop the leading # so the URL reads as `?bg=ffffff`, matching the
+    // embed route. Null / transparent stays off the URL entirely.
+    if (b) qs.set("bg", b.replace(/^#/, ""));
     window.history.replaceState(null, "", `/?${qs.toString()}`);
   }
 
@@ -308,6 +313,7 @@ export function Creator({
   const applyBg = (color: string | null, index?: number) => {
     setBg(color);
     bgRef.current = color;
+    syncUrl(encode(selRef.current), hueRef.current, saturateRef.current, color);
     if (canvasRef.current && !intervalRef.current) {
       drawOnCanvas(canvasRef.current, imagesRef.current, undefined, color);
     }
@@ -319,6 +325,7 @@ export function Creator({
     qs.set("id", pixabotId);
     if (hue !== 0) qs.set("hue", String(hue));
     if (saturate !== 1) qs.set("saturate", saturate.toFixed(2));
+    if (bg) qs.set("bg", bg.replace(/^#/, ""));
     share({
       url: `${window.location.origin}/?${qs.toString()}`,
       title: `Pixabot ${pixabotId}`,

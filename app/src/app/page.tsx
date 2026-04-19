@@ -32,7 +32,7 @@ function resolveInitialId(id?: string, seed?: string): string | null {
 export async function generateMetadata({
   searchParams,
 }: {
-  searchParams: Promise<{ id?: string; seed?: string; hue?: string; saturate?: string }>;
+  searchParams: Promise<{ id?: string; seed?: string; hue?: string; saturate?: string; bg?: string }>;
 }): Promise<Metadata> {
   const { id, seed, hue: hueRaw, saturate: satRaw } = await searchParams;
   const resolved = resolveInitialId(id, seed);
@@ -76,12 +76,19 @@ export async function generateMetadata({
   };
 }
 
+function parseBg(v: string | undefined): string | null {
+  if (typeof v !== "string") return null;
+  const raw = v.trim().replace(/^#/, "");
+  if (!/^[0-9a-fA-F]{6}$/.test(raw)) return null;
+  return `#${raw.toLowerCase()}`;
+}
+
 export default async function Home({
   searchParams,
 }: {
-  searchParams: Promise<{ id?: string; seed?: string; hue?: string; saturate?: string }>;
+  searchParams: Promise<{ id?: string; seed?: string; hue?: string; saturate?: string; bg?: string }>;
 }) {
-  const { id, seed, hue, saturate } = await searchParams;
+  const { id, seed, hue, saturate, bg } = await searchParams;
   return (
     <>
       <SpritePreload />
@@ -89,6 +96,7 @@ export default async function Home({
         initialId={resolveInitialId(id, seed)}
         initialHue={parseHue(hue)}
         initialSaturate={parseSaturate(saturate)}
+        initialBg={parseBg(bg)}
       />
     </>
   );
