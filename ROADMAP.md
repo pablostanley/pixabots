@@ -255,5 +255,5 @@ Ship Phase 1 first. Phase 2 and 3 only if someone actually asks.
 
 ## Bugs
 
-- [ ] **Home refresh shuffles hue + bg.** Reloading `/` re-randomizes palette/background instead of keeping whatever the user set. Likely an initial-state mistake — should default to none on refresh unless `?hue=`/`?saturate=`/`?bg=` are in the URL.
-- [ ] **Materialize overlay sizing.** `<PixelMaterialize />` is painting at a smaller size than its container and then appears to stretch in, instead of starting at full container size with 32×32 blocks and dithering away. Likely `node.getBoundingClientRect()` firing before layout settles, or a `clientWidth === 0` on mount.
+- [ ] **Home refresh appears to shuffle hue + bg.** User reports palette/bg changing on refresh of `/`. First code audit: no code path randomizes `hue`/`saturate`/`bg` on mount — `selection` is the only thing randomized via `useState(() => randomCombo())`. Likely a perception of different sprite combos having different intrinsic colors. Needs a screen-share or repro to pin down — if real, probably something in Inspector or layout firing `randomPalette()` during hydration.
+- [x] **Materialize overlay sizing.** Fixed in PR follow-up to #131: measurement deferred to `requestAnimationFrame` with retry until `getBoundingClientRect()` reports non-zero dimensions, and canvas gets explicit `w-full h-full` alongside `absolute inset-0` so it tracks the parent when CSS `aspect-square` is computing height.
