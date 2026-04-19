@@ -128,6 +128,7 @@
 - [x] BotDetail paste-to-jump — same behavior on `/bot/[id]`; palette query preserved. (PR #106)
 - [x] Sitemap expansion — adds `/favorites`, `/compare`, `/docs/usage`, `/docs/shortcuts`, and a `/bot/{id}` row per curated special ID. (PR #107)
 - [x] Home `generateMetadata` — `/?id=` / `/?seed=` URLs now emit a per-bot title, canonical, og:image, twitter card so shared links unfurl correctly. (PR #108)
+- [x] Browse Esc — clears the active filter when one's applied, no-op otherwise; docs updated. (PR #109)
 
 ## Up Next
 
