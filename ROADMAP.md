@@ -126,6 +126,7 @@
 - [x] Favorites newest-first — display order reversed so freshest stars land top-left; Compare uses the newest six. (PR #104)
 - [x] Creator paste-to-jump — pasting a pixabots.com URL or a 4-char ID on the creator jumps to that combo; new `usePaste` hook mirrors `useKeydown` (no `useEffect`). (PR #105)
 - [x] BotDetail paste-to-jump — same behavior on `/bot/[id]`; palette query preserved. (PR #106)
+- [x] Sitemap expansion — adds `/favorites`, `/compare`, `/docs/usage`, `/docs/shortcuts`, and a `/bot/{id}` row per curated special ID. (PR #107)
 
 ## Up Next
 
