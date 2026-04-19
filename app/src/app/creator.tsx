@@ -10,6 +10,7 @@ import { useShareOrCopy } from "@/lib/use-share-or-copy";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 import { ShuffleHint, dismissShuffleHint } from "@/components/shuffle-hint";
 import { Inspector } from "@/components/inspector";
+import { BG_CHOICES, withPalette } from "@/lib/palette";
 import { useSfx } from "@/lib/use-sfx";
 import {
   DropdownMenu,
@@ -32,14 +33,6 @@ const SIZES = [240, 480, 960, 1920] as const;
 const DISPLAY = 480;
 const NATIVE = 32;
 const PX = DISPLAY / NATIVE;
-
-function paletteQs(p: { hue: number; saturate: number }, hasExisting: boolean): string {
-  const parts: string[] = [];
-  if (p.hue !== 0) parts.push(`hue=${p.hue}`);
-  if (p.saturate !== 1) parts.push(`saturate=${p.saturate.toFixed(2)}`);
-  if (parts.length === 0) return "";
-  return (hasExisting ? "&" : "?") + parts.join("&");
-}
 
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -254,27 +247,6 @@ export function Creator({
     syncUrl(encode(selRef.current), hueRef.current, v);
   };
 
-  const BG_CHOICES: Array<string | null> = [
-    null,
-    "#ffffff",
-    "#f5f5f4",
-    "#fde68a",
-    "#bbf7d0",
-    "#bae6fd",
-    "#fbcfe8",
-    "#c4b5fd",
-    "#000000",
-    "#dc2626",
-    "#ea580c",
-    "#f59e0b",
-    "#eab308",
-    "#16a34a",
-    "#14b8a6",
-    "#2563eb",
-    "#9333ea",
-    "#db2777",
-  ];
-
   const randomPalette = () => {
     const h = Math.floor(Math.random() * 360);
     // Skew saturate toward useful range 0.6–1.4 so random doesn't often
@@ -286,13 +258,7 @@ export function Creator({
     saturateRef.current = s;
     syncUrl(encode(selRef.current), h, s);
     const bgIdx = Math.floor(Math.random() * BG_CHOICES.length);
-    const nextBg = BG_CHOICES[bgIdx];
-    setBg(nextBg);
-    bgRef.current = nextBg;
-    if (canvasRef.current && !intervalRef.current) {
-      drawOnCanvas(canvasRef.current, imagesRef.current, undefined, nextBg);
-    }
-    sfx.play({ kind: "bg", index: bgIdx });
+    applyBg(BG_CHOICES[bgIdx], bgIdx);
   };
 
   const resetPalette = () => {
@@ -301,11 +267,7 @@ export function Creator({
     setSaturateState(1);
     saturateRef.current = 1;
     syncUrl(encode(selRef.current), 0, 1);
-    setBg(null);
-    bgRef.current = null;
-    if (canvasRef.current && !intervalRef.current) {
-      drawOnCanvas(canvasRef.current, imagesRef.current, undefined, null);
-    }
+    applyBg(null);
   };
 
   const applyBg = (color: string | null, index?: number) => {
@@ -576,7 +538,7 @@ export function Creator({
         </button>
         <div className="flex items-center gap-2 ml-auto">
           <a
-            href={`${apiUrl}${paletteQs({ hue, saturate }, false)}`}
+            href={withPalette(apiUrl, { hue, saturate })}
             target="_blank"
             rel="noopener noreferrer"
             className="text-muted-foreground hover:text-foreground transition-colors"
@@ -584,7 +546,7 @@ export function Creator({
             PNG
           </a>
           <a
-            href={`${apiUrl}?animated=true${paletteQs({ hue, saturate }, true)}`}
+            href={withPalette(`${apiUrl}?animated=true`, { hue, saturate })}
             target="_blank"
             rel="noopener noreferrer"
             className="text-muted-foreground hover:text-foreground transition-colors"

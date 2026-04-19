@@ -4,37 +4,7 @@ import { useRef, useState } from "react";
 import { HexColorPicker } from "react-colorful";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import { useSfx } from "@/lib/use-sfx";
-
-const SWATCHES: string[] = [
-  // Row 1 — neutrals + pastels
-  "#ffffff",
-  "#f5f5f4",
-  "#fde68a",
-  "#bbf7d0",
-  "#bae6fd",
-  "#fbcfe8",
-  "#c4b5fd",
-  "#000000",
-  // Row 2 — saturated brights
-  "#dc2626", // red
-  "#ea580c", // orange
-  "#f59e0b", // amber
-  "#eab308", // yellow
-  "#16a34a", // green
-  "#14b8a6", // teal
-  "#2563eb", // blue
-  "#9333ea", // purple
-  "#db2777", // hot pink
-];
-
-const CHECKER =
-  "linear-gradient(45deg, var(--muted) 25%, transparent 25%), linear-gradient(-45deg, var(--muted) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, var(--muted) 75%), linear-gradient(-45deg, transparent 75%, var(--muted) 75%)";
-
-function normalizeHex(v: string): string | null {
-  const raw = v.trim().replace(/^#/, "");
-  if (!/^[0-9a-fA-F]{6}$/.test(raw)) return null;
-  return `#${raw.toLowerCase()}`;
-}
+import { SWATCHES, CHECKER, normalizeHex } from "@/lib/palette";
 
 export function Inspector({
   hue,
@@ -58,6 +28,9 @@ export function Inspector({
   onClose: () => void;
 }) {
   const active = hue !== 0 || saturate !== 1 || bg !== null;
+  // Local hex input state lets the user type freely. Reset on every parent
+  // bg change via `key={bg ?? "transparent"}` on the input below so swatch
+  // picks / random / reset always reflect the current value.
   const [hexInput, setHexInput] = useState(bg ?? "");
   const [tab, setTab] = useState<"bg" | "adj">("bg");
   const sfx = useSfx();
@@ -191,12 +164,12 @@ export function Inspector({
         <div className="flex items-center gap-2">
           <span className="text-xs text-muted-foreground font-mono">HEX</span>
           <input
-            value={hexInput}
+            key={bg ?? "transparent"}
+            defaultValue={bg ?? ""}
             onChange={(e) => setHexInput(e.target.value)}
             onBlur={() => {
               const n = normalizeHex(hexInput);
               if (n) onBgChange(n, -1);
-              else setHexInput(bg ?? "");
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter") (e.target as HTMLInputElement).blur();
