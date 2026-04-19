@@ -17,10 +17,11 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: "og", label: "OG card" },
 ];
 
-function ogUrl(id: string, hue?: number, saturate?: number): string {
+function ogUrl(id: string, hue?: number, saturate?: number, bg?: string): string {
   const qs = new URLSearchParams({ type: "single", id });
   if (hue !== undefined && hue !== 0) qs.set("hue", String(hue));
   if (saturate !== undefined && saturate !== 1) qs.set("saturate", saturate.toFixed(2));
+  if (bg) qs.set("bg", bg);
   return `${SITE_URL}/api/og?${qs.toString()}`;
 }
 
@@ -60,7 +61,7 @@ function snippetFor(kind: TabKey, id: string, hue?: number, saturate?: number, b
   loading="lazy"
 ></iframe>`;
     case "og":
-      return ogUrl(id, hue, saturate);
+      return ogUrl(id, hue, saturate, bg);
   }
 }
 

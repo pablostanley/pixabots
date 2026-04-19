@@ -64,14 +64,26 @@ function buildLabel(title: string, subtitle?: string) {
   return { svg: Buffer.from(svg), w: boxW, h: boxH };
 }
 
+function hexToRgb(hex: string): { r: number; g: number; b: number } {
+  const s = hex.replace(/^#/, "");
+  return {
+    r: parseInt(s.slice(0, 2), 16),
+    g: parseInt(s.slice(2, 4), 16),
+    b: parseInt(s.slice(4, 6), 16),
+  };
+}
+
 /** Shared sharp canvas. Every layout composes overlays onto this. */
-function composeOg(overlays: sharp.OverlayOptions[]): Promise<Buffer> {
+function composeOg(overlays: sharp.OverlayOptions[], bg?: string): Promise<Buffer> {
+  const base = bg
+    ? { ...hexToRgb(bg), alpha: 1 }
+    : { r: 0, g: 0, b: 0, alpha: 1 };
   return sharp({
     create: {
       width: OG_W,
       height: OG_H,
       channels: 4,
-      background: { r: 0, g: 0, b: 0, alpha: 1 },
+      background: base,
     },
   })
     .composite(overlays)
@@ -112,25 +124,26 @@ function layoutBotsWithLabel(
 }
 
 export type OgOptions =
-  | { type: "grid"; title: string; subtitle?: string; seed?: string; palette?: PaletteTransform }
-  | { type: "single"; id: string; title: string; subtitle?: string; palette?: PaletteTransform }
-  | { type: "compare"; ids: string[]; title: string; subtitle?: string; palette?: PaletteTransform };
+  | { type: "grid"; title: string; subtitle?: string; seed?: string; palette?: PaletteTransform; bg?: string }
+  | { type: "single"; id: string; title: string; subtitle?: string; palette?: PaletteTransform; bg?: string }
+  | { type: "compare"; ids: string[]; title: string; subtitle?: string; palette?: PaletteTransform; bg?: string };
 
 export async function generateOgImage(opts: OgOptions): Promise<Buffer> {
   if (opts.type === "grid") {
-    return generateGrid(opts.title, opts.subtitle, opts.seed ?? opts.title, opts.palette);
+    return generateGrid(opts.title, opts.subtitle, opts.seed ?? opts.title, opts.palette, opts.bg);
   }
   if (opts.type === "compare") {
-    return generateCompare(opts.ids, opts.title, opts.subtitle, opts.palette);
+    return generateCompare(opts.ids, opts.title, opts.subtitle, opts.palette, opts.bg);
   }
-  return generateSingle(opts.id, opts.title, opts.subtitle, opts.palette);
+  return generateSingle(opts.id, opts.title, opts.subtitle, opts.palette, opts.bg);
 }
 
 async function generateGrid(
   title: string,
   subtitle: string | undefined,
   seed: string,
-  palette?: PaletteTransform
+  palette?: PaletteTransform,
+  bg?: string
 ): Promise<Buffer> {
   const cols = 6;
   const rows = 3;
@@ -164,14 +177,15 @@ async function generateGrid(
     },
   ];
 
-  return composeOg(overlays);
+  return composeOg(overlays, bg);
 }
 
 async function generateCompare(
   ids: string[],
   title: string,
   subtitle: string | undefined,
-  palette?: PaletteTransform
+  palette?: PaletteTransform,
+  bg?: string
 ): Promise<Buffer> {
   const n = ids.length;
   const gap = 20;
@@ -181,18 +195,19 @@ async function generateCompare(
 
   const bots = await Promise.all(ids.map((id) => renderBot(id, size, palette)));
   const label = buildLabel(title, subtitle);
-  return composeOg(layoutBotsWithLabel(bots, size, gap, label));
+  return composeOg(layoutBotsWithLabel(bots, size, gap, label), bg);
 }
 
 async function generateSingle(
   id: string,
   title: string,
   subtitle: string | undefined,
-  palette?: PaletteTransform
+  palette?: PaletteTransform,
+  bg?: string
 ): Promise<Buffer> {
   const size = 380;
   const bot = await renderBot(id, size, palette);
   const label = buildLabel(title, subtitle);
-  return composeOg(layoutBotsWithLabel([bot], size, 0, label));
+  return composeOg(layoutBotsWithLabel([bot], size, 0, label), bg);
 }
 

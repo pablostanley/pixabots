@@ -40,10 +40,11 @@ export async function generateMetadata({
 }: {
   searchParams: Promise<{ id?: string; seed?: string; hue?: string; saturate?: string; bg?: string }>;
 }): Promise<Metadata> {
-  const { id, seed, hue: hueRaw, saturate: satRaw } = await searchParams;
+  const { id, seed, hue: hueRaw, saturate: satRaw, bg: bgRaw } = await searchParams;
   const resolved = resolveInitialId(id, seed);
   if (!resolved || !isValidId(resolved)) return {};
 
+  const bgNorm = bgRaw ? normalizeHex(bgRaw) : null;
   const parts = resolveId(resolved);
   const partsLabel = `${parts.eyes} · ${parts.heads} · ${parts.body} · ${parts.top}`;
   const title = `Pixabot ${resolved}`;
@@ -53,11 +54,13 @@ export async function generateMetadata({
   canonicalQs.set("id", resolved);
   if (hueRaw) canonicalQs.set("hue", hueRaw);
   if (satRaw) canonicalQs.set("saturate", satRaw);
+  if (bgNorm) canonicalQs.set("bg", bgNorm);
   const canonical = `${SITE_URL}/?${canonicalQs.toString()}`;
 
   let ogQuery = `type=single&id=${resolved}&title=${encodeURIComponent(title)}&subtitle=${encodeURIComponent(partsLabel)}`;
   if (hueRaw) ogQuery += `&hue=${encodeURIComponent(hueRaw)}`;
   if (satRaw) ogQuery += `&saturate=${encodeURIComponent(satRaw)}`;
+  if (bgNorm) ogQuery += `&bg=${encodeURIComponent(bgNorm)}`;
   const ogUrl = `${SITE_URL}/api/og?${ogQuery}`;
 
   return {
