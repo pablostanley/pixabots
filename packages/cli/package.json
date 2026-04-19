@@ -1,0 +1,33 @@
+{
+  "name": "pixabots",
+  "version": "0.1.0",
+  "description": "CLI — print and download Pixabots from your terminal",
+  "license": "MIT",
+  "author": "Pablo Stanley (https://pablostanley.substack.com)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pablostanley/pixabots",
+    "directory": "packages/cli"
+  },
+  "type": "module",
+  "bin": {
+    "pixabots": "./dist/index.js"
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "prepublishOnly": "pnpm run build"
+  },
+  "dependencies": {
+    "@pixabots/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
