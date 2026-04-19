@@ -1,0 +1,114 @@
+:root {
+  color-scheme: light dark;
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  background: #0b0b0b;
+  color: #eee;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+main {
+  width: 100%;
+  max-width: 504px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 20px;
+  letter-spacing: 0.02em;
+}
+
+.hint {
+  margin: 4px 0 0;
+  color: #9a9a9a;
+  font-size: 13px;
+}
+
+.stage {
+  border: 1px solid #2a2a2a;
+  padding: 12px;
+  display: grid;
+  place-items: center;
+}
+
+.stage canvas {
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+  display: block;
+}
+
+.toolbar,
+.fx {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.toolbar code {
+  font-family: ui-monospace, Menlo, monospace;
+  padding: 4px 8px;
+  border: 1px solid #2a2a2a;
+  font-size: 13px;
+}
+
+.toolbar button,
+.fx label {
+  font-size: 13px;
+  padding: 6px 10px;
+  border: 1px solid #2a2a2a;
+  background: #141414;
+  color: #eee;
+  cursor: pointer;
+  transition: transform 150ms ease-out, background-color 150ms ease-out;
+}
+
+.toolbar button:hover {
+  background: #1f1f1f;
+}
+
+.toolbar button:active {
+  transform: scale(0.97);
+}
+
+.fx {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.fx label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  cursor: auto;
+}
+
+.fx input[type="range"] {
+  accent-color: #eee;
+}
+
+footer {
+  text-align: center;
+  color: #6a6a6a;
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+footer a {
+  color: inherit;
+}
