@@ -21,13 +21,28 @@ function parseIds(raw: string | undefined): string[] {
     .slice(0, MAX_IDS);
 }
 
+function parseHue(v: string | undefined): number | undefined {
+  if (typeof v !== "string") return undefined;
+  const n = Number(v);
+  if (!Number.isFinite(n)) return undefined;
+  return ((Math.round(n) % 360) + 360) % 360;
+}
+function parseSaturate(v: string | undefined): number | undefined {
+  if (typeof v !== "string") return undefined;
+  const n = Number(v);
+  if (!Number.isFinite(n)) return undefined;
+  return Math.max(0, Math.min(4, n));
+}
+
 export default async function ComparePage({
   searchParams,
 }: {
-  searchParams: Promise<{ ids?: string }>;
+  searchParams: Promise<{ ids?: string; hue?: string; saturate?: string }>;
 }) {
-  const { ids: raw } = await searchParams;
+  const { ids: raw, hue: hueRaw, saturate: satRaw } = await searchParams;
   const ids = parseIds(raw);
+  const hue = parseHue(hueRaw);
+  const saturate = parseSaturate(satRaw);
 
   if (ids.length === 0) {
     return (
@@ -71,7 +86,7 @@ export default async function ComparePage({
       </header>
       <div className={`w-full grid gap-6 ${colClass}`}>
         {ids.map((id) => (
-          <BotDetail key={id} id={id} />
+          <BotDetail key={id} id={id} hue={hue} saturate={saturate} />
         ))}
       </div>
     </main>
