@@ -88,17 +88,19 @@ export function Inspector({
           >
             <PixelIcon name="shuffle" className="size-3.5" />
           </button>
-          {active && (
-            <button
-              type="button"
-              onClick={onReset}
-              data-tooltip="Reset"
-              aria-label="Reset effects"
-              className="size-7 flex items-center justify-center border border-border hover:bg-muted transition-colors cursor-pointer"
-            >
-              <span aria-hidden="true" className="text-sm leading-none">↺</span>
-            </button>
-          )}
+          {/* Always rendered so hitting shuffle doesn't shift the close
+              button into the reset slot. Disabled state fades the icon
+              and removes pointer interaction. */}
+          <button
+            type="button"
+            onClick={onReset}
+            disabled={!active}
+            data-tooltip="Reset"
+            aria-label="Reset effects"
+            className="size-7 flex items-center justify-center border border-border hover:bg-muted transition-colors cursor-pointer disabled:pointer-events-none disabled:opacity-40"
+          >
+            <span aria-hidden="true" className="text-sm leading-none">↺</span>
+          </button>
           <button
             type="button"
             onClick={onClose}
