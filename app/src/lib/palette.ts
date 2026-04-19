@@ -10,6 +10,7 @@
 export interface Palette {
   hue?: number;
   saturate?: number;
+  bg?: string | null;
 }
 
 /** 17 background swatches (matches the Inspector swatch grid). */
@@ -58,6 +59,7 @@ export function withPalette(url: string, p: Palette | undefined): string {
     // Trim trailing zeros so 1.5 stays "1.5" not "1.50"
     parts.push(`saturate=${Number(p.saturate.toFixed(2))}`);
   }
+  if (p.bg) parts.push(`bg=${encodeURIComponent(p.bg)}`);
   if (parts.length === 0) return url;
   const sep = url.includes("?") ? "&" : "?";
   return `${url}${sep}${parts.join("&")}`;
