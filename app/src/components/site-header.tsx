@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { PixelIcon } from "@/components/ui/pixel-icon";
+import { HeaderMenu } from "@/components/header-menu";
 import { useKeydown } from "@/lib/use-keydown";
 import { useScrollDirection } from "@/lib/use-scroll-direction";
 import { useTheme } from "@/lib/use-theme";
@@ -55,7 +56,7 @@ export function SiteHeader() {
       <Link href="/" className="font-bold text-lg tracking-wide hover:text-foreground transition-colors">
         Pixabots
       </Link>
-      <nav className="flex items-center gap-2 sm:gap-4 ml-auto">
+      <nav className="hidden sm:flex items-center gap-4 ml-auto">
         <Button
           variant="ghost"
           size="icon"
@@ -73,13 +74,16 @@ export function SiteHeader() {
         </Button>
         {navLink("/", "create")}
         {navLink("/browse", "browse")}
-        {navLink("/favorites", "stars", "hidden sm:inline")}
+        {navLink("/favorites", "stars")}
         {navLink("/docs", "docs")}
-        {navLink("/docs/api", "api", "hidden sm:inline")}
-        <a href="https://github.com/pablostanley/pixabots" target="_blank" rel="noopener noreferrer" className="hidden sm:inline text-muted-foreground hover:text-foreground transition-colors">
+        {navLink("/docs/api", "api")}
+        <a href="https://github.com/pablostanley/pixabots" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
           github
         </a>
       </nav>
+      <div className="ml-auto sm:hidden">
+        <HeaderMenu />
+      </div>
     </header>
   );
 }
