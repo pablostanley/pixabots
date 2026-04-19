@@ -253,6 +253,27 @@ export function Creator({
     syncUrl(encode(selRef.current), hueRef.current, v);
   };
 
+  const randomPalette = () => {
+    const h = Math.floor(Math.random() * 360);
+    // Skew saturate toward useful range 0.6–1.4 so random doesn't often
+    // produce greyscale or oversaturated output.
+    const s = Math.round((0.6 + Math.random() * 0.8) * 100) / 100;
+    setHueState(h);
+    hueRef.current = h;
+    setSaturateState(s);
+    saturateRef.current = s;
+    syncUrl(encode(selRef.current), h, s);
+    sfx.play({ kind: "bg", index: Math.floor(Math.random() * 9) });
+  };
+
+  const resetPalette = () => {
+    setHueState(0);
+    hueRef.current = 0;
+    setSaturateState(1);
+    saturateRef.current = 1;
+    syncUrl(encode(selRef.current), 0, 1);
+  };
+
   const applyBg = (color: string | null, index?: number) => {
     setBg(color);
     bgRef.current = color;
@@ -490,6 +511,31 @@ export function Creator({
 
       {/* Palette sliders */}
       <div className="w-full max-w-[504px] flex flex-col gap-2 text-xs text-muted-foreground">
+        <div className="flex items-center justify-between">
+          <span className="uppercase tracking-wide">Palette</span>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={randomPalette}
+              data-tooltip="Random palette"
+              aria-label="Random palette"
+              className="size-6 flex items-center justify-center border border-border hover:bg-muted transition-colors cursor-pointer"
+            >
+              <PixelIcon name="shuffle" className="size-3" />
+            </button>
+            {(hue !== 0 || saturate !== 1) && (
+              <button
+                type="button"
+                onClick={resetPalette}
+                data-tooltip="Reset palette"
+                aria-label="Reset palette"
+                className="size-6 flex items-center justify-center border border-border hover:bg-muted transition-colors cursor-pointer"
+              >
+                <span aria-hidden="true" className="text-xs">×</span>
+              </button>
+            )}
+          </div>
+        </div>
         <div className="flex items-center gap-3">
           <span className="w-16">Hue</span>
           <input
