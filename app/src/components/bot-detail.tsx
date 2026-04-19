@@ -6,6 +6,7 @@ import { FavoriteButton } from "@/components/favorite-button";
 import { Tilt } from "@/components/tilt";
 import { GalleryDialog } from "@/components/gallery-dialog";
 import { PaletteShuffleButton } from "@/components/palette-shuffle-button";
+import { BotIdCopy } from "@/components/bot-id-copy";
 import { specialNote } from "@/lib/special-ids";
 import { withPalette } from "@/lib/palette";
 
@@ -85,7 +86,7 @@ export function BotDetail({
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
           <div className="mr-auto flex flex-col">
-            <h2 className="text-3xl font-bold font-mono leading-none">{id}</h2>
+            <BotIdCopy id={id} />
             {note && (
               <span className="text-xs text-muted-foreground mt-1">{note}</span>
             )}
