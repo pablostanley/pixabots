@@ -4,14 +4,18 @@ import {
   PARTS,
   LAYER_ORDER,
   ANIM_FRAMES,
+  FRAME_INDICES,
   FRAME_MS,
   type PixabotCombo,
   type AnimFrame,
+  type PartCategory,
 } from "@pixabots/core";
 import { PARTS_DIR } from "@/lib/paths";
 
 const NATIVE_SIZE = 32;
 const ANIM_PAD = 4;
+
+type LayerSheet = { buffer: Buffer; frames: number };
 
 export class RenderError extends Error {
   status: number;
@@ -21,24 +25,35 @@ export class RenderError extends Error {
   }
 }
 
-async function loadLayers(combo: PixabotCombo) {
+async function loadLayers(combo: PixabotCombo): Promise<Record<PartCategory, LayerSheet>> {
   const entries = await Promise.all(
     LAYER_ORDER.map(async (category) => {
       const part = PARTS[category][combo[category]];
       if (!part) throw new RenderError(`Unknown part index ${combo[category]} for "${category}"`, 400);
+      const frames = part.frames ?? 1;
+      const sheetWidth = frames * NATIVE_SIZE;
       const filePath = path.join(PARTS_DIR, part.path);
       try {
-        const buf = await sharp(filePath)
-          .resize(NATIVE_SIZE, NATIVE_SIZE, { kernel: sharp.kernel.nearest })
+        const buffer = await sharp(filePath)
+          .resize(sheetWidth, NATIVE_SIZE, { kernel: sharp.kernel.nearest })
           .png()
           .toBuffer();
-        return [category, buf] as const;
+        return [category, { buffer, frames }] as const;
       } catch {
         throw new RenderError(`Sprite not found: ${part.path}`, 404);
       }
     })
   );
-  return Object.fromEntries(entries) as Record<string, Buffer>;
+  return Object.fromEntries(entries) as Record<PartCategory, LayerSheet>;
+}
+
+async function extractFrame(sheet: LayerSheet, frameIdx: number): Promise<Buffer> {
+  const f = Math.min(Math.max(0, frameIdx), sheet.frames - 1);
+  if (sheet.frames === 1) return sheet.buffer;
+  return sharp(sheet.buffer)
+    .extract({ left: f * NATIVE_SIZE, top: 0, width: NATIVE_SIZE, height: NATIVE_SIZE })
+    .png()
+    .toBuffer();
 }
 
 export type PaletteTransform = {
@@ -72,8 +87,12 @@ export async function renderPixabot(
   palette?: PaletteTransform
 ): Promise<Buffer> {
   const layers = await loadLayers(combo);
+  const frame0s = await Promise.all(
+    LAYER_ORDER.map(async (cat) => [cat, await extractFrame(layers[cat], 0)] as const)
+  );
+  const layerFrames = Object.fromEntries(frame0s) as Record<PartCategory, Buffer>;
   const composites = LAYER_ORDER.map((cat) => ({
-    input: layers[cat],
+    input: layerFrames[cat],
     left: 0,
     top: 0,
   }));
@@ -109,8 +128,12 @@ export async function renderPixabotSvg(
   size: number = 128
 ): Promise<string> {
   const layers = await loadLayers(combo);
+  const frame0s = await Promise.all(
+    LAYER_ORDER.map(async (cat) => [cat, await extractFrame(layers[cat], 0)] as const)
+  );
+  const layerFrames = Object.fromEntries(frame0s) as Record<PartCategory, Buffer>;
   const composites = LAYER_ORDER.map((cat) => ({
-    input: layers[cat],
+    input: layerFrames[cat],
     left: 0,
     top: 0,
   }));
@@ -150,22 +173,35 @@ export async function renderPixabotSvg(
 }
 
 async function renderFrameNative(
-  layers: Record<string, Buffer>,
+  layers: Record<PartCategory, LayerSheet>,
   bodyTop: Buffer,
   bodyBottom: Buffer,
-  offsets: AnimFrame
+  offsets: AnimFrame,
+  tick: number
 ): Promise<Buffer> {
   const composites: sharp.OverlayOptions[] = [];
 
+  // Per-layer sub-animation: pick the right sprite frame for this tick,
+  // clamped to each part's available frame count.
+  const frameByCategory: Record<PartCategory, Buffer> = Object.fromEntries(
+    await Promise.all(
+      LAYER_ORDER.map(async (cat) => {
+        const scheduled = FRAME_INDICES[cat][tick] ?? 0;
+        return [cat, await extractFrame(layers[cat], scheduled)] as const;
+      })
+    )
+  ) as Record<PartCategory, Buffer>;
+
   // Feet-stay-planted: body bottom row fixed at y=31, top 31 rows shifted.
-  // Matches client-side canvas logic in creator.tsx.
+  // Matches client-side canvas logic in creator.tsx. Uses the pre-sliced
+  // frame-0 body top/bottom (body sub-animations TBD).
   for (const cat of LAYER_ORDER) {
     const off = Math.round(offsets[cat as keyof AnimFrame]);
     if (cat === "body" && off > 0) {
       composites.push({ input: bodyTop, left: 0, top: off });
       composites.push({ input: bodyBottom, left: 0, top: NATIVE_SIZE - 1 });
     } else {
-      composites.push({ input: layers[cat], left: 0, top: off });
+      composites.push({ input: frameByCategory[cat], left: 0, top: off });
     }
   }
 
@@ -198,13 +234,15 @@ export async function renderAnimatedPixabot(
 ): Promise<Buffer> {
   const layers = await loadLayers(combo);
 
-  // Precompute body top/bottom once; reused across all frames with body offset > 0
+  // Precompute body frame-0 split top/bottom once; body sub-animations not
+  // supported yet (feet-planted split needs per-frame body rows).
+  const bodyFrame0 = await extractFrame(layers.body, 0);
   const [bodyTop, bodyBottom] = await Promise.all([
-    sharp(layers.body)
+    sharp(bodyFrame0)
       .extract({ left: 0, top: 0, width: NATIVE_SIZE, height: NATIVE_SIZE - 1 })
       .png()
       .toBuffer(),
-    sharp(layers.body)
+    sharp(bodyFrame0)
       .extract({ left: 0, top: NATIVE_SIZE - 1, width: NATIVE_SIZE, height: 1 })
       .png()
       .toBuffer(),
@@ -213,7 +251,9 @@ export async function renderAnimatedPixabot(
   // Composite each frame at native 32x32. Stack all 8 (32x256 raw, ~32KB)
   // and resize once. Cuts memory ~size² vs upscaling each frame independently.
   const nativeFrames = await Promise.all(
-    ANIM_FRAMES.map((offsets) => renderFrameNative(layers, bodyTop, bodyBottom, offsets))
+    ANIM_FRAMES.map((offsets, tick) =>
+      renderFrameNative(layers, bodyTop, bodyBottom, offsets, tick)
+    )
   );
   const nativeStacked = Buffer.concat(nativeFrames);
   const nativeStripHeight = NATIVE_SIZE * ANIM_FRAMES.length;

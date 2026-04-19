@@ -30,4 +30,5 @@ export {
   type AnimFrame,
   FRAME_MS,
   ANIM_FRAMES,
+  FRAME_INDICES,
 } from './animation.js'

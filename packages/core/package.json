@@ -1,6 +1,6 @@
 {
   "name": "@pixabots/core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Deterministic pixel character IDs, parts catalog, and random generation for Pixabots",
   "license": "MIT",
   "author": "Pablo Stanley (https://pablostanley.substack.com)",
