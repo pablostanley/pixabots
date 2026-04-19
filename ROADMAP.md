@@ -106,6 +106,7 @@
 - [x] Favorites export / import — versioned JSON envelope; Import + Export buttons on the favorites page; dedupe-preserving merge. (PR #84)
 - [x] BotEmbed OG-card tab — `/bot/[id]` embed block surfaces the OG image URL (`/api/og?type=single`) as a sixth snippet. (PR #85)
 - [x] Creator undo — `U` steps back through the last 20 combo changes (shuffle / cycle / pick). Palette + bg stay sticky (sliders give direct reversal). (PR #86)
+- [x] Footer `/random` "surprise me" link — tiny discovery nudge surfacing PR #83. (PR #87)
 
 ## Up Next
 

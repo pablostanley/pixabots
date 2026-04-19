@@ -23,6 +23,7 @@ const CREATOR: Shortcut[] = [
   { keys: ["D"], label: "Open Download menu" },
   { keys: ["F"], label: "Toggle Fx inspector" },
   { keys: ["U"], label: "Undo last part change" },
+  { keys: ["Shift+U"], label: "Redo" },
   { keys: ["← →"], label: "Cycle face / heads" },
   { keys: ["↑ ↓"], label: "Cycle body / top" },
 ];
