@@ -104,6 +104,7 @@ export const PARTS: Record<PartCategory, PartOption[]> = {
     'radar',
     'bun',
     'horns',
+    'spikes',
   ]),
 }
 

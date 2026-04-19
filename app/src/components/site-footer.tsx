@@ -10,7 +10,7 @@ export function SiteFooter() {
   return (
     <footer className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 px-6 py-3 text-sm text-muted-foreground">
       <span>
-        <span className="font-mono text-foreground">9,856</span> combos ·{" "}
+        <span className="font-mono text-foreground">10,752</span> combos ·{" "}
         <kbd className="font-mono border border-border px-1">SPACE</kbd> to shuffle ·{" "}
         <kbd className="font-mono border border-border px-1">?</kbd> for shortcuts ·{" "}
         <Link href="/random" className="hover:text-foreground transition-colors underline decoration-dotted underline-offset-2">

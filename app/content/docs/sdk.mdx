@@ -96,12 +96,12 @@ Access the full parts catalog:
 ```typescript
 import { PARTS, partCount, getPart, getPartIndex, totalCombinations } from "@pixabots/core";
 
-totalCombinations();  // 9856
+totalCombinations();  // 10752
 
 partCount("eyes");  // 16
 partCount("heads"); // 8
 partCount("body");  // 7
-partCount("top");   // 11
+partCount("top");   // 12
 
 getPart("eyes", 2);  // { name: "glasses", path: "eyes/glasses.png" }
 

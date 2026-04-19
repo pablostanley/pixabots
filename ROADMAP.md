@@ -51,7 +51,7 @@ When reviewing code, use the Before/After markdown table format from the skill. 
 - [x] Home autoplay — animation starts on mount, no checkerboard bg
 - [x] Browse modal — clicking a card opens a dialog at `/bot/{id}`, ESC/outside dismisses back to grid, refresh shows full page
 - [x] API hardening — 60 sizes (multiple of 32 up to 1920), animations all sizes, `/random` forwards `animated`/`speed`, strict input validation (size/speed return 400 on invalid), render memory cut ~8x at large sizes, OpenAPI gaps closed (/api/og documented)
-- [x] Prev/next bot navigation — `<` `>` buttons + ArrowLeft/ArrowRight on BotDetail. Works in dialog and on full page. Combo-index walks 9,856 bots in stable order with wrap. `router.replace` so back still returns to `/browse`. (PR #14)
+- [x] Prev/next bot navigation — `<` `>` buttons + ArrowLeft/ArrowRight on BotDetail. Works in dialog and on full page. Combo-index walks 10,752 bots in stable order with wrap. `router.replace` so back still returns to `/browse`. (PR #14)
 - [x] Mobile bottom sheet — dialog anchors to bottom edge and slides up on mobile, stays centered on desktop. Drag-handle affordance. ESC + outside tap dismiss. Drag-to-dismiss tracked as ticket #15. (PR #15)
 - [x] Sticky header — `SiteHeader` is `sticky top-0`, hides on scroll down past 20px, reveals on scroll up, backdrop-blur + bg/80 when scrolled. Scroll tracked via useSyncExternalStore. Respects prefers-reduced-motion. (PR #16)
 - [x] Browse prefetch — `mouseenter` on non-featured cards fires background fetch for the 480 animated the detail view renders. Click → cache-hit. (PR #17)
@@ -76,7 +76,7 @@ When reviewing code, use the Before/After markdown table format from the skill. 
 - [x] Favorites — star/unstar on BotDetail + browse cards; `/favorites` page with empty state; nav link + command-palette action. (PR #36)
 - [x] GIF encoding — `effort: 10` on Sharp's `.gif()` for smaller palette-optimized files. Immutable cache means render-once, serve-forever. (PR #37)
 - [x] Compare view — `/compare?ids=a,b,…` renders up to 6 BotDetails side by side; Favorites page gets a Compare CTA. (PR #38)
-- [x] Footer discovery copy — "9,856 combos · SPACE · ? for shortcuts" in footer. (PR #39)
+- [x] Footer discovery copy — "10,752 combos · SPACE · ? for shortcuts" in footer. (PR #39)
 - [x] Background color picker — 9-swatch row paints behind the canvas + bakes into downloaded PNGs. (PR #40)
 - [x] BotDetail tilt — subtle 3D rotate on pointer hover, respects reduce-motion. (PR #41)
 - [x] Browse skeleton — muted pulse layer until each card's GIF loads; motion-safe pulse. (PR #42)
@@ -149,7 +149,7 @@ When reviewing code, use the Before/After markdown table format from the skill. 
 - [x] Browse Esc — clears the active filter when one's applied, no-op otherwise; docs updated. (PR #109)
 - [x] Compare shuffle — six-random-bots button in `/compare` empty state and header; palette preserved. (PR #110)
 - [x] Creator `X` — clears palette + background; pairs with `R` for a random/clear duo. (PR #111)
-- [x] BotDetail combo index — shows `#N / 9,856` under the ID on `/bot/[id]`; special note moves inline. (PR #112)
+- [x] BotDetail combo index — shows `#N / 10,752` under the ID on `/bot/[id]`; special note moves inline. (PR #112)
 - [x] Docs selector fix — replace dead `[data-docs]` CSS with `#nd-docs-layout`, fumadocs' stable container id. (PR #141)
 - [x] `bg` API param — `/api/pixabot/{id}?bg=#rrggbb` flattens transparency onto a solid color for PNG / GIF / WebP / SVG. (PR #143)
 - [x] `bg` rollout — threaded through `/random`, `/api/pixabot/batch`, `/bot/[id]`, `/compare`, `/embed`, `@pixabots/react@0.3.0` (published), and the `pixabots` CLI v0.3.0 (code merged, publish blocked on NPM_TOKEN scope). PRs #144, #145, #146, #147, #148, #149.
@@ -158,6 +158,8 @@ When reviewing code, use the Before/After markdown table format from the skill. 
 - [x] `/docs/react` page — install, full prop table, seeded-avatar and themed-row examples, self-hosted origin note. Homepage doc links to it. (PR #152)
 - [x] OG social card `bg` — `/api/og?bg=…` (single / compare / grid), threaded through all `generateMetadata` sites so shared links unfurl with the page's bg color. (PR #153)
 - [x] `pixabots` CLI v0.3.0 published — manual first publish (npm granular token can't create unscoped packages). Future `cli-v*` tags auto-publish once `NPM_TOKEN` allow-list is expanded to include `pixabots`.
+- [x] Sub-animations — `kind: 'blink' \| 'sequence'` per part with per-tick sprite sheets. 16-tick super-loop; bounce runs twice. Stitcher script turns per-frame art subdirs into sheets. 4 blink eyes + 4 sequence eyes live. Static combos keep their 8-frame GIFs. (PR #156)
+- [x] `top/spikes` appended — new top part; total combos 9,856 → 10,752. (PR #156)
 
 ## Up Next
 

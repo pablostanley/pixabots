@@ -1,6 +1,6 @@
 # Pixabots
 
-Pixel character creator and avatar API. Mix and match 32x32 pixel art layers to build 9,856 unique characters, animate them, and use them anywhere via API.
+Pixel character creator and avatar API. Mix and match 32x32 pixel art layers to build 10,752 unique characters, animate them, and use them anywhere via API.
 
 **[pixabots.com](https://pixabots.com)**
 

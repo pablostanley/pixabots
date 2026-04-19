@@ -38,10 +38,10 @@ function test(name, fn) {
 
 console.log("\n@pixabots/core smoke\n");
 
-test("totalCombinations = 9856 (partCount product)", () => {
+test("totalCombinations = 10752 (partCount product)", () => {
   const product = CATEGORY_ORDER.reduce((n, cat) => n * partCount(cat), 1);
-  assert.equal(product, 9856);
-  assert.equal(totalCombinations(), 9856);
+  assert.equal(product, 10752);
+  assert.equal(totalCombinations(), 10752);
 });
 
 test("encode ↔ decode round-trips for special IDs", () => {

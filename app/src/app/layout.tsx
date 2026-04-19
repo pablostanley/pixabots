@@ -22,14 +22,14 @@ export const metadata: Metadata = {
     template: "%s — Pixabots",
   },
   description:
-    "9,856 unique pixel art characters with deterministic IDs. Free API for avatars, animated GIFs, and more.",
+    "10,752 unique pixel art characters with deterministic IDs. Free API for avatars, animated GIFs, and more.",
   metadataBase: new URL(SITE_URL),
   openGraph: {
     type: "website",
     siteName: "Pixabots",
     title: "Pixabots — Pixel Character Avatars",
     description:
-      "9,856 unique pixel art characters with deterministic IDs. Free API for avatars, animated GIFs, and more.",
+      "10,752 unique pixel art characters with deterministic IDs. Free API for avatars, animated GIFs, and more.",
     url: SITE_URL,
     images: [
       {
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Pixabots — Pixel Character Avatars",
     description:
-      "9,856 unique pixel art characters with deterministic IDs. Free API for avatars, animated GIFs, and more.",
+      "10,752 unique pixel art characters with deterministic IDs. Free API for avatars, animated GIFs, and more.",
     images: [
       {
         url: `${SITE_URL}/api/og?type=grid&title=Pixabots&seed=home`,

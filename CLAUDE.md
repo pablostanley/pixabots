@@ -1,6 +1,6 @@
 # Pixabots
 
-Pixel character creator and avatar API. 9,856 unique combinations from 4 categories of 32x32 sprites.
+Pixel character creator and avatar API. 10,752 unique combinations from 4 categories of 32x32 sprites.
 
 ## Checklists
 
