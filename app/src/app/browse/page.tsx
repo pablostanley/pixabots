@@ -361,7 +361,7 @@ function BotCard({ bot }: { bot: BotCell }) {
         <img
           src={mainSrc}
           alt={`Pixabot ${bot.id}`}
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity ${showFast ? "opacity-0" : "opacity-100"}`}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-150 ease-out ${showFast ? "opacity-0" : "opacity-100"}`}
           style={{ imageRendering: "pixelated" }}
           loading="lazy"
           onLoad={() => setMainLoaded(true)}
@@ -371,7 +371,7 @@ function BotCard({ bot }: { bot: BotCell }) {
           <img
             src={fastSrc}
             alt=""
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity ${showFast ? "opacity-100" : "opacity-0"}`}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-150 ease-out ${showFast ? "opacity-100" : "opacity-0"}`}
             style={{ imageRendering: "pixelated" }}
             onLoad={() => setFastReady(true)}
             onError={() => setFastReady(true)}
@@ -396,7 +396,7 @@ function BotCard({ bot }: { bot: BotCell }) {
       </div>
 
       {/* Desktop: absolute overlay on hover */}
-      <div className="hidden sm:flex absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto items-end p-2 bg-background/80">
+      <div className="hidden sm:flex absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150 ease-out pointer-events-none group-hover:pointer-events-auto items-end p-2 bg-background/80">
         <div className="flex items-center gap-1 w-full">
           <span className="font-mono text-sm text-foreground mr-auto">{bot.id}</span>
           <FavoriteButton id={bot.id} />

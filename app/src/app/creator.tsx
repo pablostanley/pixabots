@@ -524,7 +524,7 @@ export function Creator({
       {/* Canvas */}
       <ContextMenu>
         <ContextMenuTrigger asChild>
-          <div ref={canvasWrapRef} className="border border-border p-2 sm:p-3 cursor-pointer active:scale-[0.98] transition-transform w-full max-w-[504px]" onClick={shuffle}>
+          <div ref={canvasWrapRef} className="border border-border p-2 sm:p-3 cursor-pointer active:scale-[0.97] transition-transform duration-150 ease-out w-full max-w-[504px]" onClick={shuffle}>
             <canvas
               ref={setCanvasRef}
               width={DISPLAY}
