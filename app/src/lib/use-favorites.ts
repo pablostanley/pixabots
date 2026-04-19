@@ -49,6 +49,15 @@ function getServerSnapshot(): string[] {
   return [];
 }
 
+export interface ImportResult {
+  /** New IDs added after dedupe */
+  added: number;
+  /** Entries in the import that weren't valid pixabot IDs */
+  invalid: number;
+  /** True when the raw blob didn't parse or had a shape we don't recognize */
+  malformed: boolean;
+}
+
 export function useFavorites() {
   const ids = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
@@ -61,5 +70,45 @@ export function useFavorites() {
 
   const has = (id: string) => ids.includes(id);
 
-  return { ids, toggle, has };
+  /** Wrapped in a versioned envelope so future migrations don't break old files. */
+  const exportJson = (): string =>
+    JSON.stringify({ version: 1, exportedAt: new Date().toISOString(), ids: read() }, null, 2);
+
+  /**
+   * Accepts either the versioned envelope or a bare array of ids. Merges
+   * valid entries into the existing set (dedupe preserves order: existing
+   * first, then new arrivals).
+   */
+  const importJson = (raw: string): ImportResult => {
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      return { added: 0, invalid: 0, malformed: true };
+    }
+    const incoming: unknown = Array.isArray(parsed)
+      ? parsed
+      : (parsed as { ids?: unknown })?.ids;
+    if (!Array.isArray(incoming)) {
+      return { added: 0, invalid: 0, malformed: true };
+    }
+    const valid = incoming.filter(
+      (v): v is string => typeof v === "string" && isValidId(v)
+    );
+    const current = read();
+    const seen = new Set(current);
+    const merged = [...current];
+    let added = 0;
+    for (const id of valid) {
+      if (!seen.has(id)) {
+        seen.add(id);
+        merged.push(id);
+        added += 1;
+      }
+    }
+    if (added > 0) write(merged);
+    return { added, invalid: incoming.length - valid.length, malformed: false };
+  };
+
+  return { ids, toggle, has, exportJson, importJson };
 }

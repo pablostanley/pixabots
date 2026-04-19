@@ -101,6 +101,8 @@
 - [x] `/compare` OG card — new `type=compare&ids=…` on `/api/og`; `/compare` `generateMetadata` builds canonical/og/twitter with the actual bots. Bonus: fixed a 4px vertical overflow that also affected `generateSingle`; extracted `composeOg` + `parseIdsCsv` helpers. (PR #79)
 - [x] Creator F shortcut — `F` toggles the Fx inspector, completing the creator keyboard coverage. (PR #80)
 - [x] BotDetail clickable parts — each part name on `/bot/[id]` links to `/browse?<cat>=<name>` so users can pivot from one bot to all bots sharing a part. (PR #81)
+- [x] Creator JSON download — "JSON (metadata)" option alongside SVG in the Download dropdown + right-click submenu. (PR #82)
+- [x] `/random` page — 302 to a fresh `/bot/{id}`; forwards `hue`/`saturate`; `force-dynamic` so Next never bakes the target. (PR #83)
 
 ## Up Next
 
