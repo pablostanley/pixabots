@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Pixelify_Sans } from "next/font/google";
 import { RootProvider } from "fumadocs-ui/provider/next";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ShortcutsOverlay } from "@/components/shortcuts-overlay";
@@ -97,6 +99,8 @@ export default function RootLayout({
           <ShortcutsOverlay />
           <CommandPalette />
         </RootProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
