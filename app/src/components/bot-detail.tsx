@@ -94,14 +94,27 @@ export function BotDetail({
           <BotNav id={id} />
         </div>
         <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-          <dt className="text-muted-foreground">face</dt>
-          <dd>{parts.eyes}</dd>
-          <dt className="text-muted-foreground">heads</dt>
-          <dd>{parts.heads}</dd>
-          <dt className="text-muted-foreground">body</dt>
-          <dd>{parts.body}</dd>
-          <dt className="text-muted-foreground">top</dt>
-          <dd>{parts.top}</dd>
+          {(
+            [
+              ["face", "eyes", parts.eyes],
+              ["heads", "heads", parts.heads],
+              ["body", "body", parts.body],
+              ["top", "top", parts.top],
+            ] as const
+          ).map(([label, cat, name]) => (
+            <div key={cat} className="contents">
+              <dt className="text-muted-foreground">{label}</dt>
+              <dd>
+                <Link
+                  href={`/browse?${cat}=${encodeURIComponent(name)}`}
+                  className="hover:text-foreground hover:underline decoration-dotted underline-offset-2 transition-colors"
+                  title={`Browse pixabots with ${cat}: ${name}`}
+                >
+                  {name}
+                </Link>
+              </dd>
+            </div>
+          ))}
         </dl>
 
         <div className="flex flex-wrap gap-2 mt-2">
