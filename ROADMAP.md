@@ -95,6 +95,10 @@
 - [x] Rate limiting — best-effort per-IP limiter on animated (30/min) + OG (20/min). In-memory per-instance, documented as "guardrail not firewall". (PR #73)
 - [x] Analytics — Vercel Web Analytics + Speed Insights mounted at root layout. Zero config; data lands in the dashboard once enabled in project settings. (PR #74)
 
+## In Review
+
+- **PR #75** — Fx side sheet / palette inspector. In-layout sidebar (not overlay) with Background picker + Hue/Saturation sliders. Kaossilator-style synth on hex picker (pentatonic swatches + log-mapped slider pings). SFX ON by default. Mobile tabs. 3 self-review rounds done: shared palette helpers extracted to `@/lib/palette`, `withPalette` replaces three local paletteQs/paletteQuery/paletteSuffix copies in creator / bot-detail / bot-embed, voice+rawSynth merged into one `synth()`. Awaiting Vercel preview + maintainer merge.
+
 ## Up Next
 
 Prioritized tickets to work through. Each is self-contained and shippable.
