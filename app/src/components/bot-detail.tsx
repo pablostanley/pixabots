@@ -55,10 +55,12 @@ export function BotDetail({
   id,
   hue,
   saturate,
+  bg,
 }: {
   id: string;
   hue?: number;
   saturate?: number;
+  bg?: string;
 }) {
   const parts = resolveId(id);
   const note = specialNote(id);
@@ -66,13 +68,17 @@ export function BotDetail({
   const editQs = new URLSearchParams({ id });
   if (hue && hue !== 0) editQs.set("hue", String(hue));
   if (saturate !== undefined && saturate !== 1) editQs.set("saturate", saturate.toFixed(2));
+  if (bg) editQs.set("bg", bg);
 
   return (
     <div className="flex flex-col gap-4 sm:gap-6">
       <BotPasteNav id={id} />
       {/* aspect-square stops the container from collapsing between img
           swaps (prev/next nav), so nothing reflows below. */}
-      <div className="relative aspect-square border border-border p-3">
+      <div
+        className="relative aspect-square border border-border p-3"
+        style={bg ? { backgroundColor: bg } : undefined}
+      >
         <picture>
           <source
             media="(prefers-reduced-motion: reduce)"
@@ -133,13 +139,13 @@ export function BotDetail({
         <div className="flex flex-wrap gap-2 mt-2">
           <ActionButton href={`/?${editQs.toString()}`} icon="pen-square" label="Edit" />
           <ActionButton
-            href={withPalette(`/api/pixabot/${id}?size=960`, { hue, saturate })}
+            href={withPalette(`/api/pixabot/${id}?size=960`, { hue, saturate, bg })}
             download={`pixabot-${id}.png`}
             icon="download"
             label="Get PNG"
           />
           <ActionButton
-            href={withPalette(`/api/pixabot/${id}?animated=true&size=480`, { hue, saturate })}
+            href={withPalette(`/api/pixabot/${id}?animated=true&size=480`, { hue, saturate, bg })}
             external
             icon="play"
             label="Get GIF"
