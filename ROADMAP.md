@@ -181,3 +181,4 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 - [ ] Accessories — new category layer (hats, items, etc.)
 - [ ] Animation variants — wave, jump, spin, etc. (infra shipped via multi-frame sprites; still needs artwork + scheduled `FRAME_INDICES`)
 - [ ] Social cards — `GET /api/pixabot/{id}/og` for Open Graph images with name/title
+- [ ] Export a seeded PRNG primitive from `@pixabots/core` (mulberry32 + a string-hash) — currently inlined in `bot-suggestions.tsx` and would also serve any future seeded-variant feature.
