@@ -34,6 +34,7 @@ export {
   type AnimFrame,
   FRAME_MS,
   ANIM_FRAMES,
+  LOOP_LENGTH,
   BLINK_SCHEDULE,
   resolveFrameIndex,
 } from './animation.js'

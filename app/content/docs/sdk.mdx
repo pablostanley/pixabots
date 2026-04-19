@@ -121,26 +121,27 @@ ANIM_FRAMES;   // 8-frame array of { top, heads, eyes, body } offsets
 
 ## Sub-animations (sprite-sheet parts)
 
-Some parts ship as horizontal sprite sheets (`frames × 32` wide) so they can animate inside the 8-tick idle bounce. Each `PartOption` declares a `kind`:
+Some parts ship as horizontal sprite sheets (`frames × 32` wide) so they can animate inside the 16-tick idle super-loop. The bounce itself (`ANIM_FRAMES`) stays 8 ticks and repeats twice; the longer super-loop gives blinks room to breathe. Each `PartOption` declares a `kind`:
 
 - `static` (default) — always frame 0.
-- `blink` — 2-frame sheet `[open, closed]`. Runtime schedule: `[0,1,0,1,0,0,0,0]` (two blinks then hold-open).
-- `sequence` — N-frame sheet played in order. N should divide 8 (1 / 2 / 4 / 8) so the sub-loop fits the bounce.
+- `blink` — 2-frame sheet `[open, closed]`. 16-tick schedule: `[0,1,0,1,0,0,0,0, 0,0,0,0,0,0,0,0]` (two blinks then eight ticks held open).
+- `sequence` — N-frame sheet played in order. N should divide `LOOP_LENGTH` (1 / 2 / 4 / 8 / 16) so the sub-loop fits the super-loop.
 
 Resolve a tick → frame index via `resolveFrameIndex`:
 
 ```typescript
-import { PARTS, resolveFrameIndex, BLINK_SCHEDULE } from "@pixabots/core";
+import { PARTS, LOOP_LENGTH, resolveFrameIndex, BLINK_SCHEDULE } from "@pixabots/core";
 
 const visor = PARTS.eyes.find(p => p.name === "visor");
 // { name: "visor", path: "eyes/visor.png", frames: 8, kind: "sequence" }
 
-for (let tick = 0; tick < 8; tick++) {
+for (let tick = 0; tick < LOOP_LENGTH; tick++) {
   const idx = resolveFrameIndex(visor, tick);
   // sx = idx * 32 to source-crop the sprite sheet
 }
 
-BLINK_SCHEDULE; // [0,1,0,1,0,0,0,0]
+LOOP_LENGTH;     // 16
+BLINK_SCHEDULE;  // [0,1,0,1,0,0,0,0, 0,0,0,0,0,0,0,0]
 ```
 
 ## Types

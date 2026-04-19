@@ -4,6 +4,7 @@ import {
   PARTS,
   LAYER_ORDER,
   ANIM_FRAMES,
+  LOOP_LENGTH,
   FRAME_MS,
   resolveFrameIndex,
   type PixabotCombo,
@@ -260,15 +261,17 @@ export async function renderAnimatedPixabot(
       .toBuffer(),
   ]);
 
-  // Composite each frame at native 32x32. Stack all 8 (32x256 raw, ~32KB)
-  // and resize once. Cuts memory ~size² vs upscaling each frame independently.
+  // Composite each tick of the LOOP_LENGTH super-loop (bounce wraps at
+  // ANIM_FRAMES.length). Stack all ticks in one raw strip and resize once —
+  // cuts memory ~size² vs upscaling each frame independently.
   const nativeFrames = await Promise.all(
-    ANIM_FRAMES.map((offsets, tick) =>
-      renderFrameNative(combo, layers, bodyTop, bodyBottom, offsets, tick)
-    )
+    Array.from({ length: LOOP_LENGTH }, (_, tick) => {
+      const offsets = ANIM_FRAMES[tick % ANIM_FRAMES.length];
+      return renderFrameNative(combo, layers, bodyTop, bodyBottom, offsets, tick);
+    })
   );
   const nativeStacked = Buffer.concat(nativeFrames);
-  const nativeStripHeight = NATIVE_SIZE * ANIM_FRAMES.length;
+  const nativeStripHeight = NATIVE_SIZE * LOOP_LENGTH;
 
   // Palette transform + bg flatten at native scale before resize —
   // fewer pixels, same result.
@@ -282,7 +285,7 @@ export async function renderAnimatedPixabot(
     : nativeStacked;
   const tintedChannels = bg ? 3 : 4;
 
-  const targetStripHeight = size * ANIM_FRAMES.length;
+  const targetStripHeight = size * LOOP_LENGTH;
   const targetStripped =
     size === NATIVE_SIZE
       ? tintedStacked
@@ -294,7 +297,7 @@ export async function renderAnimatedPixabot(
           .toBuffer();
 
   const delay = Math.max(20, Math.round(FRAME_MS / speed));
-  const delays = ANIM_FRAMES.map(() => delay);
+  const delays = Array.from({ length: LOOP_LENGTH }, () => delay);
 
   const pipeline = sharp(targetStripped, {
     raw: {

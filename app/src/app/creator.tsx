@@ -4,7 +4,7 @@ import { useState, useRef, useCallback } from "react";
 import { isTypingTarget, useKeydown } from "@/lib/use-keydown";
 import { usePaste, parsePastedId } from "@/lib/use-paste";
 import { parts, layerOrder, layerLabel, type PartCategory } from "@/lib/parts";
-import { encode, decode, isValidId, randomCombo, resolve, ANIM_FRAMES, FRAME_MS, resolveFrameIndex, PARTS, type AnimFrame } from "@pixabots/core";
+import { encode, decode, isValidId, randomCombo, resolve, ANIM_FRAMES, LOOP_LENGTH, FRAME_MS, resolveFrameIndex, PARTS, type AnimFrame } from "@pixabots/core";
 import { Button } from "@/components/ui/button";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import { useShareOrCopy } from "@/lib/use-share-or-copy";
@@ -169,8 +169,10 @@ export function Creator({
     frameRef.current = 0;
     intervalRef.current = setInterval(() => {
       if (canvasRef.current) {
-        drawOnCanvas(canvasRef.current, imagesRef.current, selRef.current, ANIM_FRAMES[frameRef.current], bgRef.current, frameRef.current);
-        frameRef.current = (frameRef.current + 1) % ANIM_FRAMES.length;
+        const tick = frameRef.current;
+        const offsets = ANIM_FRAMES[tick % ANIM_FRAMES.length];
+        drawOnCanvas(canvasRef.current, imagesRef.current, selRef.current, offsets, bgRef.current, tick);
+        frameRef.current = (tick + 1) % LOOP_LENGTH;
       }
     }, FRAME_MS);
     animatingRef.current = true;
