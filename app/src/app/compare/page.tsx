@@ -4,21 +4,24 @@ import { BotDetail } from "@/components/bot-detail";
 import { CompareShuffleButton } from "@/components/compare-shuffle-button";
 import { SITE_URL } from "@/lib/constants";
 import { parseIdsCsv } from "@/lib/ids";
+import { normalizeHex } from "@/lib/palette";
 
 const MAX_IDS = 6;
 
 export async function generateMetadata({
   searchParams,
 }: {
-  searchParams: Promise<{ ids?: string; hue?: string; saturate?: string }>;
+  searchParams: Promise<{ ids?: string; hue?: string; saturate?: string; bg?: string }>;
 }): Promise<Metadata> {
-  const { ids: raw, hue: hueRaw, saturate: satRaw } = await searchParams;
+  const { ids: raw, hue: hueRaw, saturate: satRaw, bg: bgRaw } = await searchParams;
   const ids = parseIdsCsv(raw, MAX_IDS);
+  const bgNorm = bgRaw ? normalizeHex(bgRaw) : null;
 
   const canonicalQs = new URLSearchParams();
   if (ids.length) canonicalQs.set("ids", ids.join(","));
   if (hueRaw) canonicalQs.set("hue", hueRaw);
   if (satRaw) canonicalQs.set("saturate", satRaw);
+  if (bgNorm) canonicalQs.set("bg", bgNorm);
   const canonical = canonicalQs.size
     ? `${SITE_URL}/compare?${canonicalQs.toString()}`
     : `${SITE_URL}/compare`;
@@ -79,12 +82,13 @@ function parseSaturate(v: string | undefined): number | undefined {
 export default async function ComparePage({
   searchParams,
 }: {
-  searchParams: Promise<{ ids?: string; hue?: string; saturate?: string }>;
+  searchParams: Promise<{ ids?: string; hue?: string; saturate?: string; bg?: string }>;
 }) {
-  const { ids: raw, hue: hueRaw, saturate: satRaw } = await searchParams;
+  const { ids: raw, hue: hueRaw, saturate: satRaw, bg: bgRaw } = await searchParams;
   const ids = parseIdsCsv(raw, MAX_IDS);
   const hue = parseHue(hueRaw);
   const saturate = parseSaturate(satRaw);
+  const bg = bgRaw ? normalizeHex(bgRaw) ?? undefined : undefined;
 
   if (ids.length === 0) {
     return (
@@ -132,7 +136,7 @@ export default async function ComparePage({
       </header>
       <div className={`w-full grid gap-6 ${colClass}`}>
         {ids.map((id) => (
-          <BotDetail key={id} id={id} hue={hue} saturate={saturate} />
+          <BotDetail key={id} id={id} hue={hue} saturate={saturate} bg={bg} />
         ))}
       </div>
     </main>
