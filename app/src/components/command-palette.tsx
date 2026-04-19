@@ -33,6 +33,7 @@ export function CommandPalette() {
       { id: "api", label: "API reference", hint: "/docs/api", keywords: ["api", "rest"], run: () => router.push("/docs/api") },
       { id: "sdk", label: "SDK reference", hint: "/docs/sdk", run: () => router.push("/docs/sdk") },
       { id: "parts", label: "Parts catalog", hint: "/docs/parts", run: () => router.push("/docs/parts") },
+      { id: "shortcuts", label: "Keyboard shortcuts", hint: "/docs/shortcuts", keywords: ["keys", "hotkeys"], run: () => router.push("/docs/shortcuts") },
       {
         id: "random",
         label: "Random pixabot",

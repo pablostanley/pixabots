@@ -1,0 +1,45 @@
+---
+title: Keyboard shortcuts
+description: Every keyboard shortcut wired into the Pixabots site.
+---
+
+Press <kbd>?</kbd> anywhere to open the in-app shortcuts overlay. The list below is the same information, kept here so it's linkable and indexable.
+
+## Global
+
+| Keys | Action |
+|------|--------|
+| <kbd>?</kbd> | Show the shortcuts overlay |
+| <kbd>⌘K</kbd> / <kbd>Ctrl+K</kbd> | Open the command palette |
+
+The command palette accepts a 4-char pixabot ID as input — type a valid ID and the first action jumps straight to `/bot/{id}`.
+
+## Creator (`/`)
+
+| Keys | Action |
+|------|--------|
+| <kbd>Space</kbd> | Shuffle (respects locked layers) |
+| <kbd>P</kbd> | Play / Stop the bounce animation |
+| <kbd>C</kbd> | Copy the share URL |
+| <kbd>D</kbd> | Open the Download menu |
+| <kbd>F</kbd> | Toggle the Fx (palette) inspector |
+| <kbd>U</kbd> | Undo last part change |
+| <kbd>Shift+U</kbd> | Redo |
+| <kbd>←</kbd> <kbd>→</kbd> | Cycle face / heads |
+| <kbd>↑</kbd> <kbd>↓</kbd> | Cycle body / top |
+
+Undo/redo cover the last 20 combo changes. Palette (hue / saturation / background) stays sticky — the sliders already give a direct way to reverse their own changes.
+
+### Easter egg
+
+Type the Konami code on the creator — <kbd>↑</kbd> <kbd>↑</kbd> <kbd>↓</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd> <kbd>←</kbd> <kbd>→</kbd> <kbd>B</kbd> <kbd>A</kbd> — to trigger a rapid 20-shuffle sequence.
+
+## Bot pages (`/bot/{id}`, `/browse`)
+
+| Keys | Action |
+|------|--------|
+| <kbd>←</kbd> | Previous pixabot |
+| <kbd>→</kbd> | Next pixabot |
+| <kbd>Esc</kbd> | Close the modal (when opened from `/browse`) |
+
+Prev / next walks the 9,856 combo space in stable order and wraps at the edges.
