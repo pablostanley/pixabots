@@ -35,11 +35,17 @@ pixabots/
 
 ## npm package
 
-`@pixabots/core` is published on npm (v0.1.0). After changes to `packages/core/`:
-1. Bump version in `packages/core/package.json`
-2. `cd packages/core && pnpm build && npm publish --access public`
+`@pixabots/core` is published on npm. **Publishing is automated** via `.github/workflows/publish-core.yml` — the agent can release new versions end-to-end by pushing a git tag. No local `npm login` / `npm publish` needed; the `NPM_TOKEN` lives only in the GitHub repo secret.
 
-designteam.app currently inlines `randomPixabotId()` — should swap for `@pixabots/core`'s `randomId()` now that it's published.
+After changes to `packages/core/`:
+1. Bump `version` in `packages/core/package.json`.
+2. Commit + push to main (via PR).
+3. `git tag core-v<new-version> && git push origin core-v<new-version>`.
+4. Workflow builds, runs `pnpm --filter @pixabots/core test` (smoke tests in `packages/core/test/smoke.mjs`), and publishes.
+
+Monitor with `gh run list --workflow=publish-core.yml`.
+
+designteam.app currently inlines `randomPixabotId()` — should swap for `@pixabots/core`'s `randomId()` now that it's on npm.
 
 ## Adding new parts
 
@@ -47,7 +53,7 @@ designteam.app currently inlines `randomPixabotId()` — should swap for `@pixab
 2. Copy to `app/public/parts/{category}/`
 3. **Append** to the arrays in `packages/core/src/parts.ts` (never reorder!)
 4. Rebuild: `pnpm --filter @pixabots/core build`
-5. Bump version + republish to npm
+5. Bump version + push `core-v<new>` tag — the publish workflow ships it to npm
 
 ### Multi-frame sprites (sub-animations)
 
