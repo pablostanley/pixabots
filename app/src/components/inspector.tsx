@@ -224,13 +224,16 @@ export function Inspector({
               backgroundPosition: "0 0, 0 4px, 4px -4px, -4px 0",
             }}
           >
-            {/* Diagonal line corner-to-corner for clarity */}
+            {/* Diagonal line corner-to-corner — matches the swatch border color */}
             <span
               aria-hidden="true"
               className="absolute inset-0 pointer-events-none"
               style={{
-                backgroundImage:
-                  "linear-gradient(to top right, transparent calc(50% - 1px), var(--muted-foreground) calc(50% - 1px), var(--muted-foreground) calc(50% + 1px), transparent calc(50% + 1px))",
+                backgroundImage: `linear-gradient(to top right, transparent calc(50% - 1px), ${
+                  bg === null ? "var(--foreground)" : "var(--border)"
+                } calc(50% - 1px), ${
+                  bg === null ? "var(--foreground)" : "var(--border)"
+                } calc(50% + 1px), transparent calc(50% + 1px))`,
               }}
             />
           </button>
