@@ -96,6 +96,7 @@
 - [x] Analytics — Vercel Web Analytics + Speed Insights mounted at root layout. Zero config; data lands in the dashboard once enabled in project settings. (PR #74)
 - [x] Fx palette inspector — in-layout right sidebar with Background picker (18 pentatonic swatches + hex + HSL) and Hue/Saturation sliders. Kaossilator-style synth (log-mapped slider pings, hue→pitch/value→octave/sat→volume on color picks). Mobile tabs (Background / Adjustments) with animated height. SFX now ON by default. Shared `@/lib/palette` replaces three local palette-URL helpers; `synth()` unifies former voice + rawSynth. (PR #75)
 - [x] "You might also like" — `/bot/[id]` now shows 4 deterministic one-part-different variants. FNV-1a + mulberry32 seeded off the id so repeat visits render the same four. Palette forwards via `withPalette`. Modal skipped. (PR #76)
+- [x] `@pixabots/core` v0.3.0 — exports seeded PRNG primitives (`hashString`, `mulberry32`, `createRng`). `bot-suggestions` now reuses them instead of inlining. SDK docs updated. Awaiting `npm publish --access public` (build + workspace already use the new version). (PR #77)
 
 ## Up Next
 
@@ -182,4 +183,3 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 - [ ] Accessories — new category layer (hats, items, etc.)
 - [ ] Animation variants — wave, jump, spin, etc. (infra shipped via multi-frame sprites; still needs artwork + scheduled `FRAME_INDICES`)
 - [ ] Social cards — `GET /api/pixabot/{id}/og` for Open Graph images with name/title
-- [ ] Export a seeded PRNG primitive from `@pixabots/core` (mulberry32 + a string-hash) — currently inlined in `bot-suggestions.tsx` and would also serve any future seeded-variant feature.
