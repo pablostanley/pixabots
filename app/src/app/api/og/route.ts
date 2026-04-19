@@ -2,6 +2,10 @@ import { type NextRequest } from "next/server";
 import { isValidId } from "@pixabots/core";
 import { generateOgImage } from "@/lib/og-image";
 import { CORS_HEADERS, optionsResponse, imageResponse } from "@/lib/api";
+import { checkRate, clientKey } from "@/lib/rate-limit";
+
+const OG_LIMIT = 20;
+const OG_WINDOW_MS = 60_000;
 
 const MAX_TITLE_LEN = 60;
 const MAX_SUBTITLE_LEN = 100;
@@ -34,6 +38,23 @@ function parsePalette(
 }
 
 export async function GET(request: NextRequest) {
+  const rate = checkRate(`og:${clientKey(request)}`, OG_LIMIT, OG_WINDOW_MS);
+  if (!rate.allowed) {
+    return Response.json(
+      { error: `Rate limit exceeded. Try again in ${rate.resetSeconds}s.` },
+      {
+        status: 429,
+        headers: {
+          ...CORS_HEADERS,
+          "Retry-After": String(rate.resetSeconds),
+          "X-RateLimit-Limit": String(rate.limit),
+          "X-RateLimit-Remaining": "0",
+          "X-RateLimit-Reset": String(Math.floor(Date.now() / 1000) + rate.resetSeconds),
+        },
+      }
+    );
+  }
+
   const params = request.nextUrl.searchParams;
   const type = params.get("type") ?? "grid";
   const title = clampText(params.get("title"), MAX_TITLE_LEN) ?? "Pixabots";
