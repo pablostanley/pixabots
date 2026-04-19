@@ -32,7 +32,7 @@ export function FavoriteButton({
       <span
         key={starred ? "on" : "off"}
         aria-hidden="true"
-        className={`${starred ? "animate-in zoom-in-50 fade-in-0 duration-200" : ""} leading-none`}
+        className={`${starred ? "animate-in zoom-in-95 fade-in-0 duration-150 ease-out" : ""} leading-none`}
       >
         {starred ? "★" : "☆"}
       </span>

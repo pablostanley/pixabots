@@ -7,6 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { BotDetail } from "@/components/bot-detail";
+import { BotEdgeNav } from "@/components/bot-edge-nav";
 
 export function BotDialog({ id }: { id: string }) {
   const router = useRouter();
@@ -27,6 +28,9 @@ export function BotDialog({ id }: { id: string }) {
         <DialogTitle className="sr-only">Pixabot {id}</DialogTitle>
         <BotDetail id={id} />
       </DialogContent>
+      {/* Edge arrows render outside the dialog so they don't reflow its
+          content; keyed on id so preload links update on every step. */}
+      <BotEdgeNav id={id} key={id} />
     </Dialog>
   );
 }

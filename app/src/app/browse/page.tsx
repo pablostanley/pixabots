@@ -274,7 +274,7 @@ function BotCard({ bot }: { bot: BotCell }) {
           <PixelIcon
             key={copied ? "copied" : "idle"}
             name={copied ? "check" : "copy"}
-            className={`size-3 ${copied ? "animate-in zoom-in-50 fade-in-0 duration-200" : ""}`}
+            className={`size-3 ${copied ? "animate-in zoom-in-95 fade-in-0 duration-150 ease-out" : ""}`}
           />
         </button>
         <button onClick={onDownload} className="size-6 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" data-tooltip="Download" aria-label="Download">
@@ -291,7 +291,7 @@ function BotCard({ bot }: { bot: BotCell }) {
             <PixelIcon
               key={copied ? "copied" : "idle"}
               name={copied ? "check" : "copy"}
-              className={`size-3.5 ${copied ? "animate-in zoom-in-50 fade-in-0 duration-200" : ""}`}
+              className={`size-3.5 ${copied ? "animate-in zoom-in-95 fade-in-0 duration-150 ease-out" : ""}`}
             />
           </button>
           <button onClick={onDownload} className="size-7 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" data-tooltip="Download" aria-label="Download">

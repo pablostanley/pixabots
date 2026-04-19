@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { resolveId } from "@pixabots/core";
 import { PixelIcon } from "@/components/ui/pixel-icon";
-import { BotNav } from "@/components/bot-nav";
 import { FavoriteButton } from "@/components/favorite-button";
 import { Tilt } from "@/components/tilt";
 import { GalleryDialog } from "@/components/gallery-dialog";
 import { PaletteShuffleButton } from "@/components/palette-shuffle-button";
 import { BotIdCopy } from "@/components/bot-id-copy";
+import { BotPasteNav } from "@/components/bot-paste-nav";
 import { specialNote } from "@/lib/special-ids";
 import { withPalette } from "@/lib/palette";
 import { COMBO_TOTAL, comboToIndex } from "@/lib/bot-nav";
@@ -68,21 +68,28 @@ export function BotDetail({
 
   return (
     <div className="flex flex-col gap-4 sm:gap-6">
+      <BotPasteNav id={id} />
       <Tilt className="border border-border p-3">
-        <picture>
-          <source
-            media="(prefers-reduced-motion: reduce)"
-            srcSet={withPalette(`/api/pixabot/${id}?size=480`, { hue, saturate })}
-          />
-          <img
-            src={withPalette(`/api/pixabot/${id}?size=480&animated=true`, { hue, saturate })}
-            alt={`Pixabot ${id}`}
-            width={480}
-            height={480}
-            className="block w-full h-auto"
-            style={{ imageRendering: "pixelated" }}
-          />
-        </picture>
+        {/* aspect-square stops the container from collapsing between img
+            swaps (prev/next nav), so nothing reflows below. */}
+        <div className="relative aspect-square">
+          <picture>
+            <source
+              media="(prefers-reduced-motion: reduce)"
+              srcSet={withPalette(`/api/pixabot/${id}?size=480`, { hue, saturate })}
+            />
+            <img
+              src={withPalette(`/api/pixabot/${id}?size=480&animated=true`, { hue, saturate })}
+              alt={`Pixabot ${id}`}
+              width={480}
+              height={480}
+              decoding="async"
+              fetchPriority="high"
+              className="block w-full h-full"
+              style={{ imageRendering: "pixelated" }}
+            />
+          </picture>
+        </div>
       </Tilt>
 
       <div className="flex flex-col gap-3">
@@ -97,7 +104,6 @@ export function BotDetail({
           <FavoriteButton id={id} />
           <PaletteShuffleButton />
           <GalleryDialog id={id} />
-          <BotNav id={id} />
         </div>
         <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
           {(

@@ -627,20 +627,33 @@ export function Creator({
 
       {/* ID bar */}
       <div className="border border-border px-3 py-2 sm:px-4 sm:py-3 flex flex-wrap items-center gap-2 text-sm w-full max-w-[504px]">
-        <span className="font-mono text-foreground">{pixabotId}</span>
+        <a
+          href={withPalette(`/bot/${pixabotId}`, { hue, saturate })}
+          className="font-mono text-foreground hover:underline decoration-dotted underline-offset-2"
+          data-tooltip="Open bot page"
+        >
+          {pixabotId}
+        </a>
         <button onClick={copyShareUrl} className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer flex items-center gap-1">
           <PixelIcon
             key={copied ? "copied" : "idle"}
             name={copied ? "check" : "copy"}
-            className={`size-4 ${copied ? "animate-in zoom-in-50 fade-in-0 duration-200" : ""}`}
+            className={`size-4 ${copied ? "animate-in zoom-in-95 fade-in-0 duration-150 ease-out" : ""}`}
           />
           <span
             key={copied ? "c" : "i"}
-            className={`${copied ? "text-foreground animate-in fade-in-0 slide-in-from-bottom-1 duration-200" : ""}`}
+            className={`${copied ? "text-foreground animate-in fade-in-0 duration-150 ease-out" : ""}`}
           >
             {copied ? "Copied!" : "Share"}
           </span>
         </button>
+        <a
+          href={withPalette(`/bot/${pixabotId}`, { hue, saturate })}
+          className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+        >
+          Details
+          <span aria-hidden="true" className="text-xs">↗</span>
+        </a>
         <div className="flex items-center gap-2 ml-auto">
           <a
             href={withPalette(apiUrl, { hue, saturate })}
