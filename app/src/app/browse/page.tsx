@@ -62,10 +62,12 @@ function FilterBar({
   filters,
   onChange,
   onReroll,
+  compareHref,
 }: {
   filters: Filters;
   onChange: (cat: PartCategory, value: string | null) => void;
   onReroll: () => void;
+  compareHref: string | null;
 }) {
   const active = Object.keys(filters).length > 0;
   return (
@@ -107,10 +109,19 @@ function FilterBar({
           </DropdownMenu>
         );
       })}
+      {compareHref && (
+        <Link
+          href={compareHref}
+          className="ml-auto flex items-center gap-1 px-2 py-1 text-xs border border-border hover:bg-muted transition-colors"
+          data-tooltip="Compare the first 6 in this grid"
+        >
+          Compare top 6
+        </Link>
+      )}
       <button
         type="button"
         onClick={onReroll}
-        className="ml-auto flex items-center gap-1 px-2 py-1 text-xs border border-border hover:bg-muted cursor-pointer"
+        className={`${compareHref ? "" : "ml-auto "}flex items-center gap-1 px-2 py-1 text-xs border border-border hover:bg-muted cursor-pointer`}
         data-tooltip="Regenerate the grid"
         aria-label="Reroll grid"
       >
@@ -309,9 +320,12 @@ function BrowseInner() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [filters]);
 
+  const compareHref =
+    bots.length >= 2 ? `/compare?ids=${bots.slice(0, 6).map((b) => b.id).join(",")}` : null;
+
   return (
     <main className="flex-1 p-2 sm:p-4">
-      <FilterBar filters={filters} onChange={setFilter} onReroll={reroll} />
+      <FilterBar filters={filters} onChange={setFilter} onReroll={reroll} compareHref={compareHref} />
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4" style={{ gridAutoFlow: "dense" }}>
         {bots.map((bot) => (
           <BotCard key={bot.id} bot={bot} />
