@@ -150,6 +150,11 @@ When reviewing code, use the Before/After markdown table format from the skill. 
 - [x] Compare shuffle — six-random-bots button in `/compare` empty state and header; palette preserved. (PR #110)
 - [x] Creator `X` — clears palette + background; pairs with `R` for a random/clear duo. (PR #111)
 - [x] BotDetail combo index — shows `#N / 9,856` under the ID on `/bot/[id]`; special note moves inline. (PR #112)
+- [x] Docs selector fix — replace dead `[data-docs]` CSS with `#nd-docs-layout`, fumadocs' stable container id. (PR #141)
+- [x] `bg` API param — `/api/pixabot/{id}?bg=#rrggbb` flattens transparency onto a solid color for PNG / GIF / WebP / SVG. (PR #143)
+- [x] `bg` rollout — threaded through `/random`, `/api/pixabot/batch`, `/bot/[id]`, `/compare`, `/embed`, `@pixabots/react@0.3.0` (published), and the `pixabots` CLI v0.3.0 (code merged, publish blocked on NPM_TOKEN scope). PRs #144, #145, #146, #147, #148, #149.
+- [x] Package rename — `app/package.json` is now `pixabots-app` (private) so the CLI's `pixabots` name is unambiguous. publish-cli.yml uses `./packages/cli` path filter. (PR #150)
+- [x] React auto-publish — `.github/workflows/publish-react.yml` triggers on `react-v*` tags; same NPM_TOKEN as core. (PR #148)
 
 ## Up Next
 
@@ -252,6 +257,11 @@ Ship Phase 1 first. Phase 2 and 3 only if someone actually asks.
 - [ ] Accessories — new category layer (hats, items, etc.)
 - [ ] Animation variants — wave, jump, spin, etc. (infra shipped via multi-frame sprites; still needs artwork + scheduled `FRAME_INDICES`)
 - [x] Social cards — shipped via `/api/og?type=single|grid|compare` across PRs #79, #68, #108. `twitter:site` + `image:alt` added in PR #138.
+
+## Blocked
+
+- [ ] **CLI npm publish** — `packages/cli` (`pixabots`) is ready to ship at v0.3.0 with the new `--bg` flag, but `NPM_TOKEN` is granular-scoped to `@pixabots/*` and rejects writes to the unscoped `pixabots` name (E403 on first `cli-v0.3.0` tag). Unblock: expand the token's package allow-list at npmjs.com → Account → Access Tokens to include `pixabots`, then push a fresh `cli-v0.3.0` tag.
+- [ ] **OG image `bg` support** — Low-priority cosmetic. The single-bot OG card (`/api/og?type=single&id=…`) currently renders on the card's own dark background. Could add `?bg=` to flatten the pixabot onto a custom color inside the card. Not requested.
 
 ## Bugs
 
