@@ -6,14 +6,25 @@ import { PixelIcon } from "@/components/ui/pixel-icon";
 import { useSfx } from "@/lib/use-sfx";
 
 const SWATCHES: string[] = [
+  // Row 1 — neutrals + pastels
   "#ffffff",
-  "#000000",
   "#f5f5f4",
   "#fde68a",
   "#bbf7d0",
   "#bae6fd",
   "#fbcfe8",
   "#c4b5fd",
+  "#000000",
+  // Row 2 — saturated brights
+  "#dc2626", // red
+  "#ea580c", // orange
+  "#f59e0b", // amber
+  "#eab308", // yellow
+  "#16a34a", // green
+  "#14b8a6", // teal
+  "#2563eb", // blue
+  "#9333ea", // purple
+  "#db2777", // hot pink
 ];
 
 const CHECKER =
@@ -141,15 +152,25 @@ export function Inspector({
               onBgChange(null, -1);
             }}
             title="Transparent"
-            className={`aspect-square border ${
+            className={`relative aspect-square border ${
               bg === null ? "border-foreground border-2" : "border-border"
-            } cursor-pointer`}
+            } cursor-pointer overflow-hidden`}
             style={{
               backgroundImage: CHECKER,
               backgroundSize: "8px 8px",
               backgroundPosition: "0 0, 0 4px, 4px -4px, -4px 0",
             }}
-          />
+          >
+            {/* Diagonal line corner-to-corner for clarity */}
+            <span
+              aria-hidden="true"
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                backgroundImage:
+                  "linear-gradient(to top right, transparent calc(50% - 1px), var(--border) calc(50% - 1px), var(--border) calc(50% + 1px), transparent calc(50% + 1px))",
+              }}
+            />
+          </button>
           {SWATCHES.map((color, i) => {
             const isActive = bg === color;
             return (

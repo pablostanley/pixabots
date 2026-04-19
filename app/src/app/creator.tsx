@@ -257,13 +257,22 @@ export function Creator({
   const BG_CHOICES: Array<string | null> = [
     null,
     "#ffffff",
-    "#000000",
     "#f5f5f4",
     "#fde68a",
     "#bbf7d0",
     "#bae6fd",
     "#fbcfe8",
     "#c4b5fd",
+    "#000000",
+    "#dc2626",
+    "#ea580c",
+    "#f59e0b",
+    "#eab308",
+    "#16a34a",
+    "#14b8a6",
+    "#2563eb",
+    "#9333ea",
+    "#db2777",
   ];
 
   const randomPalette = () => {

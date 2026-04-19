@@ -29,6 +29,16 @@ const midiToHz = (m: number) => 440 * Math.pow(2, (m - 69) / 12);
 // C major pentatonic, two octaves — can't hit a wrong note
 const PENTA_C = [60, 62, 64, 67, 69, 72, 74, 76, 79, 81];
 
+// 18-note C major pentatonic across ~3 octaves (C3 → E6). Pentatonic
+// notes harmonize in any order, so random swatch taps still sound
+// musical together — one unique note per background swatch.
+const BG_SCALE = [
+  48, 50, 52, 55, 57, // C3 D3 E3 G3 A3
+  60, 62, 64, 67, 69, // C4 D4 E4 G4 A4
+  72, 74, 76, 79, 81, // C5 D5 E5 G5 A5
+  84, 86, 88,          // C6 D6 E6
+];
+
 // Each category gets its own pentatonic in a different register/key
 // so cycling through categories sounds harmonically distinct.
 const CATEGORY_SCALES: Record<PartCategory, number[]> = {
@@ -138,8 +148,9 @@ function playEvent(ev: SfxEvent) {
       return;
     }
     case "bg": {
-      // Each swatch = ascending pentatonic note
-      const note = PENTA_C[ev.index % PENTA_C.length];
+      // Each swatch = unique note on an 18-step C-major scale.
+      const safe = ((ev.index % BG_SCALE.length) + BG_SCALE.length) % BG_SCALE.length;
+      const note = BG_SCALE[safe];
       voice(note, { dur: 0.14, gain: 0.04, cutoff: 2200 });
       return;
     }
