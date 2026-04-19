@@ -119,7 +119,7 @@ export function BotEmbed({
           <PixelIcon
             key={copied ? "c" : "i"}
             name={copied ? "check" : "copy"}
-            className={`size-4 ${copied ? "${POP_IN}" : ""}`}
+            className={`size-4 ${copied ? POP_IN : ""}`}
           />
         </button>
       </div>

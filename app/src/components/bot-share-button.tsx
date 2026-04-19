@@ -32,7 +32,7 @@ export function BotShareButton({ id }: { id: string }) {
       <PixelIcon
         key={copied ? "copied" : "idle"}
         name={copied ? "check" : "copy"}
-        className={`size-4 ${copied ? "${POP_IN}" : ""}`}
+        className={`size-4 ${copied ? POP_IN : ""}`}
       />
     </button>
   );

@@ -632,7 +632,7 @@ export function Creator({
           <PixelIcon
             key={copied ? "copied" : "idle"}
             name={copied ? "check" : "copy"}
-            className={`size-4 ${copied ? "${POP_IN}" : ""}`}
+            className={`size-4 ${copied ? POP_IN : ""}`}
           />
           <span
             key={copied ? "c" : "i"}

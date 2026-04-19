@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 
 /**
  * True when the event target is a form field where a key/paste should
@@ -20,23 +20,19 @@ export function hasModifier(e: KeyboardEvent): boolean {
 }
 
 /**
- * Subscribe to window keydown events without useEffect.
- * Uses useSyncExternalStore — React's blessed pattern for external
- * subscriptions with proper mount/unmount lifecycle.
+ * Subscribe to window keydown events without useEffect. Callers should
+ * wrap `handler` with useCallback so the subscribe identity is stable
+ * across renders — otherwise we re-attach the listener on each change.
  */
 export function useKeydown(handler: (e: KeyboardEvent) => void) {
-  const handlerRef = useRef(handler);
-  handlerRef.current = handler;
-
   useSyncExternalStore(
     (notify) => {
-      const fn = (e: KeyboardEvent) => handlerRef.current(e);
-      window.addEventListener("keydown", fn);
-      // notify is unused — we don't have a snapshot that changes
+      window.addEventListener("keydown", handler);
       void notify;
-      return () => window.removeEventListener("keydown", fn);
+      return () => window.removeEventListener("keydown", handler);
     },
-    () => null, // client snapshot (unused)
-    () => null  // server snapshot (unused — no listener on server)
+    () => null,
+    () => null
   );
+  void handler;
 }
