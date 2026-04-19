@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BotDetail } from "@/components/bot-detail";
+import { CompareShuffleButton } from "@/components/compare-shuffle-button";
 import { SITE_URL } from "@/lib/constants";
 import { parseIdsCsv } from "@/lib/ids";
 
@@ -102,6 +103,7 @@ export default async function ComparePage({
           <Link href="/favorites" className="px-3 py-2 border border-border hover:bg-muted text-sm">
             Favorites
           </Link>
+          <CompareShuffleButton />
         </div>
       </main>
     );
@@ -120,9 +122,12 @@ export default async function ComparePage({
         <h1 className="text-lg font-bold">
           Comparing {ids.length} pixabot{ids.length === 1 ? "" : "s"}
         </h1>
-        <Link href="/browse" className="text-sm text-muted-foreground hover:text-foreground">
-          back to browse
-        </Link>
+        <div className="flex items-center gap-3">
+          <CompareShuffleButton />
+          <Link href="/browse" className="text-sm text-muted-foreground hover:text-foreground">
+            back to browse
+          </Link>
+        </div>
       </header>
       <div className={`w-full grid gap-6 ${colClass}`}>
         {ids.map((id) => (
