@@ -46,9 +46,28 @@ export function ActionButton({
   return <Link href={href} className={className}>{content}</Link>;
 }
 
-export function BotDetail({ id }: { id: string }) {
+function paletteQuery(hue?: number, saturate?: number): string {
+  const parts: string[] = [];
+  if (hue && hue !== 0) parts.push(`hue=${hue}`);
+  if (saturate !== undefined && saturate !== 1) parts.push(`saturate=${saturate.toFixed(2)}`);
+  return parts.length ? `&${parts.join("&")}` : "";
+}
+
+export function BotDetail({
+  id,
+  hue,
+  saturate,
+}: {
+  id: string;
+  hue?: number;
+  saturate?: number;
+}) {
   const parts = resolveId(id);
   const note = specialNote(id);
+  const pal = paletteQuery(hue, saturate);
+  const editQs = new URLSearchParams({ id });
+  if (hue && hue !== 0) editQs.set("hue", String(hue));
+  if (saturate !== undefined && saturate !== 1) editQs.set("saturate", saturate.toFixed(2));
 
   return (
     <div className="flex flex-col gap-4 sm:gap-6">
@@ -56,10 +75,10 @@ export function BotDetail({ id }: { id: string }) {
         <picture>
           <source
             media="(prefers-reduced-motion: reduce)"
-            srcSet={`/api/pixabot/${id}?size=480`}
+            srcSet={`/api/pixabot/${id}?size=480${pal}`}
           />
           <img
-            src={`/api/pixabot/${id}?size=480&animated=true`}
+            src={`/api/pixabot/${id}?size=480&animated=true${pal}`}
             alt={`Pixabot ${id}`}
             width={480}
             height={480}
@@ -93,15 +112,15 @@ export function BotDetail({ id }: { id: string }) {
         </dl>
 
         <div className="flex flex-wrap gap-2 mt-2">
-          <ActionButton href={`/?id=${id}`} icon="pen-square" label="Edit" />
+          <ActionButton href={`/?${editQs.toString()}`} icon="pen-square" label="Edit" />
           <ActionButton
-            href={`/api/pixabot/${id}?size=960`}
+            href={`/api/pixabot/${id}?size=960${pal}`}
             download={`pixabot-${id}.png`}
             icon="download"
             label="Get PNG"
           />
           <ActionButton
-            href={`/api/pixabot/${id}?animated=true&size=480`}
+            href={`/api/pixabot/${id}?animated=true&size=480${pal}`}
             external
             icon="play"
             label="Get GIF"
