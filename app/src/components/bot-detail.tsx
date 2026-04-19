@@ -6,6 +6,7 @@ import { GalleryDialog } from "@/components/gallery-dialog";
 import { PaletteShuffleButton } from "@/components/palette-shuffle-button";
 import { BotIdCopy } from "@/components/bot-id-copy";
 import { BotPasteNav } from "@/components/bot-paste-nav";
+import { BotShareButton } from "@/components/bot-share-button";
 import { specialNote } from "@/lib/special-ids";
 import { withPalette } from "@/lib/palette";
 import { COMBO_TOTAL, comboToIndex } from "@/lib/bot-nav";
@@ -99,6 +100,7 @@ export function BotDetail({
             </span>
           </div>
           <FavoriteButton id={id} />
+          <BotShareButton id={id} />
           <PaletteShuffleButton />
           <GalleryDialog id={id} />
         </div>
