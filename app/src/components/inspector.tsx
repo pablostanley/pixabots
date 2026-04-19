@@ -146,7 +146,13 @@ export function Inspector({
       </div>
 
       <div className="flex flex-col gap-4 lg:gap-7 overflow-y-auto px-4 pb-3 lg:pb-4 pt-2 lg:pt-0 min-h-0">
-      <section className={`flex-col gap-3 ${tab === "bg" ? "flex" : "hidden"} lg:flex`}>
+      <div
+        className={`grid transition-[grid-template-rows] duration-200 ease-out lg:!grid-rows-[1fr] ${
+          tab === "bg" ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        }`}
+        aria-hidden={tab !== "bg"}
+      >
+      <section className="flex flex-col gap-3 overflow-hidden min-h-0">
         <h3 className="text-xs uppercase tracking-wide text-muted-foreground hidden lg:block">Background</h3>
         <div className="h-[90px] lg:h-[140px]">
           <HexColorPicker
@@ -220,8 +226,15 @@ export function Inspector({
           })}
         </div>
       </section>
+      </div>
 
-      <section className={`flex-col gap-3 ${tab === "adj" ? "flex" : "hidden"} lg:flex`}>
+      <div
+        className={`grid transition-[grid-template-rows] duration-200 ease-out lg:!grid-rows-[1fr] ${
+          tab === "adj" ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        }`}
+        aria-hidden={tab !== "adj"}
+      >
+      <section className="flex flex-col gap-3 overflow-hidden min-h-0">
         <h3 className="text-xs uppercase tracking-wide text-muted-foreground hidden lg:block">Adjustments</h3>
         <label className="flex flex-col gap-1.5 text-xs text-muted-foreground">
           <div className="flex items-center justify-between">
@@ -276,6 +289,7 @@ export function Inspector({
           />
         </label>
       </section>
+      </div>
       </div>
     </aside>
   );
