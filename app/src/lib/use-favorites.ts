@@ -110,5 +110,7 @@ export function useFavorites() {
     return { added, invalid: incoming.length - valid.length, malformed: false };
   };
 
-  return { ids, toggle, has, exportJson, importJson };
+  const clear = () => write([]);
+
+  return { ids, toggle, has, exportJson, importJson, clear };
 }
