@@ -112,6 +112,7 @@
 - [x] Browse Reroll — re-rolls the visible grid without reload, respecting the active filter; scrolls to top. (PR #90)
 - [x] Favorites Clear all — confirm-guarded "Clear all" button; `useFavorites.clear()`. (PR #91)
 - [x] Browse "Compare top 6" — one-click link from the filtered grid to `/compare` with the six visible bots. (PR #92)
+- [x] BotDetail palette shuffle — shuffle-icon button in the bot-detail header rolls a random `hue`+`saturate` (sat 0.6–1.4 for recognizability). (PR #93)
 
 ## Up Next
 
