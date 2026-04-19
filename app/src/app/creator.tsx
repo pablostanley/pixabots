@@ -337,6 +337,15 @@ export function Creator({
     sfx.play({ kind: "download" });
   };
 
+  const downloadJson = () => {
+    const id = encode(selRef.current);
+    const link = document.createElement("a");
+    link.download = `pixabot-${id}.json`;
+    link.href = `/api/pixabot/${id}?format=json`;
+    link.click();
+    sfx.play({ kind: "download" });
+  };
+
   const KONAMI = [
     "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown",
     "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight",
@@ -446,6 +455,9 @@ export function Creator({
             <DropdownMenuItem onClick={downloadSvg} className="text-sm">
               SVG (vector)
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={downloadJson} className="text-sm">
+              JSON (metadata)
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -481,6 +493,9 @@ export function Creator({
               <ContextMenuSeparator />
               <ContextMenuItem onClick={downloadSvg} className="text-sm">
                 SVG (vector)
+              </ContextMenuItem>
+              <ContextMenuItem onClick={downloadJson} className="text-sm">
+                JSON (metadata)
               </ContextMenuItem>
             </ContextMenuSubContent>
           </ContextMenuSub>

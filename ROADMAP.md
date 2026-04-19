@@ -99,6 +99,8 @@
 - [x] `@pixabots/core` v0.3.0 — exports seeded PRNG primitives (`hashString`, `mulberry32`, `createRng`). `bot-suggestions` now reuses them instead of inlining. SDK docs updated. Awaiting `npm publish --access public` (build + workspace already use the new version). (PR #77)
 - [x] Creator SVG download — "SVG (vector)" option in header Download dropdown + canvas right-click submenu; saves `pixabot-{id}.svg` via `/api/pixabot/{id}?format=svg`. Palette/bg intentionally skipped (unsupported in SVG output). (PR #78)
 - [x] `/compare` OG card — new `type=compare&ids=…` on `/api/og`; `/compare` `generateMetadata` builds canonical/og/twitter with the actual bots. Bonus: fixed a 4px vertical overflow that also affected `generateSingle`; extracted `composeOg` + `parseIdsCsv` helpers. (PR #79)
+- [x] Creator F shortcut — `F` toggles the Fx inspector, completing the creator keyboard coverage. (PR #80)
+- [x] BotDetail clickable parts — each part name on `/bot/[id]` links to `/browse?<cat>=<name>` so users can pivot from one bot to all bots sharing a part. (PR #81)
 
 ## Up Next
 
