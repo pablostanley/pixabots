@@ -14,6 +14,7 @@ import {
   type PartCategory,
 } from "@pixabots/core";
 import { PixelIcon } from "@/components/ui/pixel-icon";
+import { useKeydown } from "@/lib/use-keydown";
 import { useShareOrCopy } from "@/lib/use-share-or-copy";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 import { FavoriteButton } from "@/components/favorite-button";
@@ -360,6 +361,24 @@ function BrowseInner() {
     setBots(generateBatch(BATCH_SIZE, filters, 0));
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [filters]);
+
+  const clearFilters = useCallback(() => {
+    router.replace(pathname, { scroll: false });
+  }, [pathname, router]);
+
+  useKeydown(
+    useCallback(
+      (e: KeyboardEvent) => {
+        if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+        if (e.metaKey || e.ctrlKey || e.altKey) return;
+        if (e.key === "Escape" && Object.keys(filters).length > 0) {
+          e.preventDefault();
+          clearFilters();
+        }
+      },
+      [filters, clearFilters]
+    )
+  );
 
   const compareHref =
     bots.length >= 2 ? `/compare?ids=${bots.slice(0, 6).map((b) => b.id).join(",")}` : null;
