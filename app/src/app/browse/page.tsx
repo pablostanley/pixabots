@@ -9,6 +9,8 @@ import {
   CATEGORY_ORDER,
   PARTS,
   getPartIndex,
+  partCount,
+  totalCombinations,
   type PartCategory,
 } from "@pixabots/core";
 import { PixelIcon } from "@/components/ui/pixel-icon";
@@ -71,6 +73,15 @@ function parseFilters(params: URLSearchParams): Filters {
   return out;
 }
 
+/** Filtered combos = product of partCount(cat) for unfiltered categories. */
+function matchCount(filters: Filters): number {
+  let total = 1;
+  for (const cat of CATEGORY_ORDER) {
+    total *= filters[cat] !== undefined ? 1 : partCount(cat);
+  }
+  return total;
+}
+
 function FilterBar({
   filters,
   onChange,
@@ -83,9 +94,13 @@ function FilterBar({
   compareHref: string | null;
 }) {
   const active = Object.keys(filters).length > 0;
+  const count = active ? matchCount(filters) : totalCombinations();
   return (
     <div className="flex flex-wrap items-center gap-2 mb-3 sm:mb-4 px-2 text-sm">
       <span className="text-muted-foreground mr-1">Filter</span>
+      <span className="font-mono text-xs text-muted-foreground mr-1" aria-live="polite">
+        {count.toLocaleString()} {count === 1 ? "bot" : "bots"}
+      </span>
       {CATEGORY_ORDER.map((cat) => {
         const selectedIdx = filters[cat];
         const label = cat === "eyes" ? "face" : cat;
