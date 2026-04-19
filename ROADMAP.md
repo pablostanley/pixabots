@@ -103,6 +103,7 @@
 - [x] BotDetail clickable parts — each part name on `/bot/[id]` links to `/browse?<cat>=<name>` so users can pivot from one bot to all bots sharing a part. (PR #81)
 - [x] Creator JSON download — "JSON (metadata)" option alongside SVG in the Download dropdown + right-click submenu. (PR #82)
 - [x] `/random` page — 302 to a fresh `/bot/{id}`; forwards `hue`/`saturate`; `force-dynamic` so Next never bakes the target. (PR #83)
+- [x] Favorites export / import — versioned JSON envelope; Import + Export buttons on the favorites page; dedupe-preserving merge. (PR #84)
 
 ## Up Next
 

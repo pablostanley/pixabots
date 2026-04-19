@@ -5,7 +5,7 @@ import { PixelIcon } from "@/components/ui/pixel-icon";
 import { SITE_URL } from "@/lib/constants";
 import { withPalette } from "@/lib/palette";
 
-type TabKey = "url" | "html" | "markdown" | "react" | "iframe";
+type TabKey = "url" | "html" | "markdown" | "react" | "iframe" | "og";
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: "url", label: "URL" },
@@ -13,7 +13,15 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: "markdown", label: "Markdown" },
   { key: "react", label: "React" },
   { key: "iframe", label: "Iframe" },
+  { key: "og", label: "OG card" },
 ];
+
+function ogUrl(id: string, hue?: number, saturate?: number): string {
+  const qs = new URLSearchParams({ type: "single", id });
+  if (hue !== undefined && hue !== 0) qs.set("hue", String(hue));
+  if (saturate !== undefined && saturate !== 1) qs.set("saturate", saturate.toFixed(2));
+  return `${SITE_URL}/api/og?${qs.toString()}`;
+}
 
 function snippetFor(kind: TabKey, id: string, hue?: number, saturate?: number): string {
   const p = { hue, saturate };
@@ -50,6 +58,8 @@ function snippetFor(kind: TabKey, id: string, hue?: number, saturate?: number): 
   title="pixabot ${id}"
   loading="lazy"
 ></iframe>`;
+    case "og":
+      return ogUrl(id, hue, saturate);
   }
 }
 
