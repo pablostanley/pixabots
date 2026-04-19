@@ -188,25 +188,25 @@
   --fd-sidebar-background: var(--background);
 }
 
-[data-docs] {
+.docs-root {
   font-family: var(--font-sans-prose), ui-sans-serif, system-ui, sans-serif;
 }
 
-[data-docs] code,
-[data-docs] pre,
-[data-docs] kbd,
-[data-docs] samp {
+.docs-root code,
+.docs-root pre,
+.docs-root kbd,
+.docs-root samp {
   font-family: var(--font-mono-prose), ui-monospace, "SF Mono", Menlo, monospace;
 }
 
-[data-docs] *,
-[data-docs] *::before,
-[data-docs] *::after {
+.docs-root *,
+.docs-root *::before,
+.docs-root *::after {
   border-radius: 0 !important;
 }
 
-[data-docs] [data-sidebar],
-[data-docs] .bg-fd-card {
+.docs-root [data-sidebar],
+.docs-root .bg-fd-card {
   overflow: visible;
   background: transparent !important;
 }
