@@ -21,6 +21,7 @@ const CREATOR: Shortcut[] = [
   { keys: ["P"], label: "Play / Stop animation" },
   { keys: ["C"], label: "Copy share URL" },
   { keys: ["D"], label: "Open Download menu" },
+  { keys: ["F"], label: "Toggle Fx inspector" },
   { keys: ["← →"], label: "Cycle face / heads" },
   { keys: ["↑ ↓"], label: "Cycle body / top" },
 ];
