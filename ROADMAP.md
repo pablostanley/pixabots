@@ -116,6 +116,7 @@
 - [x] BotDetail palette reset — companion ↺ button next to shuffle; shows only when a palette is applied. (PR #94)
 - [x] Home `?seed=X` — homepage can be opened with a deterministic starting bot via `seededId(seed)`. Capped at 80 chars; explicit `?id=` still wins. Usage doc updated. (PR #95)
 - [x] Browse dedupe — `generateBatch` threads `skipIds` so initial + load-more batches never render duplicate bots. (PR #96)
+- [x] Browse match-count — filter bar shows the live number of bots matching the active filter via `partCount(cat)` math; aria-live so SR picks up the change. (PR #97)
 
 ## Up Next
 
