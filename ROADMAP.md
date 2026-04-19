@@ -94,10 +94,7 @@
 - [x] Random + reset palette buttons — tiny shuffle-palette button beside sliders; × clears. (PR #72)
 - [x] Rate limiting — best-effort per-IP limiter on animated (30/min) + OG (20/min). In-memory per-instance, documented as "guardrail not firewall". (PR #73)
 - [x] Analytics — Vercel Web Analytics + Speed Insights mounted at root layout. Zero config; data lands in the dashboard once enabled in project settings. (PR #74)
-
-## In Review
-
-- **PR #75** — Fx side sheet / palette inspector. In-layout sidebar (not overlay) with Background picker + Hue/Saturation sliders. Kaossilator-style synth on hex picker (pentatonic swatches + log-mapped slider pings). SFX ON by default. Mobile tabs. 3 self-review rounds done: shared palette helpers extracted to `@/lib/palette`, `withPalette` replaces three local paletteQs/paletteQuery/paletteSuffix copies in creator / bot-detail / bot-embed, voice+rawSynth merged into one `synth()`. Awaiting Vercel preview + maintainer merge.
+- [x] Fx palette inspector — in-layout right sidebar with Background picker (18 pentatonic swatches + hex + HSL) and Hue/Saturation sliders. Kaossilator-style synth (log-mapped slider pings, hue→pitch/value→octave/sat→volume on color picks). Mobile tabs (Background / Adjustments) with animated height. SFX now ON by default. Shared `@/lib/palette` replaces three local palette-URL helpers; `synth()` unifies former voice + rawSynth. (PR #75)
 
 ## Up Next
 
