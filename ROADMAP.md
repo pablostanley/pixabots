@@ -230,6 +230,11 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 - [x] **Keyboard shortcuts** — space to shuffle, P to play, arrows to cycle parts
 - [x] **Share URL** — `pixabots.com/?id=2156` opens a specific combo, URL syncs live
 
+## Up next (mobile)
+
+- [ ] **Mobile hamburger menu** — site header links don't fit on mobile. Collapse everything past the logo into a hamburger that opens a sheet (probably Radix Dialog or vaul-style) with the nav items (create, browse, stars, docs, api, github) and the ♪ / theme toggles.
+- [ ] **Browse filters in a sheet on mobile** — current per-category dropdowns overflow the browse top bar. On mobile wrap them behind a "Filter" button that opens a bottom sheet with the filter controls; keep inline on ≥sm.
+
 ## Ideas
 
 - [ ] More parts — new variations for each category. Append-only to keep IDs stable.
