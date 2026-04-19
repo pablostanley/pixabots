@@ -19,6 +19,8 @@ Returns a pixabot image or metadata.
 | `animated` | query | — | Set to `true` for an animated GIF. Supports all sizes. |
 | `webp` | query | — | With `animated=true`, return lossless animated WebP instead of GIF. Smaller files, preserves alpha. |
 | `speed` | query | `1` | Animation speed multiplier (`0.25`–`4`). Only works with `animated=true`. |
+| `hue` | query | — | Hue rotation in degrees (0–359). Shifts all colors while preserving relative palette. |
+| `saturate` | query | — | Saturation multiplier (0 = greyscale, 1 = unchanged, up to 4 = very punchy). |
 
 ### PNG (default)
 
@@ -54,6 +56,18 @@ curl https://pixabots.com/api/pixabot/2156?animated=true&size=1920 -o bounce-hug
 <img src="/api/pixabot/2156?animated=true&size=128" alt="Animated pixabot" width="128" height="128" style={{imageRendering: 'pixelated'}} />
 
 The animation is 8 frames at 72ms (~14fps). Tune speed with `?speed=0.25` (slow-mo) through `?speed=4` (fast).
+
+### Palette (hue + saturation)
+
+Shift the whole character's colors without drawing new sprites. Works with PNG, GIF, and WebP outputs (SVG is unaffected — use CSS there).
+
+```bash
+curl "https://pixabots.com/api/pixabot/2156?size=240&hue=120" -o green.png
+curl "https://pixabots.com/api/pixabot/2156?size=240&saturate=0" -o grey.png
+curl "https://pixabots.com/api/pixabot/2156?size=240&hue=200&saturate=1.5" -o cold.png
+```
+
+`hue` rotates hue in degrees (0–359). `saturate` is a multiplier: 0 greyscale, 1 unchanged, 4 max.
 
 ### SVG (vector)
 

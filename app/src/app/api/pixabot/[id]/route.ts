@@ -45,6 +45,33 @@ export async function GET(
   const combo = decode(id);
   const animated = request.nextUrl.searchParams.get("animated") === "true";
   const speedParam = request.nextUrl.searchParams.get("speed");
+
+  // Palette transform (applies to raster output only)
+  const hueParam = request.nextUrl.searchParams.get("hue");
+  const saturateParam = request.nextUrl.searchParams.get("saturate");
+  let hue: number | undefined;
+  let saturate: number | undefined;
+  if (hueParam !== null) {
+    const h = Number(hueParam);
+    if (!Number.isFinite(h)) {
+      return Response.json(
+        { error: "Invalid hue. Must be a number in degrees (0–359)." },
+        { status: 400, headers: CORS_HEADERS }
+      );
+    }
+    hue = ((Math.round(h) % 360) + 360) % 360;
+  }
+  if (saturateParam !== null) {
+    const s = Number(saturateParam);
+    if (!Number.isFinite(s) || s < 0 || s > 4) {
+      return Response.json(
+        { error: "Invalid saturate. Must be a number between 0 and 4." },
+        { status: 400, headers: CORS_HEADERS }
+      );
+    }
+    saturate = s;
+  }
+  const palette = hue !== undefined || saturate !== undefined ? { hue, saturate } : undefined;
   let speed = 1;
   if (speedParam !== null) {
     const parsed = Number(speedParam);
@@ -86,10 +113,10 @@ export async function GET(
     if (animated) {
       const wantsWebp = request.nextUrl.searchParams.get("webp") === "true";
       const outFormat = wantsWebp ? "webp" : "gif";
-      const buf = await renderAnimatedPixabot(combo, size, speed, outFormat);
+      const buf = await renderAnimatedPixabot(combo, size, speed, outFormat, palette);
       return imageResponse(buf, wantsWebp ? "image/webp" : "image/gif");
     }
-    return imageResponse(await renderPixabot(combo, size), "image/png");
+    return imageResponse(await renderPixabot(combo, size, palette), "image/png");
   } catch (e) {
     const status = e instanceof RenderError ? e.status : 500;
     const message = e instanceof RenderError ? e.message : "Render failed";
