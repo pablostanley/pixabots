@@ -234,6 +234,7 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 
 - [ ] **Mobile hamburger menu** — site header links don't fit on mobile. Collapse everything past the logo into a hamburger that opens a sheet (probably Radix Dialog or vaul-style) with the nav items (create, browse, stars, docs, api, github) and the ♪ / theme toggles.
 - [ ] **Browse filters in a sheet on mobile** — current per-category dropdowns overflow the browse top bar. On mobile wrap them behind a "Filter" button that opens a bottom sheet with the filter controls; keep inline on ≥sm.
+- [ ] **Musical SFX on browse** — `/browse` is silent right now. Add pentatonic / kaossilator-style sounds for hover, prev/next in the dialog, filter toggles, and card-tap (respecting the existing `useSfx` mute). Should feel cohesive with the creator SFX (same scales / voices) so moving between pages is one instrument.
 
 ## Ideas
 
