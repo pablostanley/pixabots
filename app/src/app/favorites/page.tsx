@@ -1,25 +1,76 @@
 "use client";
 
+import { useRef } from "react";
 import Link from "next/link";
 import { useFavorites } from "@/lib/use-favorites";
 import { FavoriteButton } from "@/components/favorite-button";
 
 export default function FavoritesPage() {
-  const { ids } = useFavorites();
+  const { ids, exportJson, importJson } = useFavorites();
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleExport = () => {
+    const blob = new Blob([exportJson()], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `pixabots-favorites-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    const text = await file.text();
+    const { added, invalid, malformed } = importJson(text);
+    if (malformed) {
+      alert("Couldn't read that file — expected a JSON array of IDs or the export envelope.");
+      return;
+    }
+    const skipped = invalid > 0 ? ` (${invalid} skipped)` : "";
+    alert(`Imported ${added} new favorite${added === 1 ? "" : "s"}${skipped}.`);
+  };
 
   return (
     <main className="flex-1 p-2 sm:p-4">
-      <header className="flex items-center gap-2 mb-3 sm:mb-4 px-2">
+      <header className="flex items-center gap-2 mb-3 sm:mb-4 px-2 flex-wrap">
         <h1 className="text-lg font-bold">Favorites</h1>
         <span className="text-sm text-muted-foreground">{ids.length}</span>
-        {ids.length >= 2 && (
-          <Link
-            href={`/compare?ids=${ids.slice(0, 6).join(",")}`}
-            className="ml-auto px-3 py-1.5 border border-border hover:bg-muted transition-colors text-sm"
+        <div className="ml-auto flex items-center gap-2">
+          <input
+            ref={fileRef}
+            type="file"
+            accept="application/json,.json"
+            onChange={handleFile}
+            className="sr-only"
+          />
+          <button
+            type="button"
+            onClick={() => fileRef.current?.click()}
+            className="px-3 py-1.5 border border-border hover:bg-muted transition-colors text-sm cursor-pointer"
           >
-            Compare
-          </Link>
-        )}
+            Import
+          </button>
+          {ids.length > 0 && (
+            <button
+              type="button"
+              onClick={handleExport}
+              className="px-3 py-1.5 border border-border hover:bg-muted transition-colors text-sm cursor-pointer"
+            >
+              Export
+            </button>
+          )}
+          {ids.length >= 2 && (
+            <Link
+              href={`/compare?ids=${ids.slice(0, 6).join(",")}`}
+              className="px-3 py-1.5 border border-border hover:bg-muted transition-colors text-sm"
+            >
+              Compare
+            </Link>
+          )}
+        </div>
       </header>
 
       {ids.length === 0 ? (
