@@ -77,6 +77,7 @@
 - [x] Browse filters — per-category dropdown filter, URL-driven. (PR #55)
 - [x] Embed widget — `/embed/[id]` iframe-ready route with size/animated/bg params; BotEmbed gains Iframe tab. (PR #56)
 - [x] SVG output — `?format=svg` returns pixel-perfect vector; one rect per opaque pixel, scales without interpolation. (PR #57)
+- [x] `@pixabots/react` package — new workspace package exporting `<Pixabot>` component with full prop API. Built, not yet published. (PR #58)
 
 ## Up Next
 
@@ -161,7 +162,6 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 
 - [ ] More parts — new variations for each category. Append-only to keep IDs stable.
 - [ ] Color/palette system — tint or recolor layers (expand beyond 9,856 combos)
-- [ ] `@pixabots/react` package — `<Pixabot id="f76a" />` component with canvas rendering
 - [ ] `npx pixabots` CLI — generate random pixabots from the terminal
 - [ ] Accessories — new category layer (hats, items, etc.)
 - [ ] Animation variants — wave, jump, spin, etc.
