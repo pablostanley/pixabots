@@ -67,7 +67,7 @@ export function Inspector({
         h-[55vh] lg:h-auto lg:max-h-[calc(100dvh-6rem)]
         w-full lg:w-[280px] lg:shrink-0
         border-t lg:border border-border bg-background
-        p-4 flex flex-col gap-4 overflow-y-auto
+        p-4 flex flex-col gap-7 overflow-y-auto
         shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.15)] lg:shadow-none
         motion-safe:animate-in motion-safe:slide-in-from-bottom lg:motion-safe:slide-in-from-bottom-0 motion-safe:fade-in-0 motion-safe:duration-200
       "
@@ -78,8 +78,8 @@ export function Inspector({
           <button
             type="button"
             onClick={onRandom}
-            data-tooltip="Random palette"
-            aria-label="Random palette"
+            data-tooltip="Random adjustments"
+            aria-label="Random adjustments"
             className="size-7 flex items-center justify-center border border-border hover:bg-muted transition-colors cursor-pointer"
           >
             <PixelIcon name="shuffle" className="size-3.5" />
@@ -171,7 +171,7 @@ export function Inspector({
       </section>
 
       <section className="flex flex-col gap-3">
-        <h3 className="text-xs uppercase tracking-wide text-muted-foreground">Palette</h3>
+        <h3 className="text-xs uppercase tracking-wide text-muted-foreground">Adjustments</h3>
         <label className="flex flex-col gap-1.5 text-xs text-muted-foreground">
           <div className="flex items-center justify-between">
             <span>Hue</span>
