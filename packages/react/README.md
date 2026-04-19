@@ -40,6 +40,7 @@ All `<img>` attributes pass through (`className`, `style`, `onClick`, etc). `ima
 | `webp` | `boolean` | `false` | With `animated`, use animated WebP (smaller, alpha). |
 | `hue` | `number` | — | Hue rotation in degrees (0–359). |
 | `saturate` | `number` | `1` | Saturation multiplier (0–4). 0 = greyscale. |
+| `bg` | `string` | — | Background color as `#rrggbb` hex. Flattens transparency. |
 | `origin` | `string` | `https://pixabots.com` | Override API host. |
 
 ## License

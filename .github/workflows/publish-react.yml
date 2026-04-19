@@ -1,0 +1,40 @@
+name: Publish @pixabots/react
+
+on:
+  push:
+    tags:
+      - "react-v*"
+  workflow_dispatch: {}
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.0.6
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build core (react depends on it)
+        run: pnpm --filter @pixabots/core build
+
+      - name: Build react
+        run: pnpm --filter @pixabots/react build
+
+      - name: Publish
+        run: pnpm --filter @pixabots/react publish --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
