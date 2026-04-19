@@ -1,6 +1,7 @@
 "use client";
 
 import { useFavorites } from "@/lib/use-favorites";
+import { POP_IN } from "@/lib/motion";
 
 export function FavoriteButton({
   id,
@@ -32,7 +33,7 @@ export function FavoriteButton({
       <span
         key={starred ? "on" : "off"}
         aria-hidden="true"
-        className={`${starred ? "animate-in zoom-in-95 fade-in-0 duration-150 ease-out" : ""} leading-none`}
+        className={`${starred ? "${POP_IN}" : ""} leading-none`}
       >
         {starred ? "★" : "☆"}
       </span>

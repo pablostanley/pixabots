@@ -13,6 +13,7 @@ import { ShuffleHint, dismissShuffleHint } from "@/components/shuffle-hint";
 import { Inspector } from "@/components/inspector";
 import { BG_CHOICES, withPalette } from "@/lib/palette";
 import { useSfx } from "@/lib/use-sfx";
+import { POP_IN } from "@/lib/motion";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -631,7 +632,7 @@ export function Creator({
           <PixelIcon
             key={copied ? "copied" : "idle"}
             name={copied ? "check" : "copy"}
-            className={`size-4 ${copied ? "animate-in zoom-in-95 fade-in-0 duration-150 ease-out" : ""}`}
+            className={`size-4 ${copied ? "${POP_IN}" : ""}`}
           />
           <span
             key={copied ? "c" : "i"}
