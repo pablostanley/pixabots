@@ -5,11 +5,17 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import { useKeydown } from "@/lib/use-keydown";
 import { nextId, prevId } from "@/lib/bot-nav";
+import { neighborInOrder, useBrowseOrder } from "@/lib/browse-order";
 
 /**
  * Fixed-position left + right arrows meant to live inside the browse
  * bot-detail dialog. Large hit area, small visual footprint, pinned to the
  * screen edges so they don't steal layout space from the dialog content.
+ *
+ * When the user opened this dialog from /browse, walking left/right steps
+ * through the _visible grid order_ (published via `useBrowseOrder`). When
+ * the current id isn't in that list (direct link, first paint, etc.), falls
+ * back to the canonical prev/next combo index.
  *
  * Also preloads the adjacent bot's animated image via `<link rel="preload">`
  * — when the user clicks, the next frame is already in the browser cache so
@@ -20,8 +26,9 @@ import { nextId, prevId } from "@/lib/bot-nav";
 export function BotEdgeNav({ id }: { id: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const prev = prevId(id);
-  const next = nextId(id);
+  const order = useBrowseOrder();
+  const prev = neighborInOrder(order, id, -1) ?? prevId(id);
+  const next = neighborInOrder(order, id, 1) ?? nextId(id);
 
   const go = useCallback(
     (target: string) => {

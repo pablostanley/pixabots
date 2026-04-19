@@ -2,7 +2,6 @@ import Link from "next/link";
 import { resolveId } from "@pixabots/core";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import { FavoriteButton } from "@/components/favorite-button";
-import { Tilt } from "@/components/tilt";
 import { GalleryDialog } from "@/components/gallery-dialog";
 import { PaletteShuffleButton } from "@/components/palette-shuffle-button";
 import { BotIdCopy } from "@/components/bot-id-copy";
@@ -69,28 +68,26 @@ export function BotDetail({
   return (
     <div className="flex flex-col gap-4 sm:gap-6">
       <BotPasteNav id={id} />
-      <Tilt className="border border-border p-3">
-        {/* aspect-square stops the container from collapsing between img
-            swaps (prev/next nav), so nothing reflows below. */}
-        <div className="relative aspect-square">
-          <picture>
-            <source
-              media="(prefers-reduced-motion: reduce)"
-              srcSet={withPalette(`/api/pixabot/${id}?size=480`, { hue, saturate })}
-            />
-            <img
-              src={withPalette(`/api/pixabot/${id}?size=480&animated=true`, { hue, saturate })}
-              alt={`Pixabot ${id}`}
-              width={480}
-              height={480}
-              decoding="async"
-              fetchPriority="high"
-              className="block w-full h-full"
-              style={{ imageRendering: "pixelated" }}
-            />
-          </picture>
-        </div>
-      </Tilt>
+      {/* aspect-square stops the container from collapsing between img
+          swaps (prev/next nav), so nothing reflows below. */}
+      <div className="relative aspect-square border border-border p-3">
+        <picture>
+          <source
+            media="(prefers-reduced-motion: reduce)"
+            srcSet={withPalette(`/api/pixabot/${id}?size=480`, { hue, saturate })}
+          />
+          <img
+            src={withPalette(`/api/pixabot/${id}?size=480&animated=true`, { hue, saturate })}
+            alt={`Pixabot ${id}`}
+            width={480}
+            height={480}
+            decoding="async"
+            fetchPriority="high"
+            className="block w-full h-full"
+            style={{ imageRendering: "pixelated" }}
+          />
+        </picture>
+      </div>
 
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2">

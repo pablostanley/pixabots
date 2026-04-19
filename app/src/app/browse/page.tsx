@@ -17,6 +17,7 @@ import { PixelIcon } from "@/components/ui/pixel-icon";
 import { useKeydown } from "@/lib/use-keydown";
 import { useShareOrCopy } from "@/lib/use-share-or-copy";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
+import { setBrowseOrder } from "@/lib/browse-order";
 import { FavoriteButton } from "@/components/favorite-button";
 import {
   DropdownMenu,
@@ -382,6 +383,11 @@ function BrowseInner() {
 
   const compareHref =
     bots.length >= 2 ? `/compare?ids=${bots.slice(0, 6).map((b) => b.id).join(",")}` : null;
+
+  // Publish the visible grid order so the intercepted bot dialog can page
+  // through "what the user sees" instead of the canonical combo index.
+  // Idempotent on unchanged lists (see lib/browse-order).
+  setBrowseOrder(bots.map((b) => b.id));
 
   const deepScrolled = useSyncExternalStore(subscribeScroll, isDeep, isDeepSsr);
 
