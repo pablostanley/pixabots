@@ -5,6 +5,7 @@ import { BotNav } from "@/components/bot-nav";
 import { FavoriteButton } from "@/components/favorite-button";
 import { Tilt } from "@/components/tilt";
 import { GalleryDialog } from "@/components/gallery-dialog";
+import { PaletteShuffleButton } from "@/components/palette-shuffle-button";
 import { specialNote } from "@/lib/special-ids";
 import { withPalette } from "@/lib/palette";
 
@@ -90,6 +91,7 @@ export function BotDetail({
             )}
           </div>
           <FavoriteButton id={id} />
+          <PaletteShuffleButton />
           <GalleryDialog id={id} />
           <BotNav id={id} />
         </div>
