@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import {
   ContextMenu,
@@ -325,6 +326,17 @@ export function Creator({
     sfx.play({ kind: "download" });
   };
 
+  // SVG is vector and bakes only the combo — palette + bg are not supported
+  // server-side for SVG, so we intentionally don't pass hue/saturate here.
+  const downloadSvg = () => {
+    const id = encode(selRef.current);
+    const link = document.createElement("a");
+    link.download = `pixabot-${id}.svg`;
+    link.href = `/api/pixabot/${id}?format=svg`;
+    link.click();
+    sfx.play({ kind: "download" });
+  };
+
   const KONAMI = [
     "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown",
     "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight",
@@ -426,6 +438,10 @@ export function Creator({
                 {size} x {size}
               </DropdownMenuItem>
             ))}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={downloadSvg} className="text-sm">
+              SVG (vector)
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -458,6 +474,10 @@ export function Creator({
                   {size} x {size}
                 </ContextMenuItem>
               ))}
+              <ContextMenuSeparator />
+              <ContextMenuItem onClick={downloadSvg} className="text-sm">
+                SVG (vector)
+              </ContextMenuItem>
             </ContextMenuSubContent>
           </ContextMenuSub>
           <ContextMenuSeparator />
