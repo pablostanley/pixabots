@@ -91,6 +91,7 @@
 - [x] Embed widget + React component palette — `/embed/[id]` and `@pixabots/react` v0.2.0 both accept `hue`/`saturate`. Palette now reaches every public surface. (PR #69)
 - [x] CLI + Compare palette — `pixabots` v0.2.0 gets `--hue`/`--saturate`; `/compare?hue=&saturate=` threads to every compared bot. (PR #70)
 - [x] BotEmbed + batch palette — copy-snippets on `/bot/[id]` carry palette; `/api/pixabot/batch` forwards palette into returned png/gif URLs. (PR #71)
+- [x] Random + reset palette buttons — tiny shuffle-palette button beside sliders; × clears. (PR #72)
 
 ## Up Next
 
