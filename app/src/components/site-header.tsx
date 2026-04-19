@@ -24,9 +24,12 @@ export function SiteHeader() {
         if (e.key === "m" || e.key === "M") {
           e.preventDefault();
           sfx.toggle();
+        } else if (e.key === "t" || e.key === "T") {
+          e.preventDefault();
+          toggleTheme();
         }
       },
-      [sfx]
+      [sfx, toggleTheme]
     )
   );
   if (pathname?.startsWith("/embed/")) return null;

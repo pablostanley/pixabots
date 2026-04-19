@@ -117,6 +117,7 @@
 - [x] Home `?seed=X` — homepage can be opened with a deterministic starting bot via `seededId(seed)`. Capped at 80 chars; explicit `?id=` still wins. Usage doc updated. (PR #95)
 - [x] Browse dedupe — `generateBatch` threads `skipIds` so initial + load-more batches never render duplicate bots. (PR #96)
 - [x] Browse match-count — filter bar shows the live number of bots matching the active filter via `partCount(cat)` math; aria-live so SR picks up the change. (PR #97)
+- [x] Global `M` — SiteHeader listens for `M` to toggle SFX from anywhere; shortcuts overlay + docs reflect it. (PR #98)
 
 ## Up Next
 
