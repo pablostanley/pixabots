@@ -15,7 +15,7 @@ import {
 } from "@pixabots/core";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { useKeydown } from "@/lib/use-keydown";
+import { isTypingTarget, useKeydown } from "@/lib/use-keydown";
 import { useShareOrCopy } from "@/lib/use-share-or-copy";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 import { setBrowseOrder } from "@/lib/browse-order";
@@ -485,7 +485,7 @@ function BrowseInner({ filters }: { filters: Filters }) {
   useKeydown(
     useCallback(
       (e: KeyboardEvent) => {
-        if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+        if (isTypingTarget(e.target)) return;
         if (e.metaKey || e.ctrlKey || e.altKey) return;
         if (e.key === "Escape" && Object.keys(filters).length > 0) {
           e.preventDefault();

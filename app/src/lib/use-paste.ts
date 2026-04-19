@@ -2,6 +2,7 @@
 
 import { useRef, useSyncExternalStore } from "react";
 import { isValidId } from "@pixabots/core";
+import { isTypingTarget } from "@/lib/use-keydown";
 
 /**
  * Subscribe to window `paste` events without useEffect. Mirrors useKeydown.
@@ -29,7 +30,7 @@ export function usePaste(handler: (e: ClipboardEvent) => void) {
  * valid id. Shared by the creator and BotPasteNav.
  */
 export function parsePastedId(e: ClipboardEvent): string | null {
-  if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return null;
+  if (isTypingTarget(e.target)) return null;
   const raw = e.clipboardData?.getData("text")?.trim();
   if (!raw) return null;
   const match = raw.match(/(?:^|[/=])([0-9a-z]{4})(?:[?&/#]|$)/i);

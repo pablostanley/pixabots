@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import { HeaderMenu } from "@/components/header-menu";
-import { useKeydown } from "@/lib/use-keydown";
+import { isTypingTarget, useKeydown } from "@/lib/use-keydown";
 import { useScrollDirection } from "@/lib/use-scroll-direction";
 import { useTheme } from "@/lib/use-theme";
 import { useSfx } from "@/lib/use-sfx";
@@ -20,7 +20,7 @@ export function SiteHeader() {
   useKeydown(
     useCallback(
       (e: KeyboardEvent) => {
-        if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+        if (isTypingTarget(e.target)) return;
         if (e.metaKey || e.ctrlKey || e.altKey) return;
         if (e.key === "m" || e.key === "M") {
           e.preventDefault();

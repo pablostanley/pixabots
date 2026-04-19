@@ -7,7 +7,7 @@ import {
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useKeydown } from "@/lib/use-keydown";
+import { isTypingTarget, useKeydown } from "@/lib/use-keydown";
 
 type Shortcut = { keys: string[]; label: string };
 
@@ -60,7 +60,7 @@ export function ShortcutsOverlay() {
 
   useKeydown(
     useCallback((e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (isTypingTarget(e.target)) return;
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       if (e.key === "?") {
         e.preventDefault();
