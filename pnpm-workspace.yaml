@@ -1,3 +1,5 @@
 packages:
   - "app"
   - "packages/*"
+  # `examples/*` is intentionally excluded — each example is a standalone
+  # mini-app with its own lockfile so users can fork a folder and go.

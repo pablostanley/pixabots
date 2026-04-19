@@ -241,7 +241,7 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 Goal: let other devs drop a creator UI (render + shuffle + cycle + Fx inspector) into their own site without copying half of `app/src/app/creator.tsx`. Cheapest → most-invested path:
 
 - [x] **Phase 1 — docs recipe (`/docs/creator`).** Shipped; MDX page with a ~60-LOC MiniCreator + Fx filter snippet + links to the prod files. Sitemap + docs sidebar updated.
-- [ ] **Phase 2 — starter repo (`pixabots/creator-starter`).** Public GitHub template repo, Vite + React + TypeScript, ~200 LOC creator + Fx inspector consuming `@pixabots/core`. "Use this template" button, deployable to Vercel/Netlify out of the box.
+- [x] **Phase 2 — starter example (`examples/creator-starter/`).** Shipped as an in-repo folder rather than a separate template repo. Vite + React + TypeScript + ~150 LOC App showing shuffle, cycle, URL sync, and Fx hue/saturate sliders. README explains copy-and-go. Left in-repo for now so it tracks the package version.
 - [ ] **Phase 3 — `@pixabots/creator` headless package.** New workspace under `packages/creator`. Exports `useCreator()` / `useInspector()` / `useShuffleHint()` — state + actions only, consumers bring their own DOM. Own semver. Only ship if Phase 1/2 prove demand.
 
 Ship Phase 1 first. Phase 2 and 3 only if someone actually asks.
