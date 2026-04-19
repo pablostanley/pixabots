@@ -432,6 +432,10 @@ export function Creator({
         e.preventDefault();
         randomPalette();
         break;
+      case "x":
+        e.preventDefault();
+        resetPalette();
+        break;
       case "u":
         e.preventDefault();
         undo();

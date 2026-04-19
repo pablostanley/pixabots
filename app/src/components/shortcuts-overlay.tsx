@@ -25,6 +25,7 @@ const CREATOR: Shortcut[] = [
   { keys: ["D"], label: "Open Download menu" },
   { keys: ["F"], label: "Toggle Fx inspector" },
   { keys: ["R"], label: "Random palette + background" },
+  { keys: ["X"], label: "Clear palette + background" },
   { keys: ["U"], label: "Undo last part change" },
   { keys: ["Shift+U"], label: "Redo" },
   { keys: ["← →"], label: "Cycle face / heads" },
