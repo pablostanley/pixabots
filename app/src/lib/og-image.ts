@@ -64,6 +64,53 @@ function buildLabel(title: string, subtitle?: string) {
   return { svg: Buffer.from(svg), w: boxW, h: boxH };
 }
 
+/** Shared sharp canvas. Every layout composes overlays onto this. */
+function composeOg(overlays: sharp.OverlayOptions[]): Promise<Buffer> {
+  return sharp({
+    create: {
+      width: OG_W,
+      height: OG_H,
+      channels: 4,
+      background: { r: 0, g: 0, b: 0, alpha: 1 },
+    },
+  })
+    .composite(overlays)
+    .png()
+    .toBuffer();
+}
+
+/**
+ * Lay a row of bots centered horizontally with a label underneath; vertically
+ * center the whole (bot + gap + label) group inside OG_H so the label never
+ * clips off the bottom.
+ */
+function layoutBotsWithLabel(
+  bots: Buffer[],
+  size: number,
+  gap: number,
+  label: { svg: Buffer; w: number; h: number }
+): sharp.OverlayOptions[] {
+  const n = bots.length;
+  const totalW = size * n + gap * Math.max(0, n - 1);
+  const left0 = Math.floor((OG_W - totalW) / 2);
+  const labelGap = 40;
+  const groupH = size + labelGap + label.h;
+  const botTop = Math.max(40, Math.floor((OG_H - groupH) / 2));
+  const labelTop = botTop + size + labelGap;
+
+  const overlays: sharp.OverlayOptions[] = bots.map((input, i) => ({
+    input,
+    left: left0 + i * (size + gap),
+    top: botTop,
+  }));
+  overlays.push({
+    input: label.svg,
+    left: Math.round((OG_W - label.w) / 2),
+    top: labelTop,
+  });
+  return overlays;
+}
+
 export type OgOptions =
   | { type: "grid"; title: string; subtitle?: string; seed?: string; palette?: PaletteTransform }
   | { type: "single"; id: string; title: string; subtitle?: string; palette?: PaletteTransform }
@@ -107,26 +154,17 @@ async function generateGrid(
     }))
   );
 
-  const positions: sharp.OverlayOptions[] = [...rendered];
-
   const label = buildLabel(title, subtitle);
-  positions.push({
-    input: label.svg,
-    left: Math.round((OG_W - label.w) / 2),
-    top: Math.round((OG_H - label.h) / 2),
-  });
-
-  return sharp({
-    create: {
-      width: OG_W,
-      height: OG_H,
-      channels: 4,
-      background: { r: 0, g: 0, b: 0, alpha: 1 },
+  const overlays: sharp.OverlayOptions[] = [
+    ...rendered,
+    {
+      input: label.svg,
+      left: Math.round((OG_W - label.w) / 2),
+      top: Math.round((OG_H - label.h) / 2),
     },
-  })
-    .composite(positions)
-    .png()
-    .toBuffer();
+  ];
+
+  return composeOg(overlays);
 }
 
 async function generateCompare(
@@ -140,36 +178,10 @@ async function generateCompare(
   const horizPad = 80;
   const available = OG_W - horizPad * 2 - gap * Math.max(0, n - 1);
   const size = Math.min(380, Math.floor(available / n));
-  const totalW = size * n + gap * Math.max(0, n - 1);
-  const left0 = Math.floor((OG_W - totalW) / 2);
-  const botTop = 80;
-  const labelTop = botTop + size + 40;
 
   const bots = await Promise.all(ids.map((id) => renderBot(id, size, palette)));
-  const positions: sharp.OverlayOptions[] = bots.map((input, i) => ({
-    input,
-    left: left0 + i * (size + gap),
-    top: botTop,
-  }));
-
   const label = buildLabel(title, subtitle);
-  positions.push({
-    input: label.svg,
-    left: Math.round((OG_W - label.w) / 2),
-    top: labelTop,
-  });
-
-  return sharp({
-    create: {
-      width: OG_W,
-      height: OG_H,
-      channels: 4,
-      background: { r: 0, g: 0, b: 0, alpha: 1 },
-    },
-  })
-    .composite(positions)
-    .png()
-    .toBuffer();
+  return composeOg(layoutBotsWithLabel(bots, size, gap, label));
 }
 
 async function generateSingle(
@@ -181,27 +193,6 @@ async function generateSingle(
   const size = 380;
   const bot = await renderBot(id, size, palette);
   const label = buildLabel(title, subtitle);
-
-  const botTop = 80;
-  const labelTop = botTop + size + 40;
-
-  return sharp({
-    create: {
-      width: OG_W,
-      height: OG_H,
-      channels: 4,
-      background: { r: 0, g: 0, b: 0, alpha: 1 },
-    },
-  })
-    .composite([
-      { input: bot, left: Math.round((OG_W - size) / 2), top: botTop },
-      {
-        input: label.svg,
-        left: Math.round((OG_W - label.w) / 2),
-        top: labelTop,
-      },
-    ])
-    .png()
-    .toBuffer();
+  return composeOg(layoutBotsWithLabel([bot], size, 0, label));
 }
 

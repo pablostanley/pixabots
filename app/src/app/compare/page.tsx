@@ -1,19 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { isValidId } from "@pixabots/core";
 import { BotDetail } from "@/components/bot-detail";
 import { SITE_URL } from "@/lib/constants";
+import { parseIdsCsv } from "@/lib/ids";
 
 const MAX_IDS = 6;
-
-function parseIds(raw: string | undefined): string[] {
-  if (!raw) return [];
-  return raw
-    .split(",")
-    .map((s) => s.trim().toLowerCase())
-    .filter((s) => isValidId(s))
-    .slice(0, MAX_IDS);
-}
 
 export async function generateMetadata({
   searchParams,
@@ -21,7 +12,7 @@ export async function generateMetadata({
   searchParams: Promise<{ ids?: string; hue?: string; saturate?: string }>;
 }): Promise<Metadata> {
   const { ids: raw, hue: hueRaw, saturate: satRaw } = await searchParams;
-  const ids = parseIds(raw);
+  const ids = parseIdsCsv(raw, MAX_IDS);
 
   const canonicalQs = new URLSearchParams();
   if (ids.length) canonicalQs.set("ids", ids.join(","));
@@ -89,7 +80,7 @@ export default async function ComparePage({
   searchParams: Promise<{ ids?: string; hue?: string; saturate?: string }>;
 }) {
   const { ids: raw, hue: hueRaw, saturate: satRaw } = await searchParams;
-  const ids = parseIds(raw);
+  const ids = parseIdsCsv(raw, MAX_IDS);
   const hue = parseHue(hueRaw);
   const saturate = parseSaturate(satRaw);
 

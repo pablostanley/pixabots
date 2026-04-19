@@ -3,6 +3,7 @@ import { isValidId } from "@pixabots/core";
 import { generateOgImage } from "@/lib/og-image";
 import { CORS_HEADERS, optionsResponse, imageResponse } from "@/lib/api";
 import { checkRate, clientKey } from "@/lib/rate-limit";
+import { parseIdsCsv } from "@/lib/ids";
 
 const OG_LIMIT = 20;
 const OG_WINDOW_MS = 60_000;
@@ -75,12 +76,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (type === "compare") {
-      const idsRaw = params.get("ids");
-      const ids = (idsRaw ?? "")
-        .split(",")
-        .map((s) => s.trim().toLowerCase())
-        .filter((s) => isValidId(s))
-        .slice(0, 6);
+      const ids = parseIdsCsv(params.get("ids"), 6);
       if (ids.length === 0) {
         return Response.json(
           { error: "Missing or invalid ids (expected comma-separated list of up to 6 valid pixabot IDs)" },
