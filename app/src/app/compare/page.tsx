@@ -4,12 +4,6 @@ import { isValidId } from "@pixabots/core";
 import { BotDetail } from "@/components/bot-detail";
 import { SITE_URL } from "@/lib/constants";
 
-export const metadata: Metadata = {
-  title: "Compare",
-  description: "Compare multiple pixabots side-by-side.",
-  alternates: { canonical: `${SITE_URL}/compare` },
-};
-
 const MAX_IDS = 6;
 
 function parseIds(raw: string | undefined): string[] {
@@ -19,6 +13,61 @@ function parseIds(raw: string | undefined): string[] {
     .map((s) => s.trim().toLowerCase())
     .filter((s) => isValidId(s))
     .slice(0, MAX_IDS);
+}
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ ids?: string; hue?: string; saturate?: string }>;
+}): Promise<Metadata> {
+  const { ids: raw, hue: hueRaw, saturate: satRaw } = await searchParams;
+  const ids = parseIds(raw);
+
+  const canonicalQs = new URLSearchParams();
+  if (ids.length) canonicalQs.set("ids", ids.join(","));
+  if (hueRaw) canonicalQs.set("hue", hueRaw);
+  if (satRaw) canonicalQs.set("saturate", satRaw);
+  const canonical = canonicalQs.size
+    ? `${SITE_URL}/compare?${canonicalQs.toString()}`
+    : `${SITE_URL}/compare`;
+
+  if (ids.length === 0) {
+    return {
+      title: "Compare",
+      description: "Compare multiple pixabots side-by-side.",
+      alternates: { canonical },
+    };
+  }
+
+  const title = `Comparing ${ids.length} pixabot${ids.length === 1 ? "" : "s"}`;
+  const subtitle = ids.join(" · ");
+  const description = `Side-by-side comparison of ${ids.join(", ")}.`;
+
+  let ogQuery = `type=compare&ids=${ids.join(",")}&title=${encodeURIComponent(title)}&subtitle=${encodeURIComponent(subtitle)}`;
+  if (hueRaw) ogQuery += `&hue=${encodeURIComponent(hueRaw)}`;
+  if (satRaw) ogQuery += `&saturate=${encodeURIComponent(satRaw)}`;
+  const ogUrl = `${SITE_URL}/api/og?${ogQuery}`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      type: "article",
+      title,
+      description,
+      url: canonical,
+      siteName: "Pixabots",
+      images: [{ url: ogUrl, width: 1200, height: 630, alt: title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogUrl],
+      creator: "@pablostanley",
+    },
+  };
 }
 
 function parseHue(v: string | undefined): number | undefined {

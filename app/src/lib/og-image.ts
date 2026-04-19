@@ -66,11 +66,15 @@ function buildLabel(title: string, subtitle?: string) {
 
 export type OgOptions =
   | { type: "grid"; title: string; subtitle?: string; seed?: string; palette?: PaletteTransform }
-  | { type: "single"; id: string; title: string; subtitle?: string; palette?: PaletteTransform };
+  | { type: "single"; id: string; title: string; subtitle?: string; palette?: PaletteTransform }
+  | { type: "compare"; ids: string[]; title: string; subtitle?: string; palette?: PaletteTransform };
 
 export async function generateOgImage(opts: OgOptions): Promise<Buffer> {
   if (opts.type === "grid") {
     return generateGrid(opts.title, opts.subtitle, opts.seed ?? opts.title, opts.palette);
+  }
+  if (opts.type === "compare") {
+    return generateCompare(opts.ids, opts.title, opts.subtitle, opts.palette);
   }
   return generateSingle(opts.id, opts.title, opts.subtitle, opts.palette);
 }
@@ -110,6 +114,49 @@ async function generateGrid(
     input: label.svg,
     left: Math.round((OG_W - label.w) / 2),
     top: Math.round((OG_H - label.h) / 2),
+  });
+
+  return sharp({
+    create: {
+      width: OG_W,
+      height: OG_H,
+      channels: 4,
+      background: { r: 0, g: 0, b: 0, alpha: 1 },
+    },
+  })
+    .composite(positions)
+    .png()
+    .toBuffer();
+}
+
+async function generateCompare(
+  ids: string[],
+  title: string,
+  subtitle: string | undefined,
+  palette?: PaletteTransform
+): Promise<Buffer> {
+  const n = ids.length;
+  const gap = 20;
+  const horizPad = 80;
+  const available = OG_W - horizPad * 2 - gap * Math.max(0, n - 1);
+  const size = Math.min(380, Math.floor(available / n));
+  const totalW = size * n + gap * Math.max(0, n - 1);
+  const left0 = Math.floor((OG_W - totalW) / 2);
+  const botTop = 80;
+  const labelTop = botTop + size + 40;
+
+  const bots = await Promise.all(ids.map((id) => renderBot(id, size, palette)));
+  const positions: sharp.OverlayOptions[] = bots.map((input, i) => ({
+    input,
+    left: left0 + i * (size + gap),
+    top: botTop,
+  }));
+
+  const label = buildLabel(title, subtitle);
+  positions.push({
+    input: label.svg,
+    left: Math.round((OG_W - label.w) / 2),
+    top: labelTop,
   });
 
   return sharp({

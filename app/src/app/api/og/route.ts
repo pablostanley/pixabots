@@ -74,9 +74,26 @@ export async function GET(request: NextRequest) {
       return imageResponse(buffer, "image/png");
     }
 
+    if (type === "compare") {
+      const idsRaw = params.get("ids");
+      const ids = (idsRaw ?? "")
+        .split(",")
+        .map((s) => s.trim().toLowerCase())
+        .filter((s) => isValidId(s))
+        .slice(0, 6);
+      if (ids.length === 0) {
+        return Response.json(
+          { error: "Missing or invalid ids (expected comma-separated list of up to 6 valid pixabot IDs)" },
+          { status: 400, headers: CORS_HEADERS }
+        );
+      }
+      const buffer = await generateOgImage({ type: "compare", ids, title, subtitle, palette });
+      return imageResponse(buffer, "image/png");
+    }
+
     if (type !== "grid") {
       return Response.json(
-        { error: "type must be 'grid' or 'single'" },
+        { error: "type must be 'grid', 'single', or 'compare'" },
         { status: 400, headers: CORS_HEADERS }
       );
     }
