@@ -6,7 +6,9 @@ const BODY = partCount("body");
 const TOP = partCount("top");
 const TOTAL = EYES * HEADS * BODY * TOP;
 
-function comboToIndex(id: string): number {
+export const COMBO_TOTAL = TOTAL;
+
+export function comboToIndex(id: string): number {
   const { eyes, heads, body, top } = decode(id);
   return top + body * TOP + heads * TOP * BODY + eyes * TOP * BODY * HEADS;
 }

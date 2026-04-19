@@ -9,6 +9,7 @@ import { PaletteShuffleButton } from "@/components/palette-shuffle-button";
 import { BotIdCopy } from "@/components/bot-id-copy";
 import { specialNote } from "@/lib/special-ids";
 import { withPalette } from "@/lib/palette";
+import { COMBO_TOTAL, comboToIndex } from "@/lib/bot-nav";
 
 type IconName = React.ComponentProps<typeof PixelIcon>["name"];
 
@@ -60,6 +61,7 @@ export function BotDetail({
 }) {
   const parts = resolveId(id);
   const note = specialNote(id);
+  const index = comboToIndex(id);
   const editQs = new URLSearchParams({ id });
   if (hue && hue !== 0) editQs.set("hue", String(hue));
   if (saturate !== undefined && saturate !== 1) editQs.set("saturate", saturate.toFixed(2));
@@ -87,9 +89,10 @@ export function BotDetail({
         <div className="flex items-center gap-2">
           <div className="mr-auto flex flex-col">
             <BotIdCopy id={id} />
-            {note && (
-              <span className="text-xs text-muted-foreground mt-1">{note}</span>
-            )}
+            <span className="text-xs text-muted-foreground mt-1 font-mono">
+              #{(index + 1).toLocaleString()} / {COMBO_TOTAL.toLocaleString()}
+              {note && <span className="ml-2 font-sans">· {note}</span>}
+            </span>
           </div>
           <FavoriteButton id={id} />
           <PaletteShuffleButton />

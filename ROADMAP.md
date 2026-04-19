@@ -130,6 +130,7 @@
 - [x] Home `generateMetadata` — `/?id=` / `/?seed=` URLs now emit a per-bot title, canonical, og:image, twitter card so shared links unfurl correctly. (PR #108)
 - [x] Browse Esc — clears the active filter when one's applied, no-op otherwise; docs updated. (PR #109)
 - [x] Compare shuffle — six-random-bots button in `/compare` empty state and header; palette preserved. (PR #110)
+- [x] Creator `X` — clears palette + background; pairs with `R` for a random/clear duo. (PR #111)
 
 ## Up Next
 
