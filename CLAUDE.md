@@ -45,6 +45,8 @@ Release flow (per package):
 
 Monitor with `gh run list --workflow=publish-{core,react,cli}.yml`.
 
+**CLI publish caveat:** the `pixabots` package is unscoped, so the `NPM_TOKEN` (granular, scoped to `@pixabots/*`) can't write to it yet. Expand the token's package allow-list to include `pixabots` before running `publish-cli.yml`.
+
 designteam.app currently inlines `randomPixabotId()` — should swap for `@pixabots/core`'s `randomId()` now that it's on npm.
 
 ## Adding new parts

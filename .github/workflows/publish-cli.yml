@@ -32,9 +32,9 @@ jobs:
         run: pnpm --filter @pixabots/core build
 
       - name: Build CLI
-        run: pnpm --filter pixabots build
+        run: pnpm --filter "./packages/cli" build
 
       - name: Publish
-        run: pnpm --filter pixabots publish --access public --no-git-checks
+        run: pnpm --filter "./packages/cli" publish --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

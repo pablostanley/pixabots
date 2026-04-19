@@ -1,6 +1,7 @@
 {
-  "name": "pixabots",
+  "name": "pixabots-app",
   "version": "0.1.0",
+  "private": true,
   "license": "MIT",
   "author": "Pablo Stanley (https://pablostanley.substack.com)",
   "repository": {
