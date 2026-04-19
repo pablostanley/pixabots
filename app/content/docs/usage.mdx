@@ -1,0 +1,119 @@
+---
+title: Usage patterns
+description: Drop a pixabot into READMEs, dashboards, Discord, avatars, and more
+---
+
+Every pixabot URL is a plain image served with open CORS and immutable caching. That means you can embed one almost anywhere a remote image is allowed.
+
+## GitHub README avatar
+
+Shields and GitHub READMEs render markdown images from any HTTPS source. Pick an ID and drop it in:
+
+```markdown
+![my pixabot](https://pixabots.com/api/pixabot/2156?size=240&animated=true)
+```
+
+Seed one from your username so you get a stable bot per profile:
+
+```tsx
+import { seededId } from "@pixabots/core";
+const id = seededId("your-github-username");
+// https://pixabots.com/api/pixabot/{id}?size=240&animated=true
+```
+
+## Profile / forum avatar
+
+Any site that accepts an image URL works. Common sizes:
+
+```
+https://pixabots.com/api/pixabot/2156?size=128   (Mastodon/Discord profile)
+https://pixabots.com/api/pixabot/2156?size=240   (Slack, GitHub display)
+https://pixabots.com/api/pixabot/2156?size=480   (high-DPI profiles)
+```
+
+GitHub's own avatar upload doesn't accept a URL — download the PNG locally first:
+
+```bash
+curl "https://pixabots.com/api/pixabot/2156?size=480" -o avatar.png
+# upload avatar.png in GitHub Settings → Profile
+```
+
+## Discord / Slack webhook
+
+When you post via webhook, drop a pixabot URL in the avatar field:
+
+```json
+{
+  "username": "pixabot",
+  "avatar_url": "https://pixabots.com/api/pixabot/2156?size=128",
+  "content": "hello from a pixabot"
+}
+```
+
+## Deterministic "avatar per user" from an email or ID
+
+```ts
+import { seededId } from "@pixabots/core";
+
+function avatarFor(user: { email: string }) {
+  const id = seededId(user.email.trim().toLowerCase());
+  return `https://pixabots.com/api/pixabot/${id}?size=240&animated=true`;
+}
+```
+
+Same email → same pixabot, forever. No DB table needed.
+
+## Embed in a blog post / notion / substack
+
+Most editors accept image URLs. Paste the URL directly or use the markdown syntax above. If the platform re-hosts images, the animated GIF may be converted to a static frame — link to the detail page for playback:
+
+```markdown
+[see it animate](https://pixabots.com/bot/2156)
+```
+
+## Wall of pixabots
+
+Generate a bunch with one call:
+
+```bash
+curl "https://pixabots.com/api/pixabot/batch?count=24&size=128"
+```
+
+Returns JSON with `png` and `gif` URLs — perfect for dashboards, status pages, or team rosters.
+
+## Quick wall script
+
+```tsx
+const res = await fetch("https://pixabots.com/api/pixabot/batch?count=24&size=128");
+const { pixabots } = await res.json();
+
+// Render as a grid
+pixabots.map(({ id, gif }) => (
+  <img key={id} src={gif} width={128} height={128} alt={id} style={{ imageRendering: "pixelated" }} />
+));
+```
+
+## Color-shifted variant per project
+
+Pair `seededId` with a `hue` derived from the same seed:
+
+```ts
+import { seededId } from "@pixabots/core";
+
+function brandedBot(project: string) {
+  const id = seededId(project);
+  // Stable hue 0–359 from the same seed
+  let h = 0;
+  for (const c of project) h = (h * 31 + c.charCodeAt(0)) % 360;
+  return `https://pixabots.com/api/pixabot/${id}?size=240&animated=true&hue=${h}`;
+}
+```
+
+Same project name → same bot, same tint.
+
+## Tips
+
+- Pixabots are small (32×32 source). Use `size=128` or `size=240` for most web use.
+- All URLs are CDN-cached immutably — no rate limits on repeat fetches, and first render is one-time.
+- For large embeds, `format=svg` scales crisply to any size.
+- Set `image-rendering: pixelated` in CSS when rendering via `<img>`; otherwise browsers may antialias.
