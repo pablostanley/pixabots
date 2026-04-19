@@ -12,6 +12,14 @@ export interface PartOption {
   name: string
   /** Canonical path segment: "{category}/{name}.png" */
   path: string
+  /**
+   * Number of horizontal frames in the sprite sheet (sheet width = frames × 32).
+   * Defaults to 1 (single 32×32 sprite). Authors adding a sub-animation
+   * (e.g. a blinking eye) bump this and draw frames left-to-right in one
+   * PNG. Runtime falls back to frame 0 for parts that don't provide enough
+   * frames for a given tick's scheduled index.
+   */
+  frames?: number
 }
 
 /** Layer compositing order (bottom to top): top, body, heads, eyes */

@@ -49,6 +49,17 @@ designteam.app currently inlines `randomPixabotId()` — should swap for `@pixab
 4. Rebuild: `pnpm --filter @pixabots/core build`
 5. Bump version + republish to npm
 
+### Multi-frame sprites (sub-animations)
+
+A part can ship a horizontal sprite sheet (width = `frames × 32`, height = 32) for per-tick sub-animations like blinking or looking around.
+
+1. Draw the sheet frames left-to-right, single PNG
+2. In `packages/core/src/parts.ts` set `frames: N` on the part entry (default 1)
+3. Edit `FRAME_INDICES[category]` in `packages/core/src/animation.ts` to schedule frames per tick (array length = ANIM_FRAMES length)
+4. Parts in the same category with fewer frames automatically fall back to frame 0 — safe to mix multi-frame and single-frame parts.
+
+Body sub-animations aren't wired yet (the feet-planted split needs per-frame top/bottom rows); heads/eyes/top are ready.
+
 ## API
 
 - `GET /api/pixabot/{id}` — PNG image. `?size=<any integer 32–1920>`, `?format=json` for metadata, `?animated=true` for animated GIF (all sizes supported), `?speed=0.25–4` for animation speed
