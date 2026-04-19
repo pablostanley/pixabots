@@ -17,12 +17,19 @@ export type PixabotProps = Omit<ImgHTMLAttributes<HTMLImageElement>, "src"> & {
   format?: "svg";
   /** Use animated WebP instead of GIF (smaller, alpha preserved). */
   webp?: boolean;
+  /** Hue rotation in degrees (0–359). Applies to raster output. */
+  hue?: number;
+  /** Saturation multiplier (0 = greyscale, 1 = unchanged, up to 4). */
+  saturate?: number;
   /** Override the API origin (defaults to https://pixabots.com) */
   origin?: string;
 };
 
-function buildSrc(props: Required<Pick<PixabotProps, "id" | "size" | "animated" | "origin">> & Pick<PixabotProps, "speed" | "format" | "webp">): string {
-  const { id, size, animated, origin, speed, format, webp } = props;
+function buildSrc(
+  props: Required<Pick<PixabotProps, "id" | "size" | "animated" | "origin">> &
+    Pick<PixabotProps, "speed" | "format" | "webp" | "hue" | "saturate">
+): string {
+  const { id, size, animated, origin, speed, format, webp, hue, saturate } = props;
   const params = new URLSearchParams();
   params.set("size", String(size));
   if (format === "svg") params.set("format", "svg");
@@ -31,6 +38,8 @@ function buildSrc(props: Required<Pick<PixabotProps, "id" | "size" | "animated" 
     if (webp) params.set("webp", "true");
     if (speed && speed !== 1) params.set("speed", String(speed));
   }
+  if (hue && hue !== 0) params.set("hue", String(((Math.round(hue) % 360) + 360) % 360));
+  if (saturate !== undefined && saturate !== 1) params.set("saturate", String(saturate));
   return `${origin}/api/pixabot/${id}?${params.toString()}`;
 }
 
@@ -49,6 +58,8 @@ export const Pixabot = forwardRef<HTMLImageElement, PixabotProps>(function Pixab
     speed = 1,
     format,
     webp,
+    hue,
+    saturate,
     origin = DEFAULT_ORIGIN,
     alt,
     style,
@@ -59,7 +70,7 @@ export const Pixabot = forwardRef<HTMLImageElement, PixabotProps>(function Pixab
   ref
 ) {
   const id = idProp && idProp !== "random" && isValidId(idProp) ? idProp : randomId();
-  const src = buildSrc({ id, size, animated, origin, speed, format, webp });
+  const src = buildSrc({ id, size, animated, origin, speed, format, webp, hue, saturate });
 
   return (
     <img
