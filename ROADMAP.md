@@ -157,6 +157,7 @@ When reviewing code, use the Before/After markdown table format from the skill. 
 - [x] React auto-publish — `.github/workflows/publish-react.yml` triggers on `react-v*` tags; same NPM_TOKEN as core. (PR #148)
 - [x] `/docs/react` page — install, full prop table, seeded-avatar and themed-row examples, self-hosted origin note. Homepage doc links to it. (PR #152)
 - [x] OG social card `bg` — `/api/og?bg=…` (single / compare / grid), threaded through all `generateMetadata` sites so shared links unfurl with the page's bg color. (PR #153)
+- [x] `pixabots` CLI v0.3.0 published — manual first publish (npm granular token can't create unscoped packages). Future `cli-v*` tags auto-publish once `NPM_TOKEN` allow-list is expanded to include `pixabots`.
 
 ## Up Next
 
@@ -261,8 +262,6 @@ Ship Phase 1 first. Phase 2 and 3 only if someone actually asks.
 - [x] Social cards — shipped via `/api/og?type=single|grid|compare` across PRs #79, #68, #108. `twitter:site` + `image:alt` added in PR #138.
 
 ## Blocked
-
-- [ ] **CLI npm publish** — `packages/cli` (`pixabots`) is ready to ship at v0.3.0 with the new `--bg` flag, but `NPM_TOKEN` is granular-scoped to `@pixabots/*` and rejects writes to the unscoped `pixabots` name (E403 on first `cli-v0.3.0` tag). Unblock: expand the token's package allow-list at npmjs.com → Account → Access Tokens to include `pixabots`, then push a fresh `cli-v0.3.0` tag.
 - [x] **OG image `bg` support** — Shipped (PR #153). Card background now matches `?bg=`; applies to single / compare / grid layouts.
 
 ## Bugs
