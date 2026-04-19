@@ -92,6 +92,7 @@
 - [x] CLI + Compare palette — `pixabots` v0.2.0 gets `--hue`/`--saturate`; `/compare?hue=&saturate=` threads to every compared bot. (PR #70)
 - [x] BotEmbed + batch palette — copy-snippets on `/bot/[id]` carry palette; `/api/pixabot/batch` forwards palette into returned png/gif URLs. (PR #71)
 - [x] Random + reset palette buttons — tiny shuffle-palette button beside sliders; × clears. (PR #72)
+- [x] Rate limiting — best-effort per-IP limiter on animated (30/min) + OG (20/min). In-memory per-instance, documented as "guardrail not firewall". (PR #73)
 
 ## Up Next
 
@@ -178,5 +179,4 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 - [ ] Accessories — new category layer (hats, items, etc.)
 - [ ] Animation variants — wave, jump, spin, etc. (infra shipped via multi-frame sprites; still needs artwork + scheduled `FRAME_INDICES`)
 - [ ] Social cards — `GET /api/pixabot/{id}/og` for Open Graph images with name/title
-- [ ] Rate limiting — protect the API from abuse (especially animated endpoint)
 - [ ] Analytics — track which pixabots are most popular, API usage stats
