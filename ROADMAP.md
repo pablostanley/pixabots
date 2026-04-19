@@ -84,6 +84,7 @@
 - [x] Multi-frame sprite infra — `@pixabots/core` 0.2.0: `PartOption.frames` + `FRAME_INDICES`. Render extracts correct frame per-tick per-layer with safe frame-0 fallback. Ready for eye-blink / heads-wiggle / top-spin art. (PR #62)
 - [x] Creator hue slider — live `filter: hue-rotate` preview; baked into PNG download + URL params on PNG/GIF links. (PR #63)
 - [x] Usage patterns doc — `/docs/usage` with copy-ready recipes (README, webhooks, seeded avatars, wall, branded). (PR #64)
+- [x] Creator saturation slider — pairs with hue; both bake into download and URL params. (PR #65)
 
 ## Up Next
 
