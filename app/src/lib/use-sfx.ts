@@ -73,21 +73,23 @@ function getServerSnapshot(): boolean {
   return true;
 }
 
-type VoiceOpts = {
+type SynthOpts = {
   wave?: OscillatorType;
   dur?: number;
   gain?: number;
   delay?: number;
   cutoff?: number;
   detune?: number;
+  /** "plucky" = 6ms attack → 40ms decay to 55% → exp release (warm one-shots).
+   *  "quick"  = 3ms attack → exp release (fast throttled pings). */
+  env?: "plucky" | "quick";
 };
 
 /**
- * Single synth voice: triangle osc → lowpass filter → amp envelope → destination.
- * Soft ADSR (6ms attack, quick decay to sustain, exponential release) and a
- * 2.5kHz lowpass for warmth — chunky but not piercing.
+ * Oscillator → lowpass → amp envelope → destination. Used for every sound.
+ * Envelope selector distinguishes warm one-shots from fast slider pings.
  */
-function voice(midi: number, opts: VoiceOpts = {}) {
+function synth(freq: number, opts: SynthOpts = {}) {
   const a = getCtx();
   if (!a) return;
   const {
@@ -97,6 +99,7 @@ function voice(midi: number, opts: VoiceOpts = {}) {
     delay = 0,
     cutoff = 2500,
     detune = 0,
+    env = "plucky",
   } = opts;
   const now = a.currentTime + delay;
   const osc = a.createOscillator();
@@ -106,18 +109,25 @@ function voice(midi: number, opts: VoiceOpts = {}) {
   filter.frequency.value = cutoff;
   filter.Q.value = 0.7;
   osc.type = wave;
-  osc.frequency.value = midiToHz(midi);
+  osc.frequency.value = freq;
   if (detune) osc.detune.value = detune;
   osc.connect(filter);
   filter.connect(amp);
   amp.connect(a.destination);
   amp.gain.setValueAtTime(0, now);
-  amp.gain.linearRampToValueAtTime(gain, now + 0.006);
-  amp.gain.linearRampToValueAtTime(gain * 0.55, now + 0.04);
-  amp.gain.exponentialRampToValueAtTime(0.0005, now + dur);
+  if (env === "plucky") {
+    amp.gain.linearRampToValueAtTime(gain, now + 0.006);
+    amp.gain.linearRampToValueAtTime(gain * 0.55, now + 0.04);
+    amp.gain.exponentialRampToValueAtTime(0.0005, now + dur);
+  } else {
+    amp.gain.linearRampToValueAtTime(gain, now + 0.003);
+    amp.gain.exponentialRampToValueAtTime(0.0005, now + dur);
+  }
   osc.start(now);
   osc.stop(now + dur + 0.02);
 }
+
+const voice = (midi: number, opts: SynthOpts = {}) => synth(midiToHz(midi), opts);
 
 export type SfxEvent =
   | { kind: "shuffle" }
@@ -180,33 +190,6 @@ function playEvent(ev: SfxEvent) {
 // Continuous sliders + Kaoss color picker (efecto-inspired)
 // ---------------------------------------------------------------------------
 
-function rawSynth(freq: number, opts: Omit<VoiceOpts, "wave" | "detune"> & {
-  wave?: OscillatorType;
-  detune?: number;
-} = {}) {
-  const a = getCtx();
-  if (!a) return;
-  const { wave = "sine", dur = 0.04, gain = 0.05, delay = 0, cutoff = 3000, detune = 0 } = opts;
-  const now = a.currentTime + delay;
-  const osc = a.createOscillator();
-  const amp = a.createGain();
-  const filter = a.createBiquadFilter();
-  filter.type = "lowpass";
-  filter.frequency.value = cutoff;
-  filter.Q.value = 0.7;
-  osc.type = wave;
-  osc.frequency.value = freq;
-  if (detune) osc.detune.value = detune;
-  osc.connect(filter);
-  filter.connect(amp);
-  amp.connect(a.destination);
-  amp.gain.setValueAtTime(0, now);
-  amp.gain.linearRampToValueAtTime(gain, now + 0.003);
-  amp.gain.exponentialRampToValueAtTime(0.0005, now + dur);
-  osc.start(now);
-  osc.stop(now + dur + 0.02);
-}
-
 // Throttle state for slider/color (module scope so calls share rate across mounts)
 const SLIDER_THROTTLE_MS = 45;
 const COLOR_THROTTLE_MS = 32;
@@ -221,7 +204,7 @@ function playSliderNote(t: number) {
   // = equal musical interval.
   const clamped = Math.max(0, Math.min(1, t));
   const freq = 262 * Math.pow(1047 / 262, clamped);
-  rawSynth(freq, { wave: "sine", dur: 0.05, gain: 0.05, cutoff: 2800 });
+  synth(freq, { wave: "sine", dur: 0.05, gain: 0.05, cutoff: 2800, env: "quick" });
 }
 
 function hexToHsv(hex: string): { h: number; s: number; v: number } {
@@ -258,8 +241,8 @@ function playColorNote(hex: string) {
   const gain = 0.01 + s * 0.07;
   const freq = baseFreq * octave;
   // Main tone + a softer 2× harmonic for that Kaoss-pad shimmer.
-  rawSynth(freq, { wave: "sine", dur: 0.035, gain, cutoff: 3200 });
-  rawSynth(freq * 2, { wave: "sine", dur: 0.025, gain: gain * 0.4, cutoff: 3200 });
+  synth(freq, { wave: "sine", dur: 0.035, gain, cutoff: 3200, env: "quick" });
+  synth(freq * 2, { wave: "sine", dur: 0.025, gain: gain * 0.4, cutoff: 3200, env: "quick" });
 }
 
 export function useSfx() {
