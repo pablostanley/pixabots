@@ -67,12 +67,12 @@ export function Inspector({
         h-[55vh] lg:h-auto lg:max-h-[calc(100dvh-6rem)]
         w-full lg:w-[280px] lg:shrink-0
         border-t lg:border border-border bg-background
-        p-4 flex flex-col gap-7 overflow-y-auto
+        flex flex-col
         shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.15)] lg:shadow-none
         motion-safe:animate-in motion-safe:slide-in-from-bottom lg:motion-safe:slide-in-from-bottom-0 motion-safe:fade-in-0 motion-safe:duration-200
       "
     >
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between px-4 pt-4 pb-3">
         <h2 className="text-sm font-bold uppercase tracking-wide">Effects</h2>
         <div className="flex items-center gap-1">
           <button
@@ -107,6 +107,7 @@ export function Inspector({
         </div>
       </div>
 
+      <div className="flex flex-col gap-7 overflow-y-auto px-4 pb-4 flex-1">
       <section className="flex flex-col gap-3">
         <h3 className="text-xs uppercase tracking-wide text-muted-foreground">Background</h3>
         <HexColorPicker
@@ -225,7 +226,7 @@ export function Inspector({
           />
         </label>
       </section>
-
+      </div>
     </aside>
   );
 }
