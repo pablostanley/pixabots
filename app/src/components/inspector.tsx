@@ -226,10 +226,6 @@ export function Inspector({
         </label>
       </section>
 
-      <section className="flex flex-col gap-2 text-muted-foreground text-xs">
-        <h3 className="uppercase tracking-wide">More effects</h3>
-        <p className="italic">(coming soon)</p>
-      </section>
     </aside>
   );
 }
