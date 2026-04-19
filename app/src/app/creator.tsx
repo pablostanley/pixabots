@@ -254,6 +254,18 @@ export function Creator({
     syncUrl(encode(selRef.current), hueRef.current, v);
   };
 
+  const BG_CHOICES: Array<string | null> = [
+    null,
+    "#ffffff",
+    "#000000",
+    "#f5f5f4",
+    "#fde68a",
+    "#bbf7d0",
+    "#bae6fd",
+    "#fbcfe8",
+    "#c4b5fd",
+  ];
+
   const randomPalette = () => {
     const h = Math.floor(Math.random() * 360);
     // Skew saturate toward useful range 0.6–1.4 so random doesn't often
@@ -264,7 +276,14 @@ export function Creator({
     setSaturateState(s);
     saturateRef.current = s;
     syncUrl(encode(selRef.current), h, s);
-    sfx.play({ kind: "bg", index: Math.floor(Math.random() * 9) });
+    const bgIdx = Math.floor(Math.random() * BG_CHOICES.length);
+    const nextBg = BG_CHOICES[bgIdx];
+    setBg(nextBg);
+    bgRef.current = nextBg;
+    if (canvasRef.current && !intervalRef.current) {
+      drawOnCanvas(canvasRef.current, imagesRef.current, undefined, nextBg);
+    }
+    sfx.play({ kind: "bg", index: bgIdx });
   };
 
   const resetPalette = () => {
@@ -273,6 +292,11 @@ export function Creator({
     setSaturateState(1);
     saturateRef.current = 1;
     syncUrl(encode(selRef.current), 0, 1);
+    setBg(null);
+    bgRef.current = null;
+    if (canvasRef.current && !intervalRef.current) {
+      drawOnCanvas(canvasRef.current, imagesRef.current, undefined, null);
+    }
   };
 
   const applyBg = (color: string | null, index?: number) => {
