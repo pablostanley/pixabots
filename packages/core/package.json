@@ -24,6 +24,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
+    "test": "pnpm run build && node test/smoke.mjs",
     "prepublishOnly": "pnpm run build"
   },
   "devDependencies": {
