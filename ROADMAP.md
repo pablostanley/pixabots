@@ -95,6 +95,7 @@
 - [x] Rate limiting — best-effort per-IP limiter on animated (30/min) + OG (20/min). In-memory per-instance, documented as "guardrail not firewall". (PR #73)
 - [x] Analytics — Vercel Web Analytics + Speed Insights mounted at root layout. Zero config; data lands in the dashboard once enabled in project settings. (PR #74)
 - [x] Fx palette inspector — in-layout right sidebar with Background picker (18 pentatonic swatches + hex + HSL) and Hue/Saturation sliders. Kaossilator-style synth (log-mapped slider pings, hue→pitch/value→octave/sat→volume on color picks). Mobile tabs (Background / Adjustments) with animated height. SFX now ON by default. Shared `@/lib/palette` replaces three local palette-URL helpers; `synth()` unifies former voice + rawSynth. (PR #75)
+- [x] "You might also like" — `/bot/[id]` now shows 4 deterministic one-part-different variants. FNV-1a + mulberry32 seeded off the id so repeat visits render the same four. Palette forwards via `withPalette`. Modal skipped. (PR #76)
 
 ## Up Next
 
@@ -143,28 +144,28 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 ## Polish
 
 ### UI
-- [ ] **Mobile bottom sheet** — use a bottom sheet instead of centered dialog on mobile for bot detail
-- [ ] **Sticky header with scroll behavior** — hide on scroll down, reveal on scroll up; backdrop blur
-- [ ] **Focus rings everywhere** — audit all interactive elements for visible keyboard focus
-- [ ] **"You might also like"** — on bot page, show 4 one-part-different variants
+- [x] **Mobile bottom sheet** — PR #15
+- [x] **Sticky header with scroll behavior** — PR #16
+- [x] **Focus rings everywhere** — PR #24
+- [x] **"You might also like"** — PR #76
 
 ### Speed & perf
-- [ ] **Prefetch bot detail on browse hover** — Next.js `<Link prefetch>` already partial; extend to PNG preload
-- [ ] **Preload sprite parts on creator mount** — 42 tiny PNGs fetched in parallel so first shuffle is instant
-- [ ] **Next shuffle preloaded** — generate+preload the next random ID behind the scenes; shuffle becomes 0ms
-- [ ] **WebP animated output** — smaller than GIF with alpha support (see Ideas)
+- [x] **Prefetch bot detail on browse hover** — PR #17
+- [x] **Preload sprite parts on creator mount** — PR #18 preloads all 42; every shuffle is a cache hit
+- [x] **Next shuffle preloaded** — folded into PR #18 (all sprite parts preloaded, so next shuffle is 0ms regardless of which id comes up)
+- [x] **WebP animated output** — PR #52
 
 ### Messaging & copy
-- [ ] **Personality in empty states / 404** — "this pixabot got lost" + random pixabot on 404 page
-- [ ] **Copy-button state polish** — animated check that fades back to copy icon, accompanied by "Copied URL"
+- [x] **Personality in empty states / 404** — PR #19
+- [x] **Copy-button state polish** — PR #20
 - [ ] **Error messages match voice** — API 400s stay plain, but UI error states use the pixel vibe
-- [ ] **Share via Web Share API on mobile** — native share sheet instead of copy-URL-only
+- [x] **Share via Web Share API on mobile** — PR #21
 
 ### Accessibility & comfort
-- [ ] **`prefers-reduced-motion` support** — freeze idle bounce, disable hover "speed up" on browse
-- [ ] **Screen-reader announcements on shuffle** — `aria-live` region announces the new ID
-- [ ] **High-contrast focus + checkered BG** — audit dark mode for AA contrast on all text
-- [ ] **Command palette (⌘K)** — quick jump to ID, Browse, Docs, Random; monospace-style UI matches vibe
+- [x] **`prefers-reduced-motion` support** — PR #22
+- [x] **Screen-reader announcements on shuffle** — PR #23
+- [x] **High-contrast focus + checkered BG** — PR #25
+- [x] **Command palette (⌘K)** — PR #27
 
 ### Delight
 - [ ] **Easter-egg special animations** — Konami rapid-shuffle (PR #35) and ID captions (PR #51) done. Full special-animations-per-ID still open as a stretch.
