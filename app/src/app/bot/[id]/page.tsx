@@ -26,6 +26,7 @@ export async function generateMetadata({
   let ogQuery = `type=single&id=${id}&title=${encodeURIComponent(title)}&subtitle=${encodeURIComponent(partsLabel)}`;
   if (hueRaw) ogQuery += `&hue=${encodeURIComponent(hueRaw)}`;
   if (satRaw) ogQuery += `&saturate=${encodeURIComponent(satRaw)}`;
+  if (bgNorm) ogQuery += `&bg=${encodeURIComponent(bgNorm)}`;
   const ogUrl = `${SITE_URL}/api/og?${ogQuery}`;
 
   const canonicalQs = new URLSearchParams();

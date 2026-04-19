@@ -4,6 +4,7 @@ import { generateOgImage } from "@/lib/og-image";
 import { CORS_HEADERS, optionsResponse, imageResponse } from "@/lib/api";
 import { checkRate, clientKey } from "@/lib/rate-limit";
 import { parseIdsCsv } from "@/lib/ids";
+import { normalizeHex } from "@/lib/palette";
 
 const OG_LIMIT = 20;
 const OG_WINDOW_MS = 60_000;
@@ -61,6 +62,8 @@ export async function GET(request: NextRequest) {
   const title = clampText(params.get("title"), MAX_TITLE_LEN) ?? "Pixabots";
   const subtitle = clampText(params.get("subtitle"), MAX_SUBTITLE_LEN);
   const palette = parsePalette(params);
+  const bgRaw = params.get("bg");
+  const bg = bgRaw ? normalizeHex(bgRaw) ?? undefined : undefined;
 
   try {
     if (type === "single") {
@@ -71,7 +74,7 @@ export async function GET(request: NextRequest) {
           { status: 400, headers: CORS_HEADERS }
         );
       }
-      const buffer = await generateOgImage({ type: "single", id, title, subtitle, palette });
+      const buffer = await generateOgImage({ type: "single", id, title, subtitle, palette, bg });
       return imageResponse(buffer, "image/png");
     }
 
@@ -83,7 +86,7 @@ export async function GET(request: NextRequest) {
           { status: 400, headers: CORS_HEADERS }
         );
       }
-      const buffer = await generateOgImage({ type: "compare", ids, title, subtitle, palette });
+      const buffer = await generateOgImage({ type: "compare", ids, title, subtitle, palette, bg });
       return imageResponse(buffer, "image/png");
     }
 
@@ -95,7 +98,7 @@ export async function GET(request: NextRequest) {
     }
 
     const seed = clampText(params.get("seed"), MAX_SEED_LEN) ?? title;
-    const buffer = await generateOgImage({ type: "grid", title, subtitle, seed, palette });
+    const buffer = await generateOgImage({ type: "grid", title, subtitle, seed, palette, bg });
     return imageResponse(buffer, "image/png");
   } catch (e) {
     return Response.json(
