@@ -83,7 +83,15 @@ function drawOnCanvas(
   }
 }
 
-export function Creator({ initialId }: { initialId: string | null }) {
+export function Creator({
+  initialId,
+  initialHue = 0,
+  initialSaturate = 1,
+}: {
+  initialId: string | null;
+  initialHue?: number;
+  initialSaturate?: number;
+}) {
   const [selection, setSelection] = useState(() => {
     if (initialId && isValidId(initialId)) return decode(initialId);
     return randomCombo();
@@ -94,11 +102,11 @@ export function Creator({ initialId }: { initialId: string | null }) {
   const [bg, setBg] = useState<string | null>(null);
   const bgRef = useRef<string | null>(null);
   bgRef.current = bg;
-  const [hue, setHue] = useState(0);
-  const hueRef = useRef(0);
+  const [hue, setHueState] = useState(initialHue);
+  const hueRef = useRef(initialHue);
   hueRef.current = hue;
-  const [saturate, setSaturate] = useState(1);
-  const saturateRef = useRef(1);
+  const [saturate, setSaturateState] = useState(initialSaturate);
+  const saturateRef = useRef(initialSaturate);
   saturateRef.current = saturate;
   const [locks, setLocks] = useState<Record<PartCategory, boolean>>({
     eyes: false,
@@ -179,12 +187,20 @@ export function Creator({ initialId }: { initialId: string | null }) {
     }
   }
 
+  function syncUrl(id: string, h: number, s: number) {
+    const qs = new URLSearchParams();
+    qs.set("id", id);
+    if (h !== 0) qs.set("hue", String(h));
+    if (s !== 1) qs.set("saturate", s.toFixed(2));
+    window.history.replaceState(null, "", `/?${qs.toString()}`);
+  }
+
   function updateSelection(next: Record<PartCategory, number>) {
     selRef.current = next;
     setSelection(next);
     loadAndDraw(next);
     const nextId = encode(next);
-    window.history.replaceState(null, "", `/?id=${nextId}`);
+    syncUrl(nextId, hueRef.current, saturateRef.current);
     dismissShuffleHint();
     const el = canvasWrapRef.current;
     if (el) {
@@ -225,6 +241,18 @@ export function Creator({ initialId }: { initialId: string | null }) {
     setLocks((l) => ({ ...l, [category]: !l[category] }));
   };
 
+  const setHue = (v: number) => {
+    setHueState(v);
+    hueRef.current = v;
+    syncUrl(encode(selRef.current), v, saturateRef.current);
+  };
+
+  const setSaturate = (v: number) => {
+    setSaturateState(v);
+    saturateRef.current = v;
+    syncUrl(encode(selRef.current), hueRef.current, v);
+  };
+
   const applyBg = (color: string | null, index?: number) => {
     setBg(color);
     bgRef.current = color;
@@ -235,8 +263,12 @@ export function Creator({ initialId }: { initialId: string | null }) {
   };
 
   const copyShareUrl = () => {
+    const qs = new URLSearchParams();
+    qs.set("id", pixabotId);
+    if (hue !== 0) qs.set("hue", String(hue));
+    if (saturate !== 1) qs.set("saturate", saturate.toFixed(2));
     share({
-      url: `${window.location.origin}/?id=${pixabotId}`,
+      url: `${window.location.origin}/?${qs.toString()}`,
       title: `Pixabot ${pixabotId}`,
       text: `Check out pixabot ${pixabotId}`,
     });
