@@ -33,18 +33,31 @@ interface BotCell {
 
 type Filters = Partial<Record<PartCategory, number>>;
 
-function generateBatch(count: number, filters: Filters, offset: number): BotCell[] {
-  return Array.from({ length: count }, (_, i) => {
+function generateBatch(
+  count: number,
+  filters: Filters,
+  offset: number,
+  skipIds: ReadonlySet<string> = new Set()
+): BotCell[] {
+  // De-dupe against both `skipIds` (already rendered) and the new picks from
+  // this batch. Heavy filters can shrink the unique pool below `count`, so
+  // bail out after count*20 tries to avoid tight-looping on exhaustion.
+  const bots: BotCell[] = [];
+  const seen = new Set(skipIds);
+  let placed = 0;
+  for (let guard = 0; bots.length < count && guard < count * 20; guard++) {
     const combo = randomCombo();
     for (const cat of CATEGORY_ORDER) {
       const locked = filters[cat];
       if (locked !== undefined) combo[cat] = locked;
     }
-    return {
-      id: encode(combo),
-      featured: (i + offset) % FEATURED_EVERY === 0,
-    };
-  });
+    const id = encode(combo);
+    if (seen.has(id)) continue;
+    seen.add(id);
+    bots.push({ id, featured: (placed + offset) % FEATURED_EVERY === 0 });
+    placed++;
+  }
+  return bots;
 }
 
 function parseFilters(params: URLSearchParams): Filters {
@@ -288,7 +301,8 @@ function BrowseInner() {
     loadingRef.current = true;
     setBots((prev) => {
       if (prev.length >= MAX_BOTS) return prev;
-      return [...prev, ...generateBatch(BATCH_SIZE, filters, prev.length)];
+      const seen = new Set(prev.map((b) => b.id));
+      return [...prev, ...generateBatch(BATCH_SIZE, filters, prev.length, seen)];
     });
     setTimeout(() => { loadingRef.current = false; }, 0);
   }, [filters]);

@@ -114,6 +114,7 @@
 - [x] Browse "Compare top 6" — one-click link from the filtered grid to `/compare` with the six visible bots. (PR #92)
 - [x] BotDetail palette shuffle — shuffle-icon button in the bot-detail header rolls a random `hue`+`saturate` (sat 0.6–1.4 for recognizability). (PR #93)
 - [x] BotDetail palette reset — companion ↺ button next to shuffle; shows only when a palette is applied. (PR #94)
+- [x] Home `?seed=X` — homepage can be opened with a deterministic starting bot via `seededId(seed)`. Capped at 80 chars; explicit `?id=` still wins. Usage doc updated. (PR #95)
 
 ## Up Next
 
