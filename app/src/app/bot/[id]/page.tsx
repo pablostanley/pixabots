@@ -41,18 +41,36 @@ export async function generateMetadata({
   };
 }
 
+function parseHue(v: string | undefined): number | undefined {
+  if (typeof v !== "string") return undefined;
+  const n = Number(v);
+  if (!Number.isFinite(n)) return undefined;
+  return ((Math.round(n) % 360) + 360) % 360;
+}
+function parseSaturate(v: string | undefined): number | undefined {
+  if (typeof v !== "string") return undefined;
+  const n = Number(v);
+  if (!Number.isFinite(n)) return undefined;
+  return Math.max(0, Math.min(4, n));
+}
+
 export default async function BotPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ hue?: string; saturate?: string }>;
 }) {
   const { id } = await params;
   if (!isValidId(id)) notFound();
+  const { hue: hueParam, saturate: satParam } = await searchParams;
+  const hue = parseHue(hueParam);
+  const saturate = parseSaturate(satParam);
 
   return (
     <main className="flex-1 flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-[504px] flex flex-col gap-6">
-        <BotDetail id={id} />
+        <BotDetail id={id} hue={hue} saturate={saturate} />
         <BotEmbed id={id} />
       </div>
     </main>
