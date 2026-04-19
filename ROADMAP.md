@@ -85,6 +85,7 @@
 - [x] Creator hue slider — live `filter: hue-rotate` preview; baked into PNG download + URL params on PNG/GIF links. (PR #63)
 - [x] Usage patterns doc — `/docs/usage` with copy-ready recipes (README, webhooks, seeded avatars, wall, branded). (PR #64)
 - [x] Creator saturation slider — pairs with hue; both bake into download and URL params. (PR #65)
+- [x] Palette URL sync — `?hue` + `?saturate` on home page round-trip through URL, sliders restore, share URL carries palette. (PR #66)
 
 ## Up Next
 
