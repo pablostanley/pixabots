@@ -19,6 +19,7 @@ import { useKeydown } from "@/lib/use-keydown";
 import { useShareOrCopy } from "@/lib/use-share-or-copy";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 import { setBrowseOrder } from "@/lib/browse-order";
+import { useSfx } from "@/lib/use-sfx";
 import { FavoriteButton } from "@/components/favorite-button";
 import {
   DropdownMenu,
@@ -419,6 +420,7 @@ function BrowseInner() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const sfx = useSfx();
 
   const filters = useMemo(
     () => parseFilters(new URLSearchParams(searchParams.toString())),
@@ -472,7 +474,8 @@ function BrowseInner() {
   const reroll = useCallback(() => {
     setBots(generateBatch(BATCH_SIZE, filters, 0));
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [filters]);
+    sfx.play({ kind: "shuffle" });
+  }, [filters, sfx]);
 
   const clearFilters = useCallback(() => {
     router.replace(pathname, { scroll: false });

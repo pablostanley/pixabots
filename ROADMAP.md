@@ -234,7 +234,7 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 
 - [x] **Mobile hamburger menu** — PR #116
 - [x] **Browse filters in a sheet on mobile** — (PR in flight)
-- [ ] **Musical SFX on browse** — `/browse` is silent right now. Add pentatonic / kaossilator-style sounds for hover, prev/next in the dialog, filter toggles, and card-tap (respecting the existing `useSfx` mute). Should feel cohesive with the creator SFX (same scales / voices) so moving between pages is one instrument.
+- [x] **Musical SFX on browse** — prev/next in dialog plays a cycle note pitched by combo index; filter chip picks play pick notes per category scale; reroll plays the shuffle note. Hover is deliberately silent to avoid spam.
 
 ## Ideas
 

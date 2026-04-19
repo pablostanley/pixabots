@@ -4,9 +4,10 @@ import { useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import { useKeydown } from "@/lib/use-keydown";
-import { nextId, prevId } from "@/lib/bot-nav";
+import { nextId, prevId, comboToIndex } from "@/lib/bot-nav";
 import { neighborInOrder, useBrowseOrder } from "@/lib/browse-order";
 import { botHref } from "@/lib/bot-href";
+import { useSfx } from "@/lib/use-sfx";
 
 /**
  * Fixed-position left + right arrows. Used inside the browse bot-detail
@@ -38,6 +39,7 @@ export function BotEdgeNav({
 }) {
   const searchParams = useSearchParams();
   const order = useBrowseOrder();
+  const sfx = useSfx();
   const prev = neighborInOrder(order, id, -1) ?? prevId(id);
   const next = neighborInOrder(order, id, 1) ?? nextId(id);
 
@@ -45,8 +47,13 @@ export function BotEdgeNav({
     (target: string) => {
       window.history.replaceState(null, "", botHref(target, searchParams));
       onNavigate(target);
+      // Pitch tracks the combo index so walking the grid plays a melody
+      // instead of the same note. "cycle" voice, eyes scale — same timbre
+      // the creator uses when cycling a part, so the site stays one
+      // instrument.
+      sfx.play({ kind: "cycle", category: "eyes", index: comboToIndex(target) });
     },
-    [searchParams, onNavigate]
+    [searchParams, onNavigate, sfx]
   );
 
   useKeydown(
