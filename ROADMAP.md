@@ -87,6 +87,7 @@
 - [x] Creator saturation slider — pairs with hue; both bake into download and URL params. (PR #65)
 - [x] Palette URL sync — `?hue` + `?saturate` on home page round-trip through URL, sliders restore, share URL carries palette. (PR #66)
 - [x] BotDetail palette — `/bot/[id]?hue=&saturate=` renders recolored; Edit + download links carry palette forward. (PR #67)
+- [x] Palette propagation — OG image / canonical URL / BotNav prev-next all preserve `hue`+`saturate`. (PR #68)
 
 ## Up Next
 
