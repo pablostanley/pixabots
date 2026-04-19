@@ -62,6 +62,22 @@ seededId("user@example.com");  // same as the first call
 
 This is useful for generating avatars from usernames, emails, or any unique identifier without storing the mapping.
 
+## Seeded PRNG primitives
+
+When you need more than a single seeded pick — e.g. generating a sequence of variants from one id — use the underlying PRNG:
+
+```typescript
+import { createRng, hashString, mulberry32 } from "@pixabots/core";
+
+const rng = createRng("2156");       // hashString("2156") → mulberry32
+rng();                                // 0.0 — 1.0, deterministic from the seed
+rng();                                // next value in the same sequence
+
+// Or compose the primitives yourself:
+const seed = hashString("2156");      // 32-bit unsigned
+const next = mulberry32(seed);        // () => number
+```
+
 ## Validation
 
 ```typescript

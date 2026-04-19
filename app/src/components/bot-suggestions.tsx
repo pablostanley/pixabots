@@ -1,35 +1,15 @@
 import Link from "next/link";
-import { CATEGORY_ORDER, PARTS, decode, encode, type PartCategory } from "@pixabots/core";
+import { CATEGORY_ORDER, PARTS, createRng, decode, encode, type PartCategory } from "@pixabots/core";
 import { withPalette } from "@/lib/palette";
-
-function seedFromId(id: string): number {
-  let h = 2166136261;
-  for (let i = 0; i < id.length; i++) {
-    h ^= id.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return h >>> 0;
-}
-
-function mulberry32(seed: number) {
-  let a = seed;
-  return () => {
-    a = (a + 0x6d2b79f5) | 0;
-    let t = a;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
 
 /**
  * Deterministic 4 variants, each differing from `id` by exactly one part.
- * Uses a hashed seed so the same id always yields the same suggestions —
- * means /api/pixabot/{vid} responses stay cache-hit-friendly.
+ * Seeded off `id` so the same id always yields the same four — keeps
+ * /api/pixabot/{vid} responses cache-hit-friendly.
  */
 function buildVariants(id: string, count = 4): string[] {
   const base = decode(id);
-  const rng = mulberry32(seedFromId(id));
+  const rng = createRng(id);
   const seen = new Set<string>([id]);
   const out: string[] = [];
   for (let guard = 0; out.length < count && guard < count * 12; guard++) {

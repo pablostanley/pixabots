@@ -24,6 +24,9 @@ export {
   randomId,
   seededCombo,
   seededId,
+  hashString,
+  mulberry32,
+  createRng,
 } from './random.js'
 
 export {
