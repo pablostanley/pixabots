@@ -7,6 +7,7 @@ import { PaletteShuffleButton } from "@/components/palette-shuffle-button";
 import { BotIdCopy } from "@/components/bot-id-copy";
 import { BotPasteNav } from "@/components/bot-paste-nav";
 import { BotShareButton } from "@/components/bot-share-button";
+import { PixelMaterialize } from "@/components/pixel-materialize";
 import { specialNote } from "@/lib/special-ids";
 import { withPalette } from "@/lib/palette";
 import { COMBO_TOTAL, comboToIndex } from "@/lib/bot-nav";
@@ -71,7 +72,7 @@ export function BotDetail({
       <BotPasteNav id={id} />
       {/* aspect-square stops the container from collapsing between img
           swaps (prev/next nav), so nothing reflows below. */}
-      <div className="aspect-square border border-border p-3">
+      <div className="relative aspect-square border border-border p-3">
         <picture>
           <source
             media="(prefers-reduced-motion: reduce)"
@@ -88,6 +89,7 @@ export function BotDetail({
             style={{ imageRendering: "pixelated" }}
           />
         </picture>
+        <PixelMaterialize />
       </div>
 
       <div className="flex flex-col gap-3">
