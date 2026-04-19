@@ -84,7 +84,7 @@ export default async function BotPage({
     <main className="flex-1 flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-[504px] flex flex-col gap-6">
         <BotDetail id={id} hue={hue} saturate={saturate} />
-        <BotEmbed id={id} />
+        <BotEmbed id={id} hue={hue} saturate={saturate} />
       </div>
     </main>
   );
