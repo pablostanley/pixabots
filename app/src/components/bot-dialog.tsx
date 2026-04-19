@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Dialog,
@@ -9,8 +10,17 @@ import {
 import { BotDetail } from "@/components/bot-detail";
 import { BotEdgeNav } from "@/components/bot-edge-nav";
 
+/**
+ * Client-owned id so prev/next arrows don't fire a full Next route
+ * transition. `router.replace` re-renders the parallel-route segment,
+ * which repaints the dialog scrim and causes an obvious flash. Instead,
+ * BotEdgeNav updates our local state and shallow-updates the URL via
+ * history.replaceState — the Dialog tree stays mounted and only
+ * BotDetail's id prop changes.
+ */
 export function BotDialog({ id }: { id: string }) {
   const router = useRouter();
+  const [currentId, setCurrentId] = useState(id);
 
   const dismiss = () => {
     if (window.history.length > 1) router.back();
@@ -25,12 +35,10 @@ export function BotDialog({ id }: { id: string }) {
       }}
     >
       <DialogContent aria-describedby={undefined}>
-        <DialogTitle className="sr-only">Pixabot {id}</DialogTitle>
-        <BotDetail id={id} />
+        <DialogTitle className="sr-only">Pixabot {currentId}</DialogTitle>
+        <BotDetail id={currentId} />
       </DialogContent>
-      {/* Edge arrows render outside the dialog so they don't reflow its
-          content; keyed on id so preload links update on every step. */}
-      <BotEdgeNav id={id} key={id} />
+      <BotEdgeNav id={currentId} onNavigate={setCurrentId} />
     </Dialog>
   );
 }

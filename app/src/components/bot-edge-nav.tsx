@@ -1,30 +1,40 @@
 "use client";
 
 import { useCallback } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import { useKeydown } from "@/lib/use-keydown";
 import { nextId, prevId } from "@/lib/bot-nav";
 import { neighborInOrder, useBrowseOrder } from "@/lib/browse-order";
 
 /**
- * Fixed-position left + right arrows meant to live inside the browse
- * bot-detail dialog. Large hit area, small visual footprint, pinned to the
- * screen edges so they don't steal layout space from the dialog content.
+ * Fixed-position left + right arrows. Used inside the browse bot-detail
+ * dialog. Large hit area, small visual footprint, pinned to the screen
+ * edges so they don't steal layout space from the dialog content.
  *
- * When the user opened this dialog from /browse, walking left/right steps
- * through the _visible grid order_ (published via `useBrowseOrder`). When
- * the current id isn't in that list (direct link, first paint, etc.), falls
- * back to the canonical prev/next combo index.
+ * Navigation calls `onNavigate(nextId)` and shallow-updates the URL via
+ * history.replaceState, so the dialog tree stays mounted and only
+ * BotDetail's id prop changes. Using `router.replace` instead triggers a
+ * Next route transition that repaints the scrim — the "flash" the user
+ * saw before this refactor.
  *
- * Also preloads the adjacent bot's animated image via `<link rel="preload">`
- * — when the user clicks, the next frame is already in the browser cache so
- * the image doesn't blink.
+ * When opened from /browse, walking left/right steps through the visible
+ * grid order (via `useBrowseOrder`). Falls back to the canonical prev/
+ * next combo index when the id isn't in that list (direct link, pre-
+ * hydrate, etc.).
+ *
+ * Preloads the adjacent animated image via `<link rel="preload">` so the
+ * swap doesn't decode-stall.
  *
  * Keyboard ← / → still work; guarded against form-field focus + modifiers.
  */
-export function BotEdgeNav({ id }: { id: string }) {
-  const router = useRouter();
+export function BotEdgeNav({
+  id,
+  onNavigate,
+}: {
+  id: string;
+  onNavigate: (id: string) => void;
+}) {
   const searchParams = useSearchParams();
   const order = useBrowseOrder();
   const prev = neighborInOrder(order, id, -1) ?? prevId(id);
@@ -33,9 +43,10 @@ export function BotEdgeNav({ id }: { id: string }) {
   const go = useCallback(
     (target: string) => {
       const qs = searchParams?.toString();
-      router.replace(`/bot/${target}${qs ? `?${qs}` : ""}`, { scroll: false });
+      window.history.replaceState(null, "", `/bot/${target}${qs ? `?${qs}` : ""}`);
+      onNavigate(target);
     },
-    [router, searchParams]
+    [searchParams, onNavigate]
   );
 
   useKeydown(
