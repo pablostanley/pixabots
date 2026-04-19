@@ -124,6 +124,7 @@
 - [x] Browse scroll-to-top — fixed ↑ button fades in after 800px of scroll on /browse; smooth scroll on click. (PR #102)
 - [x] Command-palette sound + theme — ⌘K surfaces the M/T global toggles with state-aware labels. (PR #103)
 - [x] Favorites newest-first — display order reversed so freshest stars land top-left; Compare uses the newest six. (PR #104)
+- [x] Creator paste-to-jump — pasting a pixabots.com URL or a 4-char ID on the creator jumps to that combo; new `usePaste` hook mirrors `useKeydown` (no `useEffect`). (PR #105)
 
 ## Up Next
 

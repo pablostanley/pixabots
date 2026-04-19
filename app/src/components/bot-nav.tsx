@@ -2,8 +2,10 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
+import { isValidId } from "@pixabots/core";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import { useKeydown } from "@/lib/use-keydown";
+import { usePaste } from "@/lib/use-paste";
 import { nextId, prevId } from "@/lib/bot-nav";
 
 export function BotNav({ id }: { id: string }) {
@@ -30,6 +32,23 @@ export function BotNav({ id }: { id: string }) {
           e.preventDefault();
           go(nextId(id));
         }
+      },
+      [id, go]
+    )
+  );
+
+  // Paste a pixabot URL or bare 4-char ID to jump to it.
+  usePaste(
+    useCallback(
+      (e: ClipboardEvent) => {
+        if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+        const raw = e.clipboardData?.getData("text")?.trim();
+        if (!raw) return;
+        const match = raw.match(/(?:^|[/=])([0-9a-z]{4})(?:[?&/#]|$)/i);
+        const candidate = match?.[1]?.toLowerCase();
+        if (!candidate || !isValidId(candidate) || candidate === id) return;
+        e.preventDefault();
+        go(candidate);
       },
       [id, go]
     )
