@@ -9,6 +9,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useKeydown } from "@/lib/use-keydown";
+import { useSfx } from "@/lib/use-sfx";
+import { useTheme } from "@/lib/use-theme";
 
 type Action = {
   id: string;
@@ -20,6 +22,8 @@ type Action = {
 
 export function CommandPalette() {
   const router = useRouter();
+  const sfx = useSfx();
+  const [dark, toggleTheme] = useTheme();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [cursor, setCursor] = useState(0);
@@ -49,8 +53,22 @@ export function CommandPalette() {
           navigator.clipboard.writeText(window.location.href);
         },
       },
+      {
+        id: "sound",
+        label: sfx.enabled ? "Mute sound" : "Unmute sound",
+        hint: "M",
+        keywords: ["sfx", "audio", "volume"],
+        run: sfx.toggle,
+      },
+      {
+        id: "theme",
+        label: dark ? "Switch to light theme" : "Switch to dark theme",
+        hint: "T",
+        keywords: ["dark", "light", "mode"],
+        run: toggleTheme,
+      },
     ],
-    [router]
+    [router, sfx, dark, toggleTheme]
   );
 
   const actions: Action[] = useMemo(() => {
