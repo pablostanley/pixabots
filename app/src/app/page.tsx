@@ -1,6 +1,8 @@
-import { seededId } from "@pixabots/core";
+import type { Metadata } from "next";
+import { isValidId, resolveId, seededId } from "@pixabots/core";
 import { Creator } from "./creator";
 import { SpritePreload } from "@/components/sprite-preload";
+import { SITE_URL } from "@/lib/constants";
 
 function parseHue(v: string | undefined): number {
   if (typeof v !== "string") return 0;
@@ -25,6 +27,53 @@ function resolveInitialId(id?: string, seed?: string): string | null {
     return seededId(seed.slice(0, MAX_SEED_LEN));
   }
   return null;
+}
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ id?: string; seed?: string; hue?: string; saturate?: string }>;
+}): Promise<Metadata> {
+  const { id, seed, hue: hueRaw, saturate: satRaw } = await searchParams;
+  const resolved = resolveInitialId(id, seed);
+  if (!resolved || !isValidId(resolved)) return {};
+
+  const parts = resolveId(resolved);
+  const partsLabel = `${parts.eyes} · ${parts.heads} · ${parts.body} · ${parts.top}`;
+  const title = `Pixabot ${resolved}`;
+  const description = `Customize pixel character #${resolved} — ${partsLabel}`;
+
+  const canonicalQs = new URLSearchParams();
+  canonicalQs.set("id", resolved);
+  if (hueRaw) canonicalQs.set("hue", hueRaw);
+  if (satRaw) canonicalQs.set("saturate", satRaw);
+  const canonical = `${SITE_URL}/?${canonicalQs.toString()}`;
+
+  let ogQuery = `type=single&id=${resolved}&title=${encodeURIComponent(title)}&subtitle=${encodeURIComponent(partsLabel)}`;
+  if (hueRaw) ogQuery += `&hue=${encodeURIComponent(hueRaw)}`;
+  if (satRaw) ogQuery += `&saturate=${encodeURIComponent(satRaw)}`;
+  const ogUrl = `${SITE_URL}/api/og?${ogQuery}`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      type: "website",
+      title,
+      description,
+      url: canonical,
+      siteName: "Pixabots",
+      images: [{ url: ogUrl, width: 1200, height: 630, alt: title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogUrl],
+      creator: "@pablostanley",
+    },
+  };
 }
 
 export default async function Home({
