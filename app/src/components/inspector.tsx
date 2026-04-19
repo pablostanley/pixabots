@@ -145,7 +145,7 @@ export function Inspector({
         </button>
       </div>
 
-      <div className="flex flex-col gap-4 lg:gap-7 overflow-y-auto px-4 pb-3 lg:pb-4 pt-2 lg:pt-0 flex-1">
+      <div className="flex flex-col gap-4 lg:gap-7 overflow-y-auto px-4 pb-3 lg:pb-4 pt-2 lg:pt-0 min-h-0">
       <section className={`flex-col gap-3 ${tab === "bg" ? "flex" : "hidden"} lg:flex`}>
         <h3 className="text-xs uppercase tracking-wide text-muted-foreground hidden lg:block">Background</h3>
         <div className="h-[90px] lg:h-[140px]">
