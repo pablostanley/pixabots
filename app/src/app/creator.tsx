@@ -9,7 +9,8 @@ import { PixelIcon } from "@/components/ui/pixel-icon";
 import { useShareOrCopy } from "@/lib/use-share-or-copy";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 import { ShuffleHint, dismissShuffleHint } from "@/components/shuffle-hint";
-import { BgPicker } from "@/components/bg-picker";
+import { Inspector } from "@/components/inspector";
+import { BG_CHOICES, withPalette } from "@/lib/palette";
 import { useSfx } from "@/lib/use-sfx";
 import {
   DropdownMenu,
@@ -32,14 +33,6 @@ const SIZES = [240, 480, 960, 1920] as const;
 const DISPLAY = 480;
 const NATIVE = 32;
 const PX = DISPLAY / NATIVE;
-
-function paletteQs(p: { hue: number; saturate: number }, hasExisting: boolean): string {
-  const parts: string[] = [];
-  if (p.hue !== 0) parts.push(`hue=${p.hue}`);
-  if (p.saturate !== 1) parts.push(`saturate=${p.saturate.toFixed(2)}`);
-  if (parts.length === 0) return "";
-  return (hasExisting ? "&" : "?") + parts.join("&");
-}
 
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -99,6 +92,7 @@ export function Creator({
   const reducedMotion = usePrefersReducedMotion();
   const [animating, setAnimating] = useState(true);
   const [downloadOpen, setDownloadOpen] = useState(false);
+  const [inspectorOpen, setInspectorOpen] = useState(false);
   const [bg, setBg] = useState<string | null>(null);
   const bgRef = useRef<string | null>(null);
   bgRef.current = bg;
@@ -263,7 +257,8 @@ export function Creator({
     setSaturateState(s);
     saturateRef.current = s;
     syncUrl(encode(selRef.current), h, s);
-    sfx.play({ kind: "bg", index: Math.floor(Math.random() * 9) });
+    const bgIdx = Math.floor(Math.random() * BG_CHOICES.length);
+    applyBg(BG_CHOICES[bgIdx], bgIdx);
   };
 
   const resetPalette = () => {
@@ -272,6 +267,7 @@ export function Creator({
     setSaturateState(1);
     saturateRef.current = 1;
     syncUrl(encode(selRef.current), 0, 1);
+    applyBg(null);
   };
 
   const applyBg = (color: string | null, index?: number) => {
@@ -394,9 +390,13 @@ export function Creator({
 
   useKeydown(handleKeyDown);
 
+  const fxActive = hue !== 0 || saturate !== 1 || bg !== null;
+
   return (
-    <main className="flex flex-col items-center justify-center flex-1 gap-3 p-4 sm:gap-4 sm:p-6 motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-500">
+    <main className={`flex-1 flex justify-center items-center p-4 sm:p-6 motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-500 ${inspectorOpen ? "pb-[calc(55vh+1rem)] lg:pb-6" : ""}`}>
       <div aria-live="polite" aria-atomic="true" className="sr-only">{announcement}</div>
+      <div className="flex flex-col lg:flex-row items-center lg:items-center justify-center gap-4 lg:gap-6 w-full max-w-[820px]">
+      <div className="flex flex-col items-center gap-3 sm:gap-4 w-full max-w-[504px] mx-auto">
       {/* Toolbar */}
       <div className="flex items-center gap-2 w-full max-w-[504px]">
         <span className="text-lg font-bold mr-auto">Create</span>
@@ -466,9 +466,8 @@ export function Creator({
         </ContextMenuContent>
       </ContextMenu>
 
-      {/* Part selectors — swatch + 2x2 on mobile, 4 in a row on desktop */}
+      {/* Part selectors — 2x2 on mobile, 4 in a row on desktop; swatch on the right */}
       <div className="flex items-stretch gap-1 w-full max-w-[504px]">
-        <BgPicker bg={bg} onChange={applyBg} />
         <div className="grid grid-cols-2 sm:flex gap-1 flex-1 min-w-0">
         {layerOrder.map((category) => {
           const locked = locks[category];
@@ -507,75 +506,18 @@ export function Creator({
           );
         })}
         </div>
-      </div>
-
-      {/* Palette sliders */}
-      <div className="w-full max-w-[504px] flex flex-col gap-2 text-xs text-muted-foreground">
-        <div className="flex items-center justify-between">
-          <span className="uppercase tracking-wide">Palette</span>
-          <div className="flex items-center gap-1">
-            <button
-              type="button"
-              onClick={randomPalette}
-              data-tooltip="Random palette"
-              aria-label="Random palette"
-              className="size-6 flex items-center justify-center border border-border hover:bg-muted transition-colors cursor-pointer"
-            >
-              <PixelIcon name="shuffle" className="size-3" />
-            </button>
-            {(hue !== 0 || saturate !== 1) && (
-              <button
-                type="button"
-                onClick={resetPalette}
-                data-tooltip="Reset palette"
-                aria-label="Reset palette"
-                className="size-6 flex items-center justify-center border border-border hover:bg-muted transition-colors cursor-pointer"
-              >
-                <span aria-hidden="true" className="text-xs">×</span>
-              </button>
-            )}
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="w-16">Hue</span>
-          <input
-            type="range"
-            min={0}
-            max={359}
-            step={1}
-            value={hue}
-            onChange={(e) => setHue(Number(e.target.value))}
-            onDoubleClick={() => setHue(0)}
-            aria-label="Hue rotation (0–359 degrees)"
-            className="flex-1 h-6 appearance-none bg-transparent cursor-pointer
-              [&::-webkit-slider-runnable-track]:h-4 [&::-webkit-slider-runnable-track]:border [&::-webkit-slider-runnable-track]:border-border
-              [&::-webkit-slider-runnable-track]:bg-[linear-gradient(to_right,#ff0000_0%,#ffff00_17%,#00ff00_33%,#00ffff_50%,#0000ff_67%,#ff00ff_83%,#ff0000_100%)]
-              [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:bg-foreground [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-background [&::-webkit-slider-thumb]:-mt-0
-              [&::-moz-range-track]:h-4 [&::-moz-range-track]:border [&::-moz-range-track]:border-border
-              [&::-moz-range-thumb]:size-4 [&::-moz-range-thumb]:bg-foreground [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-background [&::-moz-range-thumb]:rounded-none"
-          />
-          <span className="font-mono w-10 text-right">{hue}°</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="w-16">Saturation</span>
-          <input
-            type="range"
-            min={0}
-            max={2}
-            step={0.05}
-            value={saturate}
-            onChange={(e) => setSaturate(Number(e.target.value))}
-            onDoubleClick={() => setSaturate(1)}
-            aria-label="Saturation multiplier (0 to 2)"
-            className="flex-1 h-6 appearance-none bg-transparent cursor-pointer
-              [&::-webkit-slider-runnable-track]:h-4 [&::-webkit-slider-runnable-track]:border [&::-webkit-slider-runnable-track]:border-border
-              [&::-webkit-slider-runnable-track]:bg-[linear-gradient(to_right,var(--muted)_0%,var(--foreground)_100%)]
-              [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:bg-foreground [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-background
-              [&::-moz-range-track]:h-4 [&::-moz-range-track]:border [&::-moz-range-track]:border-border
-              [&::-moz-range-thumb]:size-4 [&::-moz-range-thumb]:bg-foreground [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-background [&::-moz-range-thumb]:rounded-none"
-          />
-          <span className="font-mono w-10 text-right">{saturate.toFixed(2)}</span>
-        </div>
+        <button
+          type="button"
+          onClick={() => setInspectorOpen((v) => !v)}
+          aria-pressed={inspectorOpen}
+          aria-label="Effects inspector"
+          data-tooltip={fxActive ? `Fx · ${hue}° · ${saturate.toFixed(2)}` : "Effects"}
+          className={`h-9 min-w-9 px-2 border ${
+            fxActive || inspectorOpen ? "border-foreground/60 bg-foreground/10" : "border-border"
+          } hover:bg-muted transition-colors cursor-pointer shrink-0 flex items-center justify-center font-mono text-sm font-bold`}
+        >
+          Fx
+        </button>
       </div>
 
       {/* ID bar */}
@@ -596,7 +538,7 @@ export function Creator({
         </button>
         <div className="flex items-center gap-2 ml-auto">
           <a
-            href={`${apiUrl}${paletteQs({ hue, saturate }, false)}`}
+            href={withPalette(apiUrl, { hue, saturate })}
             target="_blank"
             rel="noopener noreferrer"
             className="text-muted-foreground hover:text-foreground transition-colors"
@@ -604,7 +546,7 @@ export function Creator({
             PNG
           </a>
           <a
-            href={`${apiUrl}?animated=true${paletteQs({ hue, saturate }, true)}`}
+            href={withPalette(`${apiUrl}?animated=true`, { hue, saturate })}
             target="_blank"
             rel="noopener noreferrer"
             className="text-muted-foreground hover:text-foreground transition-colors"
@@ -618,6 +560,22 @@ export function Creator({
       </div>
 
       <ShuffleHint />
+      </div>
+
+      {inspectorOpen && (
+        <Inspector
+          hue={hue}
+          saturate={saturate}
+          onHueChange={setHue}
+          onSaturateChange={setSaturate}
+          onRandom={randomPalette}
+          onReset={resetPalette}
+          bg={bg}
+          onBgChange={applyBg}
+          onClose={() => setInspectorOpen(false)}
+        />
+      )}
+      </div>
     </main>
   );
 }

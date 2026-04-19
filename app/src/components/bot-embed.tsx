@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import { SITE_URL } from "@/lib/constants";
+import { withPalette } from "@/lib/palette";
 
 type TabKey = "url" | "html" | "markdown" | "react" | "iframe";
 
@@ -14,18 +15,11 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: "iframe", label: "Iframe" },
 ];
 
-function paletteSuffix(hue?: number, saturate?: number): string {
-  const parts: string[] = [];
-  if (hue !== undefined && hue !== 0) parts.push(`hue=${hue}`);
-  if (saturate !== undefined && saturate !== 1) parts.push(`saturate=${saturate.toFixed(2)}`);
-  return parts.length ? `&${parts.join("&")}` : "";
-}
-
 function snippetFor(kind: TabKey, id: string, hue?: number, saturate?: number): string {
-  const pal = paletteSuffix(hue, saturate);
-  const url = `${SITE_URL}/api/pixabot/${id}?size=240${pal}`;
-  const animated = `${SITE_URL}/api/pixabot/${id}?size=240&animated=true${pal}`;
-  const embed = `${SITE_URL}/embed/${id}?size=240${pal}`;
+  const p = { hue, saturate };
+  const url = withPalette(`${SITE_URL}/api/pixabot/${id}?size=240`, p);
+  const animated = withPalette(`${SITE_URL}/api/pixabot/${id}?size=240&animated=true`, p);
+  const embed = withPalette(`${SITE_URL}/embed/${id}?size=240`, p);
   switch (kind) {
     case "url":
       return `${url}\n${animated}`;
