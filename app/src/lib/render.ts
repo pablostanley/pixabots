@@ -41,10 +41,35 @@ async function loadLayers(combo: PixabotCombo) {
   return Object.fromEntries(entries) as Record<string, Buffer>;
 }
 
+export type PaletteTransform = {
+  /** Hue rotation in degrees (0–359). */
+  hue?: number;
+  /** Saturation multiplier (0 = greyscale, 1 = unchanged, >1 = punchier). */
+  saturate?: number;
+};
+
+function hasPaletteTransform(p?: PaletteTransform): p is PaletteTransform {
+  if (!p) return false;
+  const hue = p.hue ?? 0;
+  const saturate = p.saturate ?? 1;
+  return hue !== 0 || saturate !== 1;
+}
+
+function applyPalette(pipeline: sharp.Sharp, p?: PaletteTransform): sharp.Sharp {
+  if (!hasPaletteTransform(p)) return pipeline;
+  const hue = ((p.hue ?? 0) % 360 + 360) % 360;
+  const saturate = Math.max(0, Math.min(4, p.saturate ?? 1));
+  return pipeline.modulate({
+    hue: hue || undefined,
+    saturation: saturate !== 1 ? saturate : undefined,
+  });
+}
+
 /** Render a pixabot combo to a PNG buffer at the specified size. */
 export async function renderPixabot(
   combo: PixabotCombo,
-  size: number = NATIVE_SIZE
+  size: number = NATIVE_SIZE,
+  palette?: PaletteTransform
 ): Promise<Buffer> {
   const layers = await loadLayers(combo);
   const composites = LAYER_ORDER.map((cat) => ({
@@ -64,12 +89,15 @@ export async function renderPixabot(
     .composite(composites)
     .png();
 
-  if (size === NATIVE_SIZE) {
-    return base.toBuffer();
-  }
+  const native = await base.toBuffer();
+  // Apply palette at native size (fewer pixels = faster) then scale.
+  const tinted = hasPaletteTransform(palette)
+    ? await applyPalette(sharp(native), palette).png().toBuffer()
+    : native;
 
-  const nativeBuffer = await base.toBuffer();
-  return sharp(nativeBuffer)
+  if (size === NATIVE_SIZE) return tinted;
+
+  return sharp(tinted)
     .resize(size, size, { kernel: sharp.kernel.nearest })
     .png()
     .toBuffer();
@@ -165,7 +193,8 @@ export async function renderAnimatedPixabot(
   combo: PixabotCombo,
   size: number = NATIVE_SIZE,
   speed: number = 1,
-  format: AnimatedFormat = "gif"
+  format: AnimatedFormat = "gif",
+  palette?: PaletteTransform
 ): Promise<Buffer> {
   const layers = await loadLayers(combo);
 
@@ -189,11 +218,23 @@ export async function renderAnimatedPixabot(
   const nativeStacked = Buffer.concat(nativeFrames);
   const nativeStripHeight = NATIVE_SIZE * ANIM_FRAMES.length;
 
+  // Palette transform at native scale before resize — fewer pixels, same result.
+  const tintedStacked = hasPaletteTransform(palette)
+    ? await applyPalette(
+        sharp(nativeStacked, {
+          raw: { width: NATIVE_SIZE, height: nativeStripHeight, channels: 4 },
+        }),
+        palette
+      )
+        .raw()
+        .toBuffer()
+    : nativeStacked;
+
   const targetStripHeight = size * ANIM_FRAMES.length;
   const targetStripped =
     size === NATIVE_SIZE
-      ? nativeStacked
-      : await sharp(nativeStacked, {
+      ? tintedStacked
+      : await sharp(tintedStacked, {
           raw: { width: NATIVE_SIZE, height: nativeStripHeight, channels: 4 },
         })
           .resize(size, targetStripHeight, { kernel: sharp.kernel.nearest })
