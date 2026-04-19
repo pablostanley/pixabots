@@ -31,10 +31,12 @@ export function BotSuggestions({
   id,
   hue,
   saturate,
+  bg,
 }: {
   id: string;
   hue?: number;
   saturate?: number;
+  bg?: string;
 }) {
   const variants = buildVariants(id);
   if (variants.length === 0) return null;
@@ -48,9 +50,10 @@ export function BotSuggestions({
         {variants.map((vid) => (
           <Link
             key={vid}
-            href={withPalette(`/bot/${vid}`, { hue, saturate })}
+            href={withPalette(`/bot/${vid}`, { hue, saturate, bg })}
             aria-label={`Pixabot ${vid}`}
             className="group block border border-border hover:border-foreground transition-colors"
+            style={bg ? { backgroundColor: bg } : undefined}
           >
             <img
               src={withPalette(`/api/pixabot/${vid}?size=240`, { hue, saturate })}

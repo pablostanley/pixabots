@@ -24,8 +24,8 @@ function ogUrl(id: string, hue?: number, saturate?: number): string {
   return `${SITE_URL}/api/og?${qs.toString()}`;
 }
 
-function snippetFor(kind: TabKey, id: string, hue?: number, saturate?: number): string {
-  const p = { hue, saturate };
+function snippetFor(kind: TabKey, id: string, hue?: number, saturate?: number, bg?: string): string {
+  const p = { hue, saturate, bg };
   const url = withPalette(`${SITE_URL}/api/pixabot/${id}?size=240`, p);
   const animated = withPalette(`${SITE_URL}/api/pixabot/${id}?size=240&animated=true`, p);
   const embed = withPalette(`${SITE_URL}/embed/${id}?size=240`, p);
@@ -68,15 +68,17 @@ export function BotEmbed({
   id,
   hue,
   saturate,
+  bg,
 }: {
   id: string;
   hue?: number;
   saturate?: number;
+  bg?: string;
 }) {
   const [tab, setTab] = useState<TabKey>("html");
   const [copied, setCopied] = useState(false);
 
-  const snippet = snippetFor(tab, id, hue, saturate);
+  const snippet = snippetFor(tab, id, hue, saturate, bg);
 
   const onCopy = async () => {
     await navigator.clipboard.writeText(snippet);

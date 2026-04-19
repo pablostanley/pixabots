@@ -5,18 +5,20 @@ import { SITE_URL } from "@/lib/constants";
 import { BotDetail } from "@/components/bot-detail";
 import { BotEmbed } from "@/components/bot-embed";
 import { BotSuggestions } from "@/components/bot-suggestions";
+import { normalizeHex } from "@/lib/palette";
 
 export async function generateMetadata({
   params,
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ hue?: string; saturate?: string }>;
+  searchParams: Promise<{ hue?: string; saturate?: string; bg?: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
   if (!isValidId(id)) return { title: "Not found" };
 
-  const { hue: hueRaw, saturate: satRaw } = await searchParams;
+  const { hue: hueRaw, saturate: satRaw, bg: bgRaw } = await searchParams;
+  const bgNorm = bgRaw ? normalizeHex(bgRaw) : null;
   const parts = resolveId(id);
   const partsLabel = `${parts.eyes} · ${parts.heads} · ${parts.body} · ${parts.top}`;
   const title = `Pixabot ${id}`;
@@ -29,6 +31,7 @@ export async function generateMetadata({
   const canonicalQs = new URLSearchParams();
   if (hueRaw) canonicalQs.set("hue", hueRaw);
   if (satRaw) canonicalQs.set("saturate", satRaw);
+  if (bgNorm) canonicalQs.set("bg", bgNorm);
   const canonical = canonicalQs.size
     ? `${SITE_URL}/bot/${id}?${canonicalQs.toString()}`
     : `${SITE_URL}/bot/${id}`;
@@ -74,20 +77,21 @@ export default async function BotPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ hue?: string; saturate?: string }>;
+  searchParams: Promise<{ hue?: string; saturate?: string; bg?: string }>;
 }) {
   const { id } = await params;
   if (!isValidId(id)) notFound();
-  const { hue: hueParam, saturate: satParam } = await searchParams;
+  const { hue: hueParam, saturate: satParam, bg: bgParam } = await searchParams;
   const hue = parseHue(hueParam);
   const saturate = parseSaturate(satParam);
+  const bg = bgParam ? normalizeHex(bgParam) ?? undefined : undefined;
 
   return (
     <main className="flex-1 flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-[504px] flex flex-col gap-6">
-        <BotDetail id={id} hue={hue} saturate={saturate} />
-        <BotSuggestions id={id} hue={hue} saturate={saturate} />
-        <BotEmbed id={id} hue={hue} saturate={saturate} />
+        <BotDetail id={id} hue={hue} saturate={saturate} bg={bg} />
+        <BotSuggestions id={id} hue={hue} saturate={saturate} bg={bg} />
+        <BotEmbed id={id} hue={hue} saturate={saturate} bg={bg} />
       </div>
     </main>
   );
