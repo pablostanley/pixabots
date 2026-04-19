@@ -6,6 +6,7 @@ import { FavoriteButton } from "@/components/favorite-button";
 import { Tilt } from "@/components/tilt";
 import { GalleryDialog } from "@/components/gallery-dialog";
 import { specialNote } from "@/lib/special-ids";
+import { withPalette } from "@/lib/palette";
 
 type IconName = React.ComponentProps<typeof PixelIcon>["name"];
 
@@ -46,13 +47,6 @@ export function ActionButton({
   return <Link href={href} className={className}>{content}</Link>;
 }
 
-function paletteQuery(hue?: number, saturate?: number): string {
-  const parts: string[] = [];
-  if (hue && hue !== 0) parts.push(`hue=${hue}`);
-  if (saturate !== undefined && saturate !== 1) parts.push(`saturate=${saturate.toFixed(2)}`);
-  return parts.length ? `&${parts.join("&")}` : "";
-}
-
 export function BotDetail({
   id,
   hue,
@@ -64,7 +58,6 @@ export function BotDetail({
 }) {
   const parts = resolveId(id);
   const note = specialNote(id);
-  const pal = paletteQuery(hue, saturate);
   const editQs = new URLSearchParams({ id });
   if (hue && hue !== 0) editQs.set("hue", String(hue));
   if (saturate !== undefined && saturate !== 1) editQs.set("saturate", saturate.toFixed(2));
@@ -75,10 +68,10 @@ export function BotDetail({
         <picture>
           <source
             media="(prefers-reduced-motion: reduce)"
-            srcSet={`/api/pixabot/${id}?size=480${pal}`}
+            srcSet={withPalette(`/api/pixabot/${id}?size=480`, { hue, saturate })}
           />
           <img
-            src={`/api/pixabot/${id}?size=480&animated=true${pal}`}
+            src={withPalette(`/api/pixabot/${id}?size=480&animated=true`, { hue, saturate })}
             alt={`Pixabot ${id}`}
             width={480}
             height={480}
@@ -114,13 +107,13 @@ export function BotDetail({
         <div className="flex flex-wrap gap-2 mt-2">
           <ActionButton href={`/?${editQs.toString()}`} icon="pen-square" label="Edit" />
           <ActionButton
-            href={`/api/pixabot/${id}?size=960${pal}`}
+            href={withPalette(`/api/pixabot/${id}?size=960`, { hue, saturate })}
             download={`pixabot-${id}.png`}
             icon="download"
             label="Get PNG"
           />
           <ActionButton
-            href={`/api/pixabot/${id}?animated=true&size=480${pal}`}
+            href={withPalette(`/api/pixabot/${id}?animated=true&size=480`, { hue, saturate })}
             external
             icon="play"
             label="Get GIF"
