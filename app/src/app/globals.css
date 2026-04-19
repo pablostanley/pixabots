@@ -190,6 +190,11 @@
 
 [data-docs] {
   font-family: var(--font-sans-prose), ui-sans-serif, system-ui, sans-serif;
+  /* Re-enable antialiasing — the global html rule sets `none` so the
+     pixel font stays crisp, but body text in the docs needs smoothing
+     to read cleanly. */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 [data-docs] code,
