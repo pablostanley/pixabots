@@ -189,7 +189,14 @@
 }
 
 [data-docs] {
-  font-family: var(--font-pixel), ui-monospace, monospace;
+  font-family: var(--font-sans-prose), ui-sans-serif, system-ui, sans-serif;
+}
+
+[data-docs] code,
+[data-docs] pre,
+[data-docs] kbd,
+[data-docs] samp {
+  font-family: var(--font-mono-prose), ui-monospace, "SF Mono", Menlo, monospace;
 }
 
 [data-docs] *,
