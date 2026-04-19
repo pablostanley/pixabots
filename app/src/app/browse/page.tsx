@@ -422,7 +422,11 @@ function BrowseInner({ filters }: { filters: Filters }) {
   const searchParams = useSearchParams();
   const sfx = useSfx();
 
-  const [bots, setBots] = useState(() => generateBatch(BATCH_SIZE, filters, 0));
+  const [bots, setBots] = useState(() => {
+    const initial = generateBatch(BATCH_SIZE, filters, 0);
+    setBrowseOrder(initial.map((b) => b.id));
+    return initial;
+  });
   const loadingRef = useRef(false);
 
   const loadMore = useCallback(() => {
@@ -431,7 +435,9 @@ function BrowseInner({ filters }: { filters: Filters }) {
     setBots((prev) => {
       if (prev.length >= MAX_BOTS) return prev;
       const seen = new Set(prev.map((b) => b.id));
-      return [...prev, ...generateBatch(BATCH_SIZE, filters, prev.length, seen)];
+      const next = [...prev, ...generateBatch(BATCH_SIZE, filters, prev.length, seen)];
+      setBrowseOrder(next.map((b) => b.id));
+      return next;
     });
     setTimeout(() => { loadingRef.current = false; }, 0);
   }, [filters]);
@@ -465,7 +471,9 @@ function BrowseInner({ filters }: { filters: Filters }) {
   );
 
   const reroll = useCallback(() => {
-    setBots(generateBatch(BATCH_SIZE, filters, 0));
+    const next = generateBatch(BATCH_SIZE, filters, 0);
+    setBrowseOrder(next.map((b) => b.id));
+    setBots(next);
     window.scrollTo({ top: 0, behavior: "smooth" });
     sfx.play({ kind: "shuffle" });
   }, [filters, sfx]);
@@ -490,8 +498,6 @@ function BrowseInner({ filters }: { filters: Filters }) {
 
   const compareHref =
     bots.length >= 2 ? `/compare?ids=${bots.slice(0, 6).map((b) => b.id).join(",")}` : null;
-
-  setBrowseOrder(bots.map((b) => b.id));
 
   const deepScrolled = useSyncExternalStore(subscribeScroll, isDeep, isDeepSsr);
 
