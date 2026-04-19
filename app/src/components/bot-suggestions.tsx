@@ -59,11 +59,6 @@ export function BotSuggestions({
   const variants = buildVariants(id);
   if (variants.length === 0) return null;
 
-  const qs = new URLSearchParams();
-  if (hue && hue !== 0) qs.set("hue", String(hue));
-  if (saturate !== undefined && saturate !== 1) qs.set("saturate", saturate.toFixed(2));
-  const query = qs.size ? `?${qs.toString()}` : "";
-
   return (
     <section className="flex flex-col gap-2">
       <h3 className="text-sm font-bold uppercase tracking-wide text-muted-foreground">
@@ -73,21 +68,23 @@ export function BotSuggestions({
         {variants.map((vid) => (
           <Link
             key={vid}
-            href={`/bot/${vid}${query}`}
+            href={withPalette(`/bot/${vid}`, { hue, saturate })}
+            aria-label={`Pixabot ${vid}`}
             className="group block border border-border hover:border-foreground transition-colors"
           >
-            <div className="aspect-square overflow-hidden">
-              <img
-                src={withPalette(`/api/pixabot/${vid}?size=240`, { hue, saturate })}
-                alt={`Pixabot ${vid}`}
-                width={240}
-                height={240}
-                className="block w-full h-full"
-                style={{ imageRendering: "pixelated" }}
-                loading="lazy"
-              />
-            </div>
-            <div className="px-1 py-0.5 font-mono text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+            <img
+              src={withPalette(`/api/pixabot/${vid}?size=240`, { hue, saturate })}
+              alt=""
+              width={240}
+              height={240}
+              className="block w-full aspect-square"
+              style={{ imageRendering: "pixelated" }}
+              loading="lazy"
+            />
+            <div
+              aria-hidden="true"
+              className="px-1 py-0.5 font-mono text-xs text-muted-foreground group-hover:text-foreground transition-colors"
+            >
               {vid}
             </div>
           </Link>
