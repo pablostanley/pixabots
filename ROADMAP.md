@@ -82,6 +82,7 @@
 - [x] `pixabots` CLI — new workspace package; ANSI truecolor terminal render, --info, --save, --json. (PR #60)
 - [x] Palette API — `?hue` + `?saturate` for recoloring any pixabot via Sharp modulate. Works on PNG/GIF/WebP. (PR #61)
 - [x] Multi-frame sprite infra — `@pixabots/core` 0.2.0: `PartOption.frames` + `FRAME_INDICES`. Render extracts correct frame per-tick per-layer with safe frame-0 fallback. Ready for eye-blink / heads-wiggle / top-spin art. (PR #62)
+- [x] Creator hue slider — live `filter: hue-rotate` preview; baked into PNG download + URL params on PNG/GIF links. (PR #63)
 
 ## Up Next
 
