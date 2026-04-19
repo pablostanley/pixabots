@@ -86,6 +86,7 @@
 - [x] Usage patterns doc — `/docs/usage` with copy-ready recipes (README, webhooks, seeded avatars, wall, branded). (PR #64)
 - [x] Creator saturation slider — pairs with hue; both bake into download and URL params. (PR #65)
 - [x] Palette URL sync — `?hue` + `?saturate` on home page round-trip through URL, sliders restore, share URL carries palette. (PR #66)
+- [x] BotDetail palette — `/bot/[id]?hue=&saturate=` renders recolored; Edit + download links carry palette forward. (PR #67)
 
 ## Up Next
 
