@@ -14,6 +14,7 @@ import { Inspector } from "@/components/inspector";
 import { BG_CHOICES, withPalette } from "@/lib/palette";
 import { useSfx } from "@/lib/use-sfx";
 import { POP_IN } from "@/lib/motion";
+import { PixelMaterialize } from "@/components/pixel-materialize";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -525,7 +526,7 @@ export function Creator({
       {/* Canvas */}
       <ContextMenu>
         <ContextMenuTrigger asChild>
-          <div ref={canvasWrapRef} className="border border-border p-2 sm:p-3 cursor-pointer active:scale-[0.97] transition-transform duration-150 ease-out w-full max-w-[504px]" onClick={shuffle}>
+          <div ref={canvasWrapRef} className="relative border border-border p-2 sm:p-3 cursor-pointer active:scale-[0.97] transition-transform duration-150 ease-out w-full max-w-[504px]" onClick={shuffle}>
             <canvas
               ref={setCanvasRef}
               width={DISPLAY}
@@ -539,6 +540,7 @@ export function Creator({
                     : undefined,
               }}
             />
+            <PixelMaterialize />
           </div>
         </ContextMenuTrigger>
         <ContextMenuContent>
