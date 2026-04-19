@@ -1,0 +1,144 @@
+---
+title: Build your own creator
+description: Minimal recipe for dropping a Pixabots-style character creator (shuffle, cycle parts, Fx palette) into any React app.
+---
+
+The pixabots.com creator does a lot — undo/redo history, Konami shuffle, mobile inspector, SFX on every interaction. You probably don't need all of that. This page shows the smallest possible working creator so you can lift the pieces into your own UI.
+
+Uses [`@pixabots/core`](/docs/sdk) for the parts catalog + combo math.
+
+## Install
+
+```bash
+pnpm add @pixabots/core
+```
+
+## Minimal creator (~60 LOC)
+
+Paste this into any React app. Renders the current pixabot to a canvas, supports Space to shuffle, arrow keys to cycle categories, and keeps the URL synced so `?id=2156` links round-trip.
+
+```tsx
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import {
+  CATEGORY_ORDER,
+  PARTS,
+  encode,
+  decode,
+  isValidId,
+  randomCombo,
+  type PartCategory,
+} from "@pixabots/core";
+
+const DISPLAY = 480;
+const PARTS_BASE = "https://pixabots.com/parts";
+
+function load(src: string) {
+  return new Promise<HTMLImageElement>((res, rej) => {
+    const img = new Image();
+    img.onload = () => res(img);
+    img.onerror = rej;
+    img.src = src;
+  });
+}
+
+export function MiniCreator() {
+  const [combo, setCombo] = useState(randomCombo);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Render the current combo
+  useEffect(() => {
+    (async () => {
+      const imgs = await Promise.all(
+        // Bottom-to-top compositing order: top, body, heads, eyes
+        (["top", "body", "heads", "eyes"] as PartCategory[]).map((cat) =>
+          load(`${PARTS_BASE}/${PARTS[cat][combo[cat]].path}`)
+        )
+      );
+      const ctx = canvasRef.current!.getContext("2d")!;
+      ctx.imageSmoothingEnabled = false;
+      ctx.clearRect(0, 0, DISPLAY, DISPLAY);
+      imgs.forEach((img) => ctx.drawImage(img, 0, 0, DISPLAY, DISPLAY));
+    })();
+  }, [combo]);
+
+  // Keyboard: Space = shuffle, ←↑→↓ = cycle each category
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === " ") return setCombo(randomCombo());
+      const map: Record<string, PartCategory> = {
+        ArrowRight: CATEGORY_ORDER[0],
+        ArrowLeft: CATEGORY_ORDER[1],
+        ArrowUp: CATEGORY_ORDER[2],
+        ArrowDown: CATEGORY_ORDER[3],
+      };
+      const cat = map[e.key];
+      if (cat) setCombo((c) => ({ ...c, [cat]: (c[cat] + 1) % PARTS[cat].length }));
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  return (
+    <>
+      <canvas
+        ref={canvasRef}
+        width={DISPLAY}
+        height={DISPLAY}
+        style={{ imageRendering: "pixelated", width: 480, height: 480 }}
+      />
+      <div style={{ fontFamily: "monospace" }}>{encode(combo)}</div>
+      <button onClick={() => setCombo(randomCombo())}>Shuffle</button>
+    </>
+  );
+}
+```
+
+That's the whole thing — no build step, no custom deps, no design system. Fork from there.
+
+## Adding a palette filter (Fx)
+
+Wrap the canvas with CSS `filter: hue-rotate(Ndeg) saturate(Nx)` and the pixabot recolors live. No server round-trip.
+
+```tsx
+<canvas
+  style={{
+    imageRendering: "pixelated",
+    filter: `hue-rotate(${hue}deg) saturate(${saturate})`,
+  }}
+/>
+```
+
+Slider ranges: `hue` 0–359, `saturate` 0–2 (0 = grey, 1 = normal, 2 = super saturated).
+
+For share URLs that carry the palette, just append `?hue=120&saturate=1.5` — the pixabots.com API and SDK accept the same params.
+
+## Reference implementation
+
+The production creator at [pixabots.com](https://pixabots.com) is open source — read it for patterns you want to lift:
+
+- [`app/src/app/creator.tsx`](https://github.com/pablostanley/pixabots/blob/main/app/src/app/creator.tsx) — the full creator with canvas loop, shuffle, cycle, pick-from-dropdown, lock-layers, undo/redo, download menu, SFX, URL sync.
+- [`app/src/components/inspector.tsx`](https://github.com/pablostanley/pixabots/blob/main/app/src/components/inspector.tsx) — the Fx side-sheet with hue/saturate sliders, bg swatches, hex input, kaossilator-style synth.
+- [`app/src/lib/use-sfx.ts`](https://github.com/pablostanley/pixabots/blob/main/app/src/lib/use-sfx.ts) — Web Audio sound effects per action (pentatonic scale, throttled kaoss pad on the hue picker).
+- [`app/src/components/pixel-materialize.tsx`](https://github.com/pablostanley/pixabots/blob/main/app/src/components/pixel-materialize.tsx) — drop-in canvas overlay that dithers the pixabot in on first load.
+
+## Animation
+
+Idle bounce lives in `@pixabots/core` as the `ANIM_FRAMES` array — 8 frames at 72ms each. Cycle through them on `setInterval` and offset the y of specific layers per tick to get the bounce. See `app/src/app/creator.tsx` for the full loop with the feet-plant fix.
+
+```ts
+import { ANIM_FRAMES, FRAME_MS } from "@pixabots/core";
+
+setInterval(() => {
+  const frame = ANIM_FRAMES[tick % ANIM_FRAMES.length];
+  // Draw each layer with vertical offset frame[cat] * pixel-size
+  tick++;
+}, FRAME_MS);
+```
+
+## When you want more
+
+The above covers the 80% case. If you want the exact pixabots.com creator experience (undo/redo, Konami, layer locks, sound, keyboard help overlay, command palette), fork the repo and strip what you don't need — it's ~700 LOC total across `creator.tsx` + `inspector.tsx`, all standard React.
+
+If there's demand, we'll package `@pixabots/creator` as a headless hooks library — open an issue on [the repo](https://github.com/pablostanley/pixabots/issues) if you'd use it.
