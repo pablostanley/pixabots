@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback, useMemo, useSyncExternalStore, Suspense } from "react";
+import { useState, useRef, useCallback, useMemo, useSyncExternalStore, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
@@ -416,27 +416,14 @@ function BotCard({ bot }: { bot: BotCell }) {
   );
 }
 
-function BrowseInner() {
+function BrowseInner({ filters }: { filters: Filters }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const sfx = useSfx();
 
-  const filters = useMemo(
-    () => parseFilters(new URLSearchParams(searchParams.toString())),
-    [searchParams]
-  );
-
   const [bots, setBots] = useState(() => generateBatch(BATCH_SIZE, filters, 0));
-  const sentinelRef = useRef<HTMLDivElement>(null);
   const loadingRef = useRef(false);
-
-  // Regenerate when filters change
-  const filterKey = JSON.stringify(filters);
-  useEffect(() => {
-    setBots(generateBatch(BATCH_SIZE, filters, 0));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterKey]);
 
   const loadMore = useCallback(() => {
     if (loadingRef.current) return;
@@ -449,16 +436,22 @@ function BrowseInner() {
     setTimeout(() => { loadingRef.current = false; }, 0);
   }, [filters]);
 
-  useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) loadMore(); },
-      { rootMargin: "400px" }
-    );
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, [loadMore]);
+  // Ref callback — React 19 runs the returned function on detach, so we
+  // don't need a useEffect to wire up + tear down the IntersectionObserver.
+  const attachSentinel = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (!node) return;
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) loadMore();
+        },
+        { rootMargin: "400px" }
+      );
+      observer.observe(node);
+      return () => observer.disconnect();
+    },
+    [loadMore]
+  );
 
   const setFilter = useCallback(
     (cat: PartCategory, value: string | null) => {
@@ -510,7 +503,7 @@ function BrowseInner() {
           <BotCard key={bot.id} bot={bot} />
         ))}
       </div>
-      <div ref={sentinelRef} className="h-1" />
+      <div ref={attachSentinel} className="h-1" />
       {deepScrolled && (
         <button
           type="button"
@@ -526,10 +519,26 @@ function BrowseInner() {
   );
 }
 
+/**
+ * Reads the current filter off the URL and re-keys BrowseInner on every
+ * change, so changing filter = fresh mount with a regenerated initial
+ * batch. Avoids the previous useEffect that called setBots on filterKey
+ * change.
+ */
+function BrowseShell() {
+  const searchParams = useSearchParams();
+  const filters = useMemo(
+    () => parseFilters(new URLSearchParams(searchParams.toString())),
+    [searchParams]
+  );
+  const filterKey = JSON.stringify(filters);
+  return <BrowseInner key={filterKey} filters={filters} />;
+}
+
 export default function BrowsePage() {
   return (
     <Suspense fallback={<main className="flex-1 p-2 sm:p-4" />}>
-      <BrowseInner />
+      <BrowseShell />
     </Suspense>
   );
 }
