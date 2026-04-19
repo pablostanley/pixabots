@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { isValidId } from "@pixabots/core";
+import { normalizeHex } from "@/lib/palette";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
@@ -26,7 +27,7 @@ export default async function EmbedPage({
   const size = Number(sp.size) || 240;
   const safeSize = Math.max(32, Math.min(1920, Math.round(size)));
   const animated = sp.animated !== "false";
-  const bg = sp.bg ? `#${sp.bg.replace(/^#/, "")}` : undefined;
+  const bg = sp.bg ? normalizeHex(sp.bg) ?? undefined : undefined;
 
   const palette: string[] = [];
   if (sp.hue) {
