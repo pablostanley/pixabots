@@ -35,8 +35,8 @@
             "name": "format",
             "in": "query",
             "required": false,
-            "description": "Response format. Omit for PNG image, use `json` for metadata.",
-            "schema": { "type": "string", "enum": ["json"] }
+            "description": "Response format. Omit for PNG (or GIF/WebP when animated). Use `json` for metadata, `svg` for vector output.",
+            "schema": { "type": "string", "enum": ["json", "svg"] }
           },
           {
             "name": "animated",
@@ -72,6 +72,9 @@
               },
               "image/webp": {
                 "schema": { "type": "string", "format": "binary", "description": "Animated WebP (when animated=true and webp=true)" }
+              },
+              "image/svg+xml": {
+                "schema": { "type": "string", "description": "SVG vector output (when format=svg)" }
               },
               "application/json": {
                 "schema": {

@@ -15,7 +15,7 @@ Returns a pixabot image or metadata.
 |-----------|------|---------|-------------|
 | `id` | path | required | 4-char base36 pixabot ID (e.g. `2156`, `f76a`) |
 | `size` | query | `128` | Image size in pixels, any integer from 32 to 1920. Nearest-neighbor scaled from the 32×32 source. |
-| `format` | query | — | Set to `json` for metadata instead of image |
+| `format` | query | — | Set to `json` for metadata, `svg` for vector output |
 | `animated` | query | — | Set to `true` for an animated GIF. Supports all sizes. |
 | `webp` | query | — | With `animated=true`, return lossless animated WebP instead of GIF. Smaller files, preserves alpha. |
 | `speed` | query | `1` | Animation speed multiplier (`0.25`–`4`). Only works with `animated=true`. |
@@ -54,6 +54,16 @@ curl https://pixabots.com/api/pixabot/2156?animated=true&size=1920 -o bounce-hug
 <img src="/api/pixabot/2156?animated=true&size=128" alt="Animated pixabot" width="128" height="128" style={{imageRendering: 'pixelated'}} />
 
 The animation is 8 frames at 72ms (~14fps). Tune speed with `?speed=0.25` (slow-mo) through `?speed=4` (fast).
+
+### SVG (vector)
+
+Add `?format=svg` for a vector output — one `<rect>` per opaque pixel, scales crisply to any size without interpolation.
+
+```bash
+curl "https://pixabots.com/api/pixabot/2156?format=svg&size=480" -o pixabot.svg
+```
+
+Good for print, large displays, or anywhere you want infinite zoom without stepping through the raster size enum.
 
 ### Animated WebP
 

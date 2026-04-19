@@ -1,6 +1,11 @@
 import { type NextRequest } from "next/server";
 import { decode, isValidId, resolve } from "@pixabots/core";
-import { renderPixabot, renderAnimatedPixabot, RenderError } from "@/lib/render";
+import {
+  renderPixabot,
+  renderAnimatedPixabot,
+  renderPixabotSvg,
+  RenderError,
+} from "@/lib/render";
 import {
   CORS_HEADERS,
   optionsResponse,
@@ -67,6 +72,17 @@ export async function GET(
   }
 
   try {
+    if (format === "svg") {
+      const svg = await renderPixabotSvg(combo, size);
+      return new Response(svg, {
+        headers: {
+          "Content-Type": "image/svg+xml; charset=utf-8",
+          "Cache-Control": "public, max-age=31536000, immutable",
+          "CDN-Cache-Control": "public, max-age=31536000, immutable",
+          ...CORS_HEADERS,
+        },
+      });
+    }
     if (animated) {
       const wantsWebp = request.nextUrl.searchParams.get("webp") === "true";
       const outFormat = wantsWebp ? "webp" : "gif";

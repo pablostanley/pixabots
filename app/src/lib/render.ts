@@ -75,6 +75,52 @@ export async function renderPixabot(
     .toBuffer();
 }
 
+/** Render a pixabot combo as an SVG string (one <rect> per opaque pixel). */
+export async function renderPixabotSvg(
+  combo: PixabotCombo,
+  size: number = 128
+): Promise<string> {
+  const layers = await loadLayers(combo);
+  const composites = LAYER_ORDER.map((cat) => ({
+    input: layers[cat],
+    left: 0,
+    top: 0,
+  }));
+  const raw = await sharp({
+    create: {
+      width: NATIVE_SIZE,
+      height: NATIVE_SIZE,
+      channels: 4,
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    },
+  })
+    .composite(composites)
+    .raw()
+    .toBuffer();
+
+  const rects: string[] = [];
+  for (let y = 0; y < NATIVE_SIZE; y++) {
+    for (let x = 0; x < NATIVE_SIZE; x++) {
+      const i = (y * NATIVE_SIZE + x) * 4;
+      const r = raw[i];
+      const g = raw[i + 1];
+      const b = raw[i + 2];
+      const a = raw[i + 3];
+      if (a === 0) continue;
+      const hex = `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
+      if (a === 255) {
+        rects.push(`<rect x="${x}" y="${y}" width="1" height="1" fill="${hex}"/>`);
+      } else {
+        rects.push(
+          `<rect x="${x}" y="${y}" width="1" height="1" fill="${hex}" fill-opacity="${(a / 255).toFixed(3)}"/>`
+        );
+      }
+    }
+  }
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${NATIVE_SIZE} ${NATIVE_SIZE}" shape-rendering="crispEdges">${rects.join("")}</svg>`;
+}
+
 async function renderFrameNative(
   layers: Record<string, Buffer>,
   bodyTop: Buffer,
