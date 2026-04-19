@@ -4,7 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { seededId, decode, isValidId } from "@pixabots/core";
 import { FONTS_DIR } from "@/lib/paths";
-import { renderPixabot } from "@/lib/render";
+import { renderPixabot, type PaletteTransform } from "@/lib/render";
 
 const OG_W = 1200;
 const OG_H = 630;
@@ -22,9 +22,9 @@ function getBoldFont() {
   return boldFont;
 }
 
-async function renderBot(id: string, size: number): Promise<Buffer> {
+async function renderBot(id: string, size: number, palette?: PaletteTransform): Promise<Buffer> {
   if (!isValidId(id)) throw new Error(`Invalid pixabot ID: ${id}`);
-  return renderPixabot(decode(id), size);
+  return renderPixabot(decode(id), size, palette);
 }
 
 function buildLabel(title: string, subtitle?: string) {
@@ -65,20 +65,21 @@ function buildLabel(title: string, subtitle?: string) {
 }
 
 export type OgOptions =
-  | { type: "grid"; title: string; subtitle?: string; seed?: string }
-  | { type: "single"; id: string; title: string; subtitle?: string };
+  | { type: "grid"; title: string; subtitle?: string; seed?: string; palette?: PaletteTransform }
+  | { type: "single"; id: string; title: string; subtitle?: string; palette?: PaletteTransform };
 
 export async function generateOgImage(opts: OgOptions): Promise<Buffer> {
   if (opts.type === "grid") {
-    return generateGrid(opts.title, opts.subtitle, opts.seed ?? opts.title);
+    return generateGrid(opts.title, opts.subtitle, opts.seed ?? opts.title, opts.palette);
   }
-  return generateSingle(opts.id, opts.title, opts.subtitle);
+  return generateSingle(opts.id, opts.title, opts.subtitle, opts.palette);
 }
 
 async function generateGrid(
   title: string,
   subtitle: string | undefined,
-  seed: string
+  seed: string,
+  palette?: PaletteTransform
 ): Promise<Buffer> {
   const cols = 6;
   const rows = 3;
@@ -96,7 +97,7 @@ async function generateGrid(
 
   const rendered = await Promise.all(
     cells.map(async ({ r, c, id }) => ({
-      input: await renderBot(id, cellSize),
+      input: await renderBot(id, cellSize, palette),
       left: Math.round(padding + c * (cellW + gap)),
       top: Math.round(padding + r * (cellW + gap)),
     }))
@@ -127,10 +128,11 @@ async function generateGrid(
 async function generateSingle(
   id: string,
   title: string,
-  subtitle: string | undefined
+  subtitle: string | undefined,
+  palette?: PaletteTransform
 ): Promise<Buffer> {
   const size = 380;
-  const bot = await renderBot(id, size);
+  const bot = await renderBot(id, size, palette);
   const label = buildLabel(title, subtitle);
 
   const botTop = 80;

@@ -7,27 +7,40 @@ import { BotEmbed } from "@/components/bot-embed";
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ hue?: string; saturate?: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
   if (!isValidId(id)) return { title: "Not found" };
 
+  const { hue: hueRaw, saturate: satRaw } = await searchParams;
   const parts = resolveId(id);
   const partsLabel = `${parts.eyes} · ${parts.heads} · ${parts.body} · ${parts.top}`;
   const title = `Pixabot ${id}`;
   const description = `Pixel character #${id} — ${partsLabel}`;
-  const ogUrl = `${SITE_URL}/api/og?type=single&id=${id}&title=${encodeURIComponent(title)}&subtitle=${encodeURIComponent(partsLabel)}`;
+  let ogQuery = `type=single&id=${id}&title=${encodeURIComponent(title)}&subtitle=${encodeURIComponent(partsLabel)}`;
+  if (hueRaw) ogQuery += `&hue=${encodeURIComponent(hueRaw)}`;
+  if (satRaw) ogQuery += `&saturate=${encodeURIComponent(satRaw)}`;
+  const ogUrl = `${SITE_URL}/api/og?${ogQuery}`;
+
+  const canonicalQs = new URLSearchParams();
+  if (hueRaw) canonicalQs.set("hue", hueRaw);
+  if (satRaw) canonicalQs.set("saturate", satRaw);
+  const canonical = canonicalQs.size
+    ? `${SITE_URL}/bot/${id}?${canonicalQs.toString()}`
+    : `${SITE_URL}/bot/${id}`;
 
   return {
     title,
     description,
-    alternates: { canonical: `${SITE_URL}/bot/${id}` },
+    alternates: { canonical },
     openGraph: {
       type: "article",
       title,
       description,
-      url: `${SITE_URL}/bot/${id}`,
+      url: canonical,
       siteName: "Pixabots",
       images: [{ url: ogUrl, width: 1200, height: 630, alt: title }],
     },
