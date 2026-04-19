@@ -10,6 +10,7 @@ import { useShareOrCopy } from "@/lib/use-share-or-copy";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 import { ShuffleHint, dismissShuffleHint } from "@/components/shuffle-hint";
 import { BgPicker } from "@/components/bg-picker";
+import { PalettePicker } from "@/components/palette-picker";
 import { useSfx } from "@/lib/use-sfx";
 import {
   DropdownMenu,
@@ -466,9 +467,8 @@ export function Creator({
         </ContextMenuContent>
       </ContextMenu>
 
-      {/* Part selectors — swatch + 2x2 on mobile, 4 in a row on desktop */}
+      {/* Part selectors — 2x2 on mobile, 4 in a row on desktop; swatch on the right */}
       <div className="flex items-stretch gap-1 w-full max-w-[504px]">
-        <BgPicker bg={bg} onChange={applyBg} />
         <div className="grid grid-cols-2 sm:flex gap-1 flex-1 min-w-0">
         {layerOrder.map((category) => {
           const locked = locks[category];
@@ -507,75 +507,15 @@ export function Creator({
           );
         })}
         </div>
-      </div>
-
-      {/* Palette sliders */}
-      <div className="w-full max-w-[504px] flex flex-col gap-2 text-xs text-muted-foreground">
-        <div className="flex items-center justify-between">
-          <span className="uppercase tracking-wide">Palette</span>
-          <div className="flex items-center gap-1">
-            <button
-              type="button"
-              onClick={randomPalette}
-              data-tooltip="Random palette"
-              aria-label="Random palette"
-              className="size-6 flex items-center justify-center border border-border hover:bg-muted transition-colors cursor-pointer"
-            >
-              <PixelIcon name="shuffle" className="size-3" />
-            </button>
-            {(hue !== 0 || saturate !== 1) && (
-              <button
-                type="button"
-                onClick={resetPalette}
-                data-tooltip="Reset palette"
-                aria-label="Reset palette"
-                className="size-6 flex items-center justify-center border border-border hover:bg-muted transition-colors cursor-pointer"
-              >
-                <span aria-hidden="true" className="text-xs">×</span>
-              </button>
-            )}
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="w-16">Hue</span>
-          <input
-            type="range"
-            min={0}
-            max={359}
-            step={1}
-            value={hue}
-            onChange={(e) => setHue(Number(e.target.value))}
-            onDoubleClick={() => setHue(0)}
-            aria-label="Hue rotation (0–359 degrees)"
-            className="flex-1 h-6 appearance-none bg-transparent cursor-pointer
-              [&::-webkit-slider-runnable-track]:h-4 [&::-webkit-slider-runnable-track]:border [&::-webkit-slider-runnable-track]:border-border
-              [&::-webkit-slider-runnable-track]:bg-[linear-gradient(to_right,#ff0000_0%,#ffff00_17%,#00ff00_33%,#00ffff_50%,#0000ff_67%,#ff00ff_83%,#ff0000_100%)]
-              [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:bg-foreground [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-background [&::-webkit-slider-thumb]:-mt-0
-              [&::-moz-range-track]:h-4 [&::-moz-range-track]:border [&::-moz-range-track]:border-border
-              [&::-moz-range-thumb]:size-4 [&::-moz-range-thumb]:bg-foreground [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-background [&::-moz-range-thumb]:rounded-none"
-          />
-          <span className="font-mono w-10 text-right">{hue}°</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="w-16">Saturation</span>
-          <input
-            type="range"
-            min={0}
-            max={2}
-            step={0.05}
-            value={saturate}
-            onChange={(e) => setSaturate(Number(e.target.value))}
-            onDoubleClick={() => setSaturate(1)}
-            aria-label="Saturation multiplier (0 to 2)"
-            className="flex-1 h-6 appearance-none bg-transparent cursor-pointer
-              [&::-webkit-slider-runnable-track]:h-4 [&::-webkit-slider-runnable-track]:border [&::-webkit-slider-runnable-track]:border-border
-              [&::-webkit-slider-runnable-track]:bg-[linear-gradient(to_right,var(--muted)_0%,var(--foreground)_100%)]
-              [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:bg-foreground [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-background
-              [&::-moz-range-track]:h-4 [&::-moz-range-track]:border [&::-moz-range-track]:border-border
-              [&::-moz-range-thumb]:size-4 [&::-moz-range-thumb]:bg-foreground [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-background [&::-moz-range-thumb]:rounded-none"
-          />
-          <span className="font-mono w-10 text-right">{saturate.toFixed(2)}</span>
-        </div>
+        <PalettePicker
+          hue={hue}
+          saturate={saturate}
+          onHueChange={setHue}
+          onSaturateChange={setSaturate}
+          onRandom={randomPalette}
+          onReset={resetPalette}
+        />
+        <BgPicker bg={bg} onChange={applyBg} />
       </div>
 
       {/* ID bar */}
