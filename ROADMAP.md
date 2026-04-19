@@ -105,6 +105,7 @@
 - [x] `/random` page — 302 to a fresh `/bot/{id}`; forwards `hue`/`saturate`; `force-dynamic` so Next never bakes the target. (PR #83)
 - [x] Favorites export / import — versioned JSON envelope; Import + Export buttons on the favorites page; dedupe-preserving merge. (PR #84)
 - [x] BotEmbed OG-card tab — `/bot/[id]` embed block surfaces the OG image URL (`/api/og?type=single`) as a sixth snippet. (PR #85)
+- [x] Creator undo — `U` steps back through the last 20 combo changes (shuffle / cycle / pick). Palette + bg stay sticky (sliders give direct reversal). (PR #86)
 
 ## Up Next
 
@@ -167,7 +168,7 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 ### Messaging & copy
 - [x] **Personality in empty states / 404** — PR #19
 - [x] **Copy-button state polish** — PR #20
-- [ ] **Error messages match voice** — API 400s stay plain, but UI error states use the pixel vibe
+- [x] **Error messages match voice** — 404 ships with a lost-pixabot animation + "This pixabot got lost" copy (PR #19); favorites + /compare empty states match the pixel voice. API 400s stay plain JSON by design.
 - [x] **Share via Web Share API on mobile** — PR #21
 
 ### Accessibility & comfort
