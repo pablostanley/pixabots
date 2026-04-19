@@ -61,9 +61,11 @@ function parseFilters(params: URLSearchParams): Filters {
 function FilterBar({
   filters,
   onChange,
+  onReroll,
 }: {
   filters: Filters;
   onChange: (cat: PartCategory, value: string | null) => void;
+  onReroll: () => void;
 }) {
   const active = Object.keys(filters).length > 0;
   return (
@@ -105,13 +107,23 @@ function FilterBar({
           </DropdownMenu>
         );
       })}
+      <button
+        type="button"
+        onClick={onReroll}
+        className="ml-auto flex items-center gap-1 px-2 py-1 text-xs border border-border hover:bg-muted cursor-pointer"
+        data-tooltip="Regenerate the grid"
+        aria-label="Reroll grid"
+      >
+        <PixelIcon name="shuffle" className="size-3" />
+        Reroll
+      </button>
       {active && (
         <button
           type="button"
           onClick={() => {
             for (const cat of CATEGORY_ORDER) onChange(cat, null);
           }}
-          className="ml-auto px-2 py-1 text-xs text-muted-foreground hover:text-foreground cursor-pointer"
+          className="px-2 py-1 text-xs text-muted-foreground hover:text-foreground cursor-pointer"
         >
           Clear
         </button>
@@ -292,9 +304,14 @@ function BrowseInner() {
     [pathname, router, searchParams]
   );
 
+  const reroll = useCallback(() => {
+    setBots(generateBatch(BATCH_SIZE, filters, 0));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [filters]);
+
   return (
     <main className="flex-1 p-2 sm:p-4">
-      <FilterBar filters={filters} onChange={setFilter} />
+      <FilterBar filters={filters} onChange={setFilter} onReroll={reroll} />
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4" style={{ gridAutoFlow: "dense" }}>
         {bots.map((bot) => (
           <BotCard key={bot.id} bot={bot} />
