@@ -88,6 +88,7 @@
 - [x] Palette URL sync — `?hue` + `?saturate` on home page round-trip through URL, sliders restore, share URL carries palette. (PR #66)
 - [x] BotDetail palette — `/bot/[id]?hue=&saturate=` renders recolored; Edit + download links carry palette forward. (PR #67)
 - [x] Palette propagation — OG image / canonical URL / BotNav prev-next all preserve `hue`+`saturate`. (PR #68)
+- [x] Embed widget + React component palette — `/embed/[id]` and `@pixabots/react` v0.2.0 both accept `hue`/`saturate`. Palette now reaches every public surface. (PR #69)
 
 ## Up Next
 
