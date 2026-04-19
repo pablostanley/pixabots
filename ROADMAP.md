@@ -1,5 +1,23 @@
 # Pixabots Roadmap
 
+## Design principles (load-bearing)
+
+Every UI / animation decision should be checked against [Emil Kowalski's design-eng principles](https://github.com/emilkowalski/skill/blob/main/skills/emil-design-eng/SKILL.md). Short summary, in priority order for this codebase:
+
+- **Never animate keyboard-initiated actions** — Space shuffle, C copy, ⌘K, etc. fire 100× / session. Keep them instant.
+- **Never animate from `scale(0)`** — floor at `scale(0.95)` combined with `opacity: 0`.
+- **`ease-out` for UI, never `ease-in`** — ease-in feels sluggish on the leading edge.
+- **Only animate `transform` + `opacity`** — everything else triggers layout/paint.
+- **Buttons feel responsive** — `:active { transform: scale(0.97) }`, ≤160ms.
+- **Durations under 300ms** for all UI; longer only for marketing/explanatory motion.
+- **Popovers scale from their trigger** (`transform-origin`); modals stay centered.
+- **Use CSS transitions** over keyframes for anything that can be rapidly re-triggered (toasts, state flips).
+- **Preload adjacent surfaces** — prev/next, hover-likely — so nav feels instant.
+- **Respect `prefers-reduced-motion`** — keep opacity/color; drop transform motion.
+- **Review animations the next day** with fresh eyes and in slow motion.
+
+When reviewing code, use the Before/After markdown table format from the skill. When adding animations, answer the four framework questions first: *should this animate at all / what is the purpose / what easing / how fast.*
+
 ## Done
 
 - [x] `@pixabots/core` npm package — v0.1.0 published (ID system, parts catalog, random/seeded generation)
@@ -211,6 +229,12 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 - [x] **Active nav state** — header highlights current page
 - [x] **Keyboard shortcuts** — space to shuffle, P to play, arrows to cycle parts
 - [x] **Share URL** — `pixabots.com/?id=2156` opens a specific combo, URL syncs live
+
+## Up next (mobile)
+
+- [ ] **Mobile hamburger menu** — site header links don't fit on mobile. Collapse everything past the logo into a hamburger that opens a sheet (probably Radix Dialog or vaul-style) with the nav items (create, browse, stars, docs, api, github) and the ♪ / theme toggles.
+- [ ] **Browse filters in a sheet on mobile** — current per-category dropdowns overflow the browse top bar. On mobile wrap them behind a "Filter" button that opens a bottom sheet with the filter controls; keep inline on ≥sm.
+- [ ] **Musical SFX on browse** — `/browse` is silent right now. Add pentatonic / kaossilator-style sounds for hover, prev/next in the dialog, filter toggles, and card-tap (respecting the existing `useSfx` mute). Should feel cohesive with the creator SFX (same scales / voices) so moving between pages is one instrument.
 
 ## Ideas
 

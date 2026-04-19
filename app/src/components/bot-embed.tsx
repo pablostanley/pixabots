@@ -118,7 +118,7 @@ export function BotEmbed({
           <PixelIcon
             key={copied ? "c" : "i"}
             name={copied ? "check" : "copy"}
-            className={`size-4 ${copied ? "animate-in zoom-in-50 fade-in-0 duration-200" : ""}`}
+            className={`size-4 ${copied ? "animate-in zoom-in-95 fade-in-0 duration-150 ease-out" : ""}`}
           />
         </button>
       </div>

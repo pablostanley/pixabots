@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useSyncExternalStore } from "react";
+import { isValidId } from "@pixabots/core";
 
 /**
  * Subscribe to window `paste` events without useEffect. Mirrors useKeydown.
@@ -19,4 +20,19 @@ export function usePaste(handler: (e: ClipboardEvent) => void) {
     () => null,
     () => null
   );
+}
+
+/**
+ * Extract a valid 4-char pixabot id from a clipboard paste. Accepts bare
+ * ids, `?id=…`, `/bot/…`, and full URLs. Returns null when the target
+ * is a form field (don't hijack regular paste) or the payload has no
+ * valid id. Shared by the creator and BotPasteNav.
+ */
+export function parsePastedId(e: ClipboardEvent): string | null {
+  if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return null;
+  const raw = e.clipboardData?.getData("text")?.trim();
+  if (!raw) return null;
+  const match = raw.match(/(?:^|[/=])([0-9a-z]{4})(?:[?&/#]|$)/i);
+  const candidate = match?.[1]?.toLowerCase();
+  return candidate && isValidId(candidate) ? candidate : null;
 }
