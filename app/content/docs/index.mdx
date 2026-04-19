@@ -72,3 +72,11 @@ import { seededId } from "@pixabots/core";
 const avatarId = seededId("user@example.com"); // always the same pixabot
 const url = `https://pixabots.com/api/pixabot/${avatarId}?size=240`;
 ```
+
+In a React app, [`@pixabots/react`](/docs/react) is a one-line wrapper:
+
+```tsx
+import { Pixabot } from "@pixabots/react";
+
+<Pixabot id={seededId("user@example.com")} size={48} />
+```

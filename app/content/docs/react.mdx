@@ -1,0 +1,75 @@
+---
+title: React
+description: "@pixabots/react — drop <Pixabot /> anywhere in your React app"
+---
+
+[`@pixabots/react`](https://www.npmjs.com/package/@pixabots/react) wraps the Pixabots API in a single component. Works in any React 18+ app.
+
+## Install
+
+```bash
+npm install @pixabots/react
+```
+
+```bash
+pnpm add @pixabots/react
+```
+
+## Usage
+
+```tsx
+import { Pixabot } from "@pixabots/react";
+
+<Pixabot id="2156" size={240} />
+<Pixabot id="random" size={128} />
+<Pixabot id="2156" hue={200} saturate={1.2} bg="#fde68a" size={240} />
+```
+
+The component renders a plain `<img>`, so any `img` prop (`className`, `style`, `onClick`, `loading`, …) passes through. `image-rendering: pixelated` is applied automatically.
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `id` | `string \| "random"` | `"random"` | 4-char base36 pixabot ID. Invalid / missing → random. |
+| `size` | `number` | `128` | Any integer 32–1920. |
+| `animated` | `boolean` | `true` | Idle bounce animation. |
+| `speed` | `number` | `1` | 0.25–4 multiplier. Only with `animated`. |
+| `format` | `"svg"` | — | Vector output instead of raster. |
+| `webp` | `boolean` | `false` | With `animated`, use animated WebP (smaller, alpha). |
+| `hue` | `number` | — | Hue rotation in degrees (0–359). |
+| `saturate` | `number` | `1` | Saturation multiplier (0–4). 0 = greyscale. |
+| `bg` | `string` | — | Background color as `#rrggbb` hex. Flattens transparency. |
+| `origin` | `string` | `https://pixabots.com` | Override the API host. |
+
+Plus every native `img` prop (`className`, `style`, `alt`, `width`, `height`, `loading`, event handlers, …).
+
+## Examples
+
+### Deterministic avatar per user
+
+```tsx
+import { Pixabot, seededId } from "@pixabots/react";
+
+function UserAvatar({ email }: { email: string }) {
+  return <Pixabot id={seededId(email)} size={48} animated={false} />;
+}
+```
+
+### Themed row
+
+```tsx
+<div style={{ display: "flex", gap: 12 }}>
+  {["2156", "1337", "f76a"].map((id) => (
+    <Pixabot key={id} id={id} size={96} bg="#fde68a" hue={200} />
+  ))}
+</div>
+```
+
+### Self-hosted API
+
+```tsx
+<Pixabot id="2156" origin="https://my-api.example.com" />
+```
+
+The component never fetches on your behalf — it just builds the `<img src>` URL. Every render is a GET to `/api/pixabot/{id}` on the configured origin.
