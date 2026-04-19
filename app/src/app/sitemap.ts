@@ -24,6 +24,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     entry(`${SITE_URL}/docs/api`, 0.7),
     entry(`${SITE_URL}/docs/sdk`, 0.7),
     entry(`${SITE_URL}/docs/usage`, 0.7),
+    entry(`${SITE_URL}/docs/creator`, 0.7),
     entry(`${SITE_URL}/docs/shortcuts`, 0.6),
     entry(`${SITE_URL}/docs/parts`, 0.6),
     ...specialBots,
