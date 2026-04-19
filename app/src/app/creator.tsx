@@ -4,7 +4,7 @@ import { useState, useRef, useCallback } from "react";
 import { isTypingTarget, useKeydown } from "@/lib/use-keydown";
 import { usePaste, parsePastedId } from "@/lib/use-paste";
 import { parts, layerOrder, layerLabel, type PartCategory } from "@/lib/parts";
-import { encode, decode, isValidId, randomCombo, resolve, ANIM_FRAMES, FRAME_MS, type AnimFrame } from "@pixabots/core";
+import { encode, decode, isValidId, randomCombo, resolve, ANIM_FRAMES, FRAME_MS, resolveFrameIndex, PARTS, type AnimFrame } from "@pixabots/core";
 import { Button } from "@/components/ui/button";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import { useShareOrCopy } from "@/lib/use-share-or-copy";
@@ -50,8 +50,10 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 function drawOnCanvas(
   canvas: HTMLCanvasElement,
   images: Record<string, HTMLImageElement>,
+  selection: Record<PartCategory, number>,
   offsets?: AnimFrame,
-  bg?: string | null
+  bg?: string | null,
+  tick: number = 0
 ) {
   const ctx = canvas.getContext("2d")!;
   ctx.clearRect(0, 0, DISPLAY, DISPLAY);
@@ -66,16 +68,22 @@ function drawOnCanvas(
     if (!img) return;
     const yOffset = offsets ? offsets[category as keyof AnimFrame] * PX : 0;
 
+    // Multi-frame sprite sheets (blink / sequence): pick the source-X column
+    // for this tick. Static parts (frames ≤ 1) fall through to sx=0.
+    const part = PARTS[category][selection[category]];
+    const frameIdx = resolveFrameIndex(part, tick);
+    const sx = frameIdx * NATIVE;
+
     if (category === "body" && yOffset > 0) {
-      ctx.drawImage(img, 0, NATIVE - 1, NATIVE, 1, 0, DISPLAY - PX, DISPLAY, PX);
+      ctx.drawImage(img, sx, NATIVE - 1, NATIVE, 1, 0, DISPLAY - PX, DISPLAY, PX);
       ctx.save();
       ctx.beginPath();
       ctx.rect(0, 0, DISPLAY, DISPLAY - PX);
       ctx.clip();
-      ctx.drawImage(img, 0, 0, NATIVE, NATIVE - 1, 0, yOffset, DISPLAY, (NATIVE - 1) * PX);
+      ctx.drawImage(img, sx, 0, NATIVE, NATIVE - 1, 0, yOffset, DISPLAY, (NATIVE - 1) * PX);
       ctx.restore();
     } else {
-      ctx.drawImage(img, 0, yOffset, DISPLAY, DISPLAY);
+      ctx.drawImage(img, sx, 0, NATIVE, NATIVE, 0, yOffset, DISPLAY, DISPLAY);
     }
   }
 }
@@ -146,7 +154,7 @@ export function Creator({
     if (animatingRef.current) {
       startAnimation();
     } else {
-      drawOnCanvas(canvasRef.current, loaded, undefined, bgRef.current);
+      drawOnCanvas(canvasRef.current, loaded, selRef.current, undefined, bgRef.current, 0);
     }
   }
 
@@ -155,13 +163,13 @@ export function Creator({
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       animatingRef.current = false;
       setAnimating(false);
-      if (canvasRef.current) drawOnCanvas(canvasRef.current, imagesRef.current, undefined, bgRef.current);
+      if (canvasRef.current) drawOnCanvas(canvasRef.current, imagesRef.current, selRef.current, undefined, bgRef.current, 0);
       return;
     }
     frameRef.current = 0;
     intervalRef.current = setInterval(() => {
       if (canvasRef.current) {
-        drawOnCanvas(canvasRef.current, imagesRef.current, ANIM_FRAMES[frameRef.current], bgRef.current);
+        drawOnCanvas(canvasRef.current, imagesRef.current, selRef.current, ANIM_FRAMES[frameRef.current], bgRef.current, frameRef.current);
         frameRef.current = (frameRef.current + 1) % ANIM_FRAMES.length;
       }
     }, FRAME_MS);
@@ -174,7 +182,7 @@ export function Creator({
     clearInterval(intervalRef.current);
     intervalRef.current = undefined;
     frameRef.current = 0;
-    if (canvasRef.current) drawOnCanvas(canvasRef.current, imagesRef.current, undefined, bgRef.current);
+    if (canvasRef.current) drawOnCanvas(canvasRef.current, imagesRef.current, selRef.current, undefined, bgRef.current, 0);
     animatingRef.current = false;
     setAnimating(false);
   }
@@ -317,7 +325,7 @@ export function Creator({
     setBg(color);
     bgRef.current = color;
     if (canvasRef.current && !intervalRef.current) {
-      drawOnCanvas(canvasRef.current, imagesRef.current, undefined, color);
+      drawOnCanvas(canvasRef.current, imagesRef.current, selRef.current, undefined, color, 0);
     }
     if (typeof index === "number" && index >= 0) sfx.play({ kind: "bg", index });
     syncUrl(encode(selRef.current), hueRef.current, saturateRef.current, color);

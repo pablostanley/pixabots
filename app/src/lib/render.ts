@@ -4,8 +4,8 @@ import {
   PARTS,
   LAYER_ORDER,
   ANIM_FRAMES,
-  FRAME_INDICES,
   FRAME_MS,
+  resolveFrameIndex,
   type PixabotCombo,
   type AnimFrame,
   type PartCategory,
@@ -182,6 +182,7 @@ export async function renderPixabotSvg(
 }
 
 async function renderFrameNative(
+  combo: PixabotCombo,
   layers: Record<PartCategory, LayerSheet>,
   bodyTop: Buffer,
   bodyBottom: Buffer,
@@ -190,12 +191,13 @@ async function renderFrameNative(
 ): Promise<Buffer> {
   const composites: sharp.OverlayOptions[] = [];
 
-  // Per-layer sub-animation: pick the right sprite frame for this tick,
-  // clamped to each part's available frame count.
+  // Per-layer sub-animation: each part declares its own schedule via `kind`
+  // (static / blink / sequence). resolveFrameIndex maps tick → sheet frame.
   const frameByCategory: Record<PartCategory, Buffer> = Object.fromEntries(
     await Promise.all(
       LAYER_ORDER.map(async (cat) => {
-        const scheduled = FRAME_INDICES[cat][tick] ?? 0;
+        const part = PARTS[cat][combo[cat]];
+        const scheduled = resolveFrameIndex(part, tick);
         return [cat, await extractFrame(layers[cat], scheduled)] as const;
       })
     )
@@ -262,7 +264,7 @@ export async function renderAnimatedPixabot(
   // and resize once. Cuts memory ~size² vs upscaling each frame independently.
   const nativeFrames = await Promise.all(
     ANIM_FRAMES.map((offsets, tick) =>
-      renderFrameNative(layers, bodyTop, bodyBottom, offsets, tick)
+      renderFrameNative(combo, layers, bodyTop, bodyBottom, offsets, tick)
     )
   );
   const nativeStacked = Buffer.concat(nativeFrames);

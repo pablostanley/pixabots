@@ -5,6 +5,8 @@
  * for each layer. At 72ms per frame this gives a ~14fps bounce.
  */
 
+import type { PartOption } from './parts'
+
 export interface AnimFrame {
   top: number
   heads: number
@@ -28,22 +30,29 @@ export const ANIM_FRAMES: AnimFrame[] = [
 ]
 
 /**
- * Per-tick sprite-sheet frame index for each category.
- *
- * Each array has the same length as ANIM_FRAMES (one entry per tick) and
- * contains the frame index to sample from the sprite sheet. For sprites
- * drawn as a single 32×32 image (the default today), always 0.
- *
- * Authors adding multi-frame sprites (e.g. a blink for an eye variant)
- * should tweak FRAME_INDICES[category] to sequence the extra frames.
- * Runtime clamps the lookup against each part's `frames` count, so a
- * category's sequence can reference frame N without forcing every part
- * in that category to provide N frames — parts with fewer frames fall
- * back to frame 0.
+ * 8-tick schedule for blink parts against a 2-frame sheet [open, closed]:
+ * open, closed, open, closed, open, open, open, open — two fast blinks
+ * then hold open for the rest of the loop.
  */
-export const FRAME_INDICES: { top: number[]; heads: number[]; body: number[]; eyes: number[] } = {
-  top: [0, 0, 0, 0, 0, 0, 0, 0],
-  heads: [0, 0, 0, 0, 0, 0, 0, 0],
-  body: [0, 0, 0, 0, 0, 0, 0, 0],
-  eyes: [0, 0, 0, 0, 0, 0, 0, 0],
+export const BLINK_SCHEDULE: readonly number[] = [0, 1, 0, 1, 0, 0, 0, 0]
+
+/**
+ * Which frame index of a part's sprite sheet to show on a given tick of
+ * the 8-frame idle bounce. Driven by the part's `kind`:
+ *
+ * - 'static' (or frames ≤ 1): always frame 0.
+ * - 'blink':                   BLINK_SCHEDULE[tick].
+ * - 'sequence':                tick % frames — loops inside the 8-tick bounce.
+ *
+ * Runtime still clamps to the part's available frame count, so mismatches
+ * (e.g. kind='sequence' with frames=3) fall back gracefully rather than
+ * overrun the sheet.
+ */
+export function resolveFrameIndex(part: PartOption, tick: number): number {
+  const frames = part.frames ?? 1
+  if (frames <= 1) return 0
+  const kind = part.kind ?? 'static'
+  if (kind === 'blink') return BLINK_SCHEDULE[tick % BLINK_SCHEDULE.length]
+  if (kind === 'sequence') return tick % frames
+  return 0
 }

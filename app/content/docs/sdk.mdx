@@ -119,13 +119,38 @@ FRAME_MS;      // 72 (ms per frame)
 ANIM_FRAMES;   // 8-frame array of { top, heads, eyes, body } offsets
 ```
 
+## Sub-animations (sprite-sheet parts)
+
+Some parts ship as horizontal sprite sheets (`frames × 32` wide) so they can animate inside the 8-tick idle bounce. Each `PartOption` declares a `kind`:
+
+- `static` (default) — always frame 0.
+- `blink` — 2-frame sheet `[open, closed]`. Runtime schedule: `[0,1,0,1,0,0,0,0]` (two blinks then hold-open).
+- `sequence` — N-frame sheet played in order. N should divide 8 (1 / 2 / 4 / 8) so the sub-loop fits the bounce.
+
+Resolve a tick → frame index via `resolveFrameIndex`:
+
+```typescript
+import { PARTS, resolveFrameIndex, BLINK_SCHEDULE } from "@pixabots/core";
+
+const visor = PARTS.eyes.find(p => p.name === "visor");
+// { name: "visor", path: "eyes/visor.png", frames: 8, kind: "sequence" }
+
+for (let tick = 0; tick < 8; tick++) {
+  const idx = resolveFrameIndex(visor, tick);
+  // sx = idx * 32 to source-crop the sprite sheet
+}
+
+BLINK_SCHEDULE; // [0,1,0,1,0,0,0,0]
+```
+
 ## Types
 
 ```typescript
-import type { PixabotCombo, PartCategory, PartOption, AnimFrame } from "@pixabots/core";
+import type { PixabotCombo, PartCategory, PartOption, PartAnimKind, AnimFrame } from "@pixabots/core";
 
 // PixabotCombo = { eyes: number, heads: number, body: number, top: number }
 // PartCategory = "eyes" | "heads" | "body" | "top"
-// PartOption = { name: string, path: string }
+// PartAnimKind = "static" | "blink" | "sequence"
+// PartOption = { name: string, path: string, frames?: number, kind?: PartAnimKind }
 // AnimFrame = { top: number, heads: number, eyes: number, body: number }
 ```
