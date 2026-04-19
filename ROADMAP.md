@@ -97,6 +97,7 @@
 - [x] Fx palette inspector — in-layout right sidebar with Background picker (18 pentatonic swatches + hex + HSL) and Hue/Saturation sliders. Kaossilator-style synth (log-mapped slider pings, hue→pitch/value→octave/sat→volume on color picks). Mobile tabs (Background / Adjustments) with animated height. SFX now ON by default. Shared `@/lib/palette` replaces three local palette-URL helpers; `synth()` unifies former voice + rawSynth. (PR #75)
 - [x] "You might also like" — `/bot/[id]` now shows 4 deterministic one-part-different variants. FNV-1a + mulberry32 seeded off the id so repeat visits render the same four. Palette forwards via `withPalette`. Modal skipped. (PR #76)
 - [x] `@pixabots/core` v0.3.0 — exports seeded PRNG primitives (`hashString`, `mulberry32`, `createRng`). `bot-suggestions` now reuses them instead of inlining. SDK docs updated. Awaiting `npm publish --access public` (build + workspace already use the new version). (PR #77)
+- [x] Creator SVG download — "SVG (vector)" option in header Download dropdown + canvas right-click submenu; saves `pixabot-{id}.svg` via `/api/pixabot/{id}?format=svg`. Palette/bg intentionally skipped (unsupported in SVG output). (PR #78)
 
 ## Up Next
 
