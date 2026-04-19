@@ -97,6 +97,22 @@ importers:
         specifier: ^5
         version: 5.9.3
 
+  packages/cli:
+    dependencies:
+      '@pixabots/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.39
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(jiti@2.6.1)(postcss@8.5.9)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
   packages/core:
     devDependencies:
       tsup:
