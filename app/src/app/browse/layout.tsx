@@ -16,7 +16,8 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Browse Pixabots",
     description: "Explore 9,856 unique pixel art characters.",
-    images: [OG],
+    images: [{ url: OG, alt: "Browse Pixabots" }],
+    site: "@pablostanley",
     creator: "@pablostanley",
   },
 };

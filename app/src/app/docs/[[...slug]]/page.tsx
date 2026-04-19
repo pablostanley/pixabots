@@ -72,7 +72,8 @@ export async function generateMetadata({
       card: "summary_large_image",
       title: `${title} — Pixabots`,
       description,
-      images: [ogUrl],
+      images: [{ url: ogUrl, alt: ogTitle }],
+      site: "@pablostanley",
       creator: "@pablostanley",
     },
   };

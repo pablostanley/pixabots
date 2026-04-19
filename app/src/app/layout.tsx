@@ -45,7 +45,13 @@ export const metadata: Metadata = {
     title: "Pixabots — Pixel Character Avatars",
     description:
       "9,856 unique pixel art characters with deterministic IDs. Free API for avatars, animated GIFs, and more.",
-    images: [`${SITE_URL}/api/og?type=grid&title=Pixabots&seed=home`],
+    images: [
+      {
+        url: `${SITE_URL}/api/og?type=grid&title=Pixabots&seed=home`,
+        alt: "Pixabots",
+      },
+    ],
+    site: "@pablostanley",
     creator: "@pablostanley",
   },
   keywords: [

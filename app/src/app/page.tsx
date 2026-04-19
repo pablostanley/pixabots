@@ -70,7 +70,8 @@ export async function generateMetadata({
       card: "summary_large_image",
       title,
       description,
-      images: [ogUrl],
+      images: [{ url: ogUrl, alt: title }],
+      site: "@pablostanley",
       creator: "@pablostanley",
     },
   };
