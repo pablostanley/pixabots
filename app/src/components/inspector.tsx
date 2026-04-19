@@ -76,7 +76,7 @@ export function Inspector({
       aria-label="Effects inspector"
       className="
         fixed lg:static left-0 right-0 bottom-0 z-40
-        h-[42vh] lg:h-auto lg:max-h-[calc(100dvh-6rem)]
+        max-h-[55vh] lg:max-h-[calc(100dvh-6rem)]
         w-full lg:w-[280px] lg:shrink-0
         border-t lg:border border-border bg-background
         flex flex-col
