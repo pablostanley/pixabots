@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export function SiteFooter() {
@@ -11,7 +12,10 @@ export function SiteFooter() {
       <span>
         <span className="font-mono text-foreground">9,856</span> combos ·{" "}
         <kbd className="font-mono border border-border px-1">SPACE</kbd> to shuffle ·{" "}
-        <kbd className="font-mono border border-border px-1">?</kbd> for shortcuts
+        <kbd className="font-mono border border-border px-1">?</kbd> for shortcuts ·{" "}
+        <Link href="/random" className="hover:text-foreground transition-colors underline decoration-dotted underline-offset-2">
+          surprise me
+        </Link>
       </span>
       <span aria-hidden="true">·</span>
       <span>
