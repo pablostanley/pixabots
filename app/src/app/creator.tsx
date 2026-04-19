@@ -659,7 +659,7 @@ export function Creator({
         </a>
         <div className="flex items-center gap-2 ml-auto">
           <a
-            href={withPalette(apiUrl, { hue, saturate })}
+            href={withPalette(apiUrl, { hue, saturate, bg })}
             target="_blank"
             rel="noopener noreferrer"
             className="text-muted-foreground hover:text-foreground transition-colors"
@@ -667,7 +667,7 @@ export function Creator({
             PNG
           </a>
           <a
-            href={withPalette(`${apiUrl}?animated=true`, { hue, saturate })}
+            href={withPalette(`${apiUrl}?animated=true`, { hue, saturate, bg })}
             target="_blank"
             rel="noopener noreferrer"
             className="text-muted-foreground hover:text-foreground transition-colors"

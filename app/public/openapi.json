@@ -72,6 +72,13 @@
             "required": false,
             "description": "Saturation multiplier (0 = greyscale, 1 = unchanged, up to 4).",
             "schema": { "type": "number", "minimum": 0, "maximum": 4, "default": 1 }
+          },
+          {
+            "name": "bg",
+            "in": "query",
+            "required": false,
+            "description": "Background color as `#rrggbb` hex. Flattens transparency onto a solid color. Applies to PNG / GIF / WebP / SVG outputs.",
+            "schema": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" }
           }
         ],
         "responses": {
@@ -309,7 +316,7 @@
       "get": {
         "operationId": "getRandomPixabot",
         "summary": "Get a random pixabot",
-        "description": "Returns a 302 redirect to a random pixabot's canonical URL (for caching). The `size`, `animated`, and `speed` query params are forwarded to the redirect target. Use `?format=json` to get the random ID and metadata without redirect. The redirect itself is not cached (`Cache-Control: no-store`).",
+        "description": "Returns a 302 redirect to a random pixabot's canonical URL (for caching). The `size`, `animated`, `speed`, `webp`, `hue`, `saturate`, and `bg` query params are forwarded to the redirect target. Use `?format=json` to get the random ID and metadata without redirect. The redirect itself is not cached (`Cache-Control: no-store`).",
         "parameters": [
           {
             "name": "size",

@@ -17,6 +17,7 @@ import {
   MAX_SPEED,
 } from "@/lib/api";
 import { checkRate, clientKey } from "@/lib/rate-limit";
+import { normalizeHex } from "@/lib/palette";
 
 // Per-IP rate limit for animated renders (GIF / WebP are 5–50× costlier
 // than PNG). Limits per minute per lambda instance.
@@ -78,6 +79,20 @@ export async function GET(
     saturate = s;
   }
   const palette = hue !== undefined || saturate !== undefined ? { hue, saturate } : undefined;
+
+  // Background color (flattens transparent pixels). Accepts #rrggbb.
+  const bgParam = request.nextUrl.searchParams.get("bg");
+  let bg: string | undefined;
+  if (bgParam !== null) {
+    const normalized = normalizeHex(bgParam);
+    if (!normalized) {
+      return Response.json(
+        { error: "Invalid bg. Must be a #rrggbb hex color." },
+        { status: 400, headers: CORS_HEADERS }
+      );
+    }
+    bg = normalized;
+  }
   let speed = 1;
   if (speedParam !== null) {
     const parsed = Number(speedParam);
@@ -106,7 +121,7 @@ export async function GET(
 
   try {
     if (format === "svg") {
-      const svg = await renderPixabotSvg(combo, size);
+      const svg = await renderPixabotSvg(combo, size, bg);
       return new Response(svg, {
         headers: {
           "Content-Type": "image/svg+xml; charset=utf-8",
@@ -135,10 +150,10 @@ export async function GET(
       }
       const wantsWebp = request.nextUrl.searchParams.get("webp") === "true";
       const outFormat = wantsWebp ? "webp" : "gif";
-      const buf = await renderAnimatedPixabot(combo, size, speed, outFormat, palette);
+      const buf = await renderAnimatedPixabot(combo, size, speed, outFormat, palette, bg);
       return imageResponse(buf, wantsWebp ? "image/webp" : "image/gif");
     }
-    return imageResponse(await renderPixabot(combo, size, palette), "image/png");
+    return imageResponse(await renderPixabot(combo, size, palette, bg), "image/png");
   } catch (e) {
     const status = e instanceof RenderError ? e.status : 500;
     const message = e instanceof RenderError ? e.message : "Render failed";

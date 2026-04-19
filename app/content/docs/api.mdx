@@ -21,6 +21,7 @@ Returns a pixabot image or metadata.
 | `speed` | query | `1` | Animation speed multiplier (`0.25`–`4`). Only works with `animated=true`. |
 | `hue` | query | — | Hue rotation in degrees (0–359). Shifts all colors while preserving relative palette. |
 | `saturate` | query | — | Saturation multiplier (0 = greyscale, 1 = unchanged, up to 4 = very punchy). |
+| `bg` | query | — | Background color as `#rrggbb` hex. Flattens transparency onto a solid color. |
 
 ### PNG (default)
 
@@ -68,6 +69,17 @@ curl "https://pixabots.com/api/pixabot/2156?size=240&hue=200&saturate=1.5" -o co
 ```
 
 `hue` rotates hue in degrees (0–359). `saturate` is a multiplier: 0 greyscale, 1 unchanged, 4 max.
+
+### Background (`bg`)
+
+Default output has a transparent background. Add `?bg=%23rrggbb` to flatten it onto a solid color — handy for GIFs (which don't support true alpha) and for baking a final exported avatar.
+
+```bash
+curl "https://pixabots.com/api/pixabot/2156?size=240&bg=%23fde68a" -o sunny.png
+curl "https://pixabots.com/api/pixabot/2156?animated=true&bg=%23000000" -o on-black.gif
+```
+
+Works with PNG, GIF, WebP, and SVG outputs. Pairs with `hue`/`saturate`.
 
 ### SVG (vector)
 

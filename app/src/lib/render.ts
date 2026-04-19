@@ -84,7 +84,8 @@ function applyPalette(pipeline: sharp.Sharp, p?: PaletteTransform): sharp.Sharp 
 export async function renderPixabot(
   combo: PixabotCombo,
   size: number = NATIVE_SIZE,
-  palette?: PaletteTransform
+  palette?: PaletteTransform,
+  bg?: string
 ): Promise<Buffer> {
   const layers = await loadLayers(combo);
   const frame0s = await Promise.all(
@@ -109,9 +110,13 @@ export async function renderPixabot(
     .png();
 
   const native = await base.toBuffer();
-  // Apply palette at native size (fewer pixels = faster) then scale.
-  const tinted = hasPaletteTransform(palette)
-    ? await applyPalette(sharp(native), palette).png().toBuffer()
+  // Apply palette at native size (fewer pixels = faster), then flatten onto
+  // bg if one was given, then scale.
+  let working = sharp(native);
+  if (hasPaletteTransform(palette)) working = applyPalette(working, palette);
+  if (bg) working = working.flatten({ background: bg });
+  const tinted = hasPaletteTransform(palette) || bg
+    ? await working.png().toBuffer()
     : native;
 
   if (size === NATIVE_SIZE) return tinted;
@@ -125,7 +130,8 @@ export async function renderPixabot(
 /** Render a pixabot combo as an SVG string (one <rect> per opaque pixel). */
 export async function renderPixabotSvg(
   combo: PixabotCombo,
-  size: number = 128
+  size: number = 128,
+  bg?: string
 ): Promise<string> {
   const layers = await loadLayers(combo);
   const frame0s = await Promise.all(
@@ -169,7 +175,10 @@ export async function renderPixabotSvg(
     }
   }
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${NATIVE_SIZE} ${NATIVE_SIZE}" shape-rendering="crispEdges">${rects.join("")}</svg>`;
+  const bgRect = bg
+    ? `<rect x="0" y="0" width="${NATIVE_SIZE}" height="${NATIVE_SIZE}" fill="${bg}"/>`
+    : "";
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${NATIVE_SIZE} ${NATIVE_SIZE}" shape-rendering="crispEdges">${bgRect}${rects.join("")}</svg>`;
 }
 
 async function renderFrameNative(
@@ -230,7 +239,8 @@ export async function renderAnimatedPixabot(
   size: number = NATIVE_SIZE,
   speed: number = 1,
   format: AnimatedFormat = "gif",
-  palette?: PaletteTransform
+  palette?: PaletteTransform,
+  bg?: string
 ): Promise<Buffer> {
   const layers = await loadLayers(combo);
 
@@ -258,24 +268,24 @@ export async function renderAnimatedPixabot(
   const nativeStacked = Buffer.concat(nativeFrames);
   const nativeStripHeight = NATIVE_SIZE * ANIM_FRAMES.length;
 
-  // Palette transform at native scale before resize — fewer pixels, same result.
-  const tintedStacked = hasPaletteTransform(palette)
-    ? await applyPalette(
-        sharp(nativeStacked, {
-          raw: { width: NATIVE_SIZE, height: nativeStripHeight, channels: 4 },
-        }),
-        palette
-      )
-        .raw()
-        .toBuffer()
+  // Palette transform + bg flatten at native scale before resize —
+  // fewer pixels, same result.
+  let nativePipeline = sharp(nativeStacked, {
+    raw: { width: NATIVE_SIZE, height: nativeStripHeight, channels: 4 },
+  });
+  if (hasPaletteTransform(palette)) nativePipeline = applyPalette(nativePipeline, palette);
+  if (bg) nativePipeline = nativePipeline.flatten({ background: bg });
+  const tintedStacked = hasPaletteTransform(palette) || bg
+    ? await nativePipeline.raw().toBuffer()
     : nativeStacked;
+  const tintedChannels = bg ? 3 : 4;
 
   const targetStripHeight = size * ANIM_FRAMES.length;
   const targetStripped =
     size === NATIVE_SIZE
       ? tintedStacked
       : await sharp(tintedStacked, {
-          raw: { width: NATIVE_SIZE, height: nativeStripHeight, channels: 4 },
+          raw: { width: NATIVE_SIZE, height: nativeStripHeight, channels: tintedChannels },
         })
           .resize(size, targetStripHeight, { kernel: sharp.kernel.nearest })
           .raw()
@@ -288,7 +298,7 @@ export async function renderAnimatedPixabot(
     raw: {
       width: size,
       height: targetStripHeight,
-      channels: 4,
+      channels: tintedChannels,
       pageHeight: size,
     } as sharp.CreateRaw,
   });
