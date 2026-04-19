@@ -9,7 +9,6 @@ import { PixelIcon } from "@/components/ui/pixel-icon";
 import { useShareOrCopy } from "@/lib/use-share-or-copy";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 import { ShuffleHint, dismissShuffleHint } from "@/components/shuffle-hint";
-import { BgPicker } from "@/components/bg-picker";
 import { PalettePicker } from "@/components/palette-picker";
 import { useSfx } from "@/lib/use-sfx";
 import {
@@ -514,8 +513,9 @@ export function Creator({
           onSaturateChange={setSaturate}
           onRandom={randomPalette}
           onReset={resetPalette}
+          bg={bg}
+          onBgChange={applyBg}
         />
-        <BgPicker bg={bg} onChange={applyBg} />
       </div>
 
       {/* ID bar */}

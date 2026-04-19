@@ -9,6 +9,29 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 
+import { useState } from "react";
+import { HexColorPicker } from "react-colorful";
+
+const SWATCHES: string[] = [
+  "#ffffff",
+  "#000000",
+  "#f5f5f4",
+  "#fde68a",
+  "#bbf7d0",
+  "#bae6fd",
+  "#fbcfe8",
+  "#c4b5fd",
+];
+
+const CHECKER =
+  "linear-gradient(45deg, var(--muted) 25%, transparent 25%), linear-gradient(-45deg, var(--muted) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, var(--muted) 75%), linear-gradient(-45deg, transparent 75%, var(--muted) 75%)";
+
+function normalizeHex(v: string): string | null {
+  const raw = v.trim().replace(/^#/, "");
+  if (!/^[0-9a-fA-F]{6}$/.test(raw)) return null;
+  return `#${raw.toLowerCase()}`;
+}
+
 export function PalettePicker({
   hue,
   saturate,
@@ -16,6 +39,8 @@ export function PalettePicker({
   onSaturateChange,
   onRandom,
   onReset,
+  bg,
+  onBgChange,
 }: {
   hue: number;
   saturate: number;
@@ -23,8 +48,17 @@ export function PalettePicker({
   onSaturateChange: (v: number) => void;
   onRandom: () => void;
   onReset: () => void;
+  bg: string | null;
+  onBgChange: (color: string | null, index: number) => void;
 }) {
-  const active = hue !== 0 || saturate !== 1;
+  const active = hue !== 0 || saturate !== 1 || bg !== null;
+  const [hexInput, setHexInput] = useState(bg ?? "");
+
+  const setBgColor = (color: string) => {
+    setHexInput(color);
+    const n = normalizeHex(color);
+    if (n) onBgChange(n, -1);
+  };
 
   return (
     <Sheet>
@@ -33,7 +67,7 @@ export function PalettePicker({
           type="button"
           aria-label={active ? `Effects: hue ${hue}°, saturation ${saturate.toFixed(2)}` : "Effects"}
           data-tooltip={active ? `Fx · ${hue}° · ${saturate.toFixed(2)}` : "Effects"}
-          className={`size-10 border-2 ${active ? "border-foreground/60 bg-foreground/10" : "border-border"} hover:border-foreground/60 transition-colors cursor-pointer shrink-0 flex items-center justify-center font-mono text-sm font-bold`}
+          className={`h-9 min-w-9 px-2 border ${active ? "border-foreground/60 bg-foreground/10" : "border-border"} hover:bg-muted transition-colors cursor-pointer shrink-0 flex items-center justify-center font-mono text-sm font-bold`}
         >
           Fx
         </button>
@@ -73,6 +107,69 @@ export function PalettePicker({
             </SheetClose>
           </div>
         </div>
+
+        <section className="flex flex-col gap-3">
+          <h3 className="text-xs uppercase tracking-wide text-muted-foreground">Background</h3>
+          <HexColorPicker
+            color={bg ?? "#ffffff"}
+            onChange={setBgColor}
+            style={{ width: "100%", height: 140 }}
+          />
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground font-mono">HEX</span>
+            <input
+              value={hexInput}
+              onChange={(e) => setHexInput(e.target.value)}
+              onBlur={() => {
+                const n = normalizeHex(hexInput);
+                if (n) onBgChange(n, -1);
+                else setHexInput(bg ?? "");
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+              }}
+              placeholder="ffffff"
+              maxLength={7}
+              className="flex-1 font-mono text-sm border border-border px-2 py-1 bg-background outline-none focus:border-foreground"
+            />
+          </div>
+          <div className="grid grid-cols-9 gap-1">
+            <button
+              type="button"
+              onClick={() => {
+                setHexInput("");
+                onBgChange(null, -1);
+              }}
+              title="Transparent"
+              className={`aspect-square border ${
+                bg === null ? "border-foreground border-2" : "border-border"
+              } cursor-pointer`}
+              style={{
+                backgroundImage: CHECKER,
+                backgroundSize: "8px 8px",
+                backgroundPosition: "0 0, 0 4px, 4px -4px, -4px 0",
+              }}
+            />
+            {SWATCHES.map((color, i) => {
+              const isActive = bg === color;
+              return (
+                <button
+                  key={color}
+                  type="button"
+                  onClick={() => {
+                    setHexInput(color);
+                    onBgChange(color, i);
+                  }}
+                  title={color}
+                  className={`aspect-square border ${
+                    isActive ? "border-foreground border-2" : "border-border"
+                  } cursor-pointer`}
+                  style={{ backgroundColor: color }}
+                />
+              );
+            })}
+          </div>
+        </section>
 
         <section className="flex flex-col gap-3">
           <h3 className="text-xs uppercase tracking-wide text-muted-foreground">Palette</h3>
