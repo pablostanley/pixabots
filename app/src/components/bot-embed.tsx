@@ -4,18 +4,20 @@ import { useState } from "react";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import { SITE_URL } from "@/lib/constants";
 
-type TabKey = "url" | "html" | "markdown" | "react";
+type TabKey = "url" | "html" | "markdown" | "react" | "iframe";
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: "url", label: "URL" },
   { key: "html", label: "HTML" },
   { key: "markdown", label: "Markdown" },
   { key: "react", label: "React" },
+  { key: "iframe", label: "Iframe" },
 ];
 
 function snippetFor(kind: TabKey, id: string): string {
   const url = `${SITE_URL}/api/pixabot/${id}?size=240`;
   const animated = `${SITE_URL}/api/pixabot/${id}?size=240&animated=true`;
+  const embed = `${SITE_URL}/embed/${id}?size=240`;
   switch (kind) {
     case "url":
       return `${url}\n${animated}`;
@@ -37,6 +39,15 @@ function snippetFor(kind: TabKey, id: string): string {
   height={240}
   style={{ imageRendering: "pixelated" }}
 />`;
+    case "iframe":
+      return `<iframe
+  src="${embed}"
+  width="240"
+  height="240"
+  style="border:0; background:transparent"
+  title="pixabot ${id}"
+  loading="lazy"
+></iframe>`;
   }
 }
 

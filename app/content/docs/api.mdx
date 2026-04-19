@@ -197,6 +197,23 @@ const res = await fetch("https://pixabots.com/api/pixabot/2156?format=json");
 const { png, gif, parts } = await res.json();
 ```
 
+### iframe widget
+
+For contexts that don't allow raw `<img>` from cross-origin (or if you want a self-contained frame that respects reduced motion and a background param), use the embed widget:
+
+```html
+<iframe
+  src="https://pixabots.com/embed/2156?size=240&bg=0b0f14"
+  width="240"
+  height="240"
+  style="border:0; background:transparent"
+  title="pixabot 2156"
+  loading="lazy"
+></iframe>
+```
+
+Query params: `size` (integer 32–1920, default 240), `animated` (`false` to disable, default true), `bg` (hex without `#`).
+
 Always use `image-rendering: pixelated` in CSS so browsers don't antialias the pixel art.
 
 ## Caching

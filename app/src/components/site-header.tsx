@@ -14,6 +14,7 @@ export function SiteHeader() {
   const hide = scrolled && direction === "down";
   const [dark, toggleTheme] = useTheme();
   const sfx = useSfx();
+  if (pathname?.startsWith("/embed/")) return null;
 
   const navLink = (href: string, label: string, className?: string) => {
     const isActive = pathname === href;
