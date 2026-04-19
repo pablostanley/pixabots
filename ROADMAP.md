@@ -111,6 +111,7 @@
 - [x] Docs `/docs/shortcuts` — full keyboard reference page, linked from sidebar + command palette. (PR #89)
 - [x] Browse Reroll — re-rolls the visible grid without reload, respecting the active filter; scrolls to top. (PR #90)
 - [x] Favorites Clear all — confirm-guarded "Clear all" button; `useFavorites.clear()`. (PR #91)
+- [x] Browse "Compare top 6" — one-click link from the filtered grid to `/compare` with the six visible bots. (PR #92)
 
 ## Up Next
 
