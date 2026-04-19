@@ -70,12 +70,14 @@ export function BotEdgeNav({
   const preloadSrc = (target: string) =>
     `/api/pixabot/${target}?size=480&animated=true${palette ? `&${palette}` : ""}`;
 
+  // Invisible hit area is 56×56 (sm:64×64) for fat-finger tolerance; only
+  // the chevron glyph is drawn. No bg, no border, no backdrop — just the
+  // icon. Hover darkens the icon; press scales. Nothing else.
   const btn =
     "pointer-events-auto fixed top-1/2 -translate-y-1/2 z-[60] " +
-    "size-12 flex items-center justify-center text-foreground/70 hover:text-foreground " +
-    "bg-background/70 backdrop-blur border border-border hover:bg-muted " +
-    "transition-[transform,color,background-color] duration-150 ease-out " +
-    "active:scale-[0.97]";
+    "size-14 sm:size-16 flex items-center justify-center cursor-pointer " +
+    "text-foreground/50 hover:text-foreground " +
+    "transition-[transform,color] duration-150 ease-out active:scale-[0.92]";
 
   return (
     <>
@@ -88,7 +90,7 @@ export function BotEdgeNav({
         onClick={() => go(prev)}
         aria-label="Previous pixabot"
         data-tooltip="Previous (←)"
-        className={`${btn} left-2 sm:left-6`}
+        className={`${btn} left-0 sm:left-2`}
       >
         <PixelIcon name="chevron-right" className="size-5 rotate-180" />
       </button>
@@ -97,7 +99,7 @@ export function BotEdgeNav({
         onClick={() => go(next)}
         aria-label="Next pixabot"
         data-tooltip="Next (→)"
-        className={`${btn} right-2 sm:right-6`}
+        className={`${btn} right-0 sm:right-2`}
       >
         <PixelIcon name="chevron-right" className="size-5" />
       </button>
