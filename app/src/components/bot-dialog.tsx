@@ -37,8 +37,12 @@ export function BotDialog({ id }: { id: string }) {
       <DialogContent aria-describedby={undefined}>
         <DialogTitle className="sr-only">Pixabot {currentId}</DialogTitle>
         <BotDetail id={currentId} />
+        {/* Edge nav stays a DOM child of DialogContent (fixed position
+            takes it to the viewport edges visually). If it sat outside,
+            Radix would treat taps on the arrows as outside-pointer-down
+            and dismiss the dialog. */}
+        <BotEdgeNav id={currentId} onNavigate={setCurrentId} />
       </DialogContent>
-      <BotEdgeNav id={currentId} onNavigate={setCurrentId} />
     </Dialog>
   );
 }
