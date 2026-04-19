@@ -59,6 +59,7 @@ export function Inspector({
 }) {
   const active = hue !== 0 || saturate !== 1 || bg !== null;
   const [hexInput, setHexInput] = useState(bg ?? "");
+  const [tab, setTab] = useState<"bg" | "adj">("bg");
   const sfx = useSfx();
 
   const setBgColor = (color: string) => {
@@ -118,9 +119,35 @@ export function Inspector({
         </div>
       </div>
 
-      <div className="flex flex-col gap-7 overflow-y-auto px-4 pb-4 flex-1">
-      <section className="flex flex-col gap-3">
-        <h3 className="text-xs uppercase tracking-wide text-muted-foreground">Background</h3>
+      {/* Mobile tabs */}
+      <div role="tablist" aria-label="Inspector sections" className="lg:hidden flex gap-1 px-4 pb-3 border-b border-border">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tab === "bg"}
+          onClick={() => setTab("bg")}
+          className={`flex-1 px-3 py-1.5 text-sm border border-border transition-colors cursor-pointer ${
+            tab === "bg" ? "bg-muted text-foreground" : "bg-background text-muted-foreground"
+          }`}
+        >
+          Background
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tab === "adj"}
+          onClick={() => setTab("adj")}
+          className={`flex-1 px-3 py-1.5 text-sm border border-border transition-colors cursor-pointer ${
+            tab === "adj" ? "bg-muted text-foreground" : "bg-background text-muted-foreground"
+          }`}
+        >
+          Adjustments
+        </button>
+      </div>
+
+      <div className="flex flex-col gap-7 overflow-y-auto px-4 pb-4 pt-2 lg:pt-0 flex-1">
+      <section className={`flex-col gap-3 ${tab === "bg" ? "flex" : "hidden"} lg:flex`}>
+        <h3 className="text-xs uppercase tracking-wide text-muted-foreground hidden lg:block">Background</h3>
         <HexColorPicker
           color={bg ?? "#ffffff"}
           onChange={setBgColor}
@@ -192,8 +219,8 @@ export function Inspector({
         </div>
       </section>
 
-      <section className="flex flex-col gap-3">
-        <h3 className="text-xs uppercase tracking-wide text-muted-foreground">Adjustments</h3>
+      <section className={`flex-col gap-3 ${tab === "adj" ? "flex" : "hidden"} lg:flex`}>
+        <h3 className="text-xs uppercase tracking-wide text-muted-foreground hidden lg:block">Adjustments</h3>
         <label className="flex flex-col gap-1.5 text-xs text-muted-foreground">
           <div className="flex items-center justify-between">
             <span>Hue</span>
