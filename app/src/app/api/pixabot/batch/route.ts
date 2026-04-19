@@ -67,6 +67,21 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  // Forward palette into the per-bot URLs so consumers get recolored
+  // variants without having to append the params themselves.
+  const paletteParts: string[] = [];
+  const hueRaw = params.get("hue");
+  const satRaw = params.get("saturate");
+  if (hueRaw !== null) {
+    const n = Number(hueRaw);
+    if (Number.isFinite(n)) paletteParts.push(`hue=${((Math.round(n) % 360) + 360) % 360}`);
+  }
+  if (satRaw !== null) {
+    const n = Number(satRaw);
+    if (Number.isFinite(n)) paletteParts.push(`saturate=${Math.max(0, Math.min(4, n))}`);
+  }
+  const pal = paletteParts.length ? `&${paletteParts.join("&")}` : "";
+
   const origin = request.nextUrl.origin;
   const pixabots = ids.map((id) => {
     const combo = decode(id);
@@ -74,8 +89,8 @@ export async function GET(request: NextRequest) {
       id,
       combo,
       parts: resolve(combo),
-      png: `${origin}/api/pixabot/${id}?size=${size}`,
-      gif: `${origin}/api/pixabot/${id}?size=${size}&animated=true`,
+      png: `${origin}/api/pixabot/${id}?size=${size}${pal}`,
+      gif: `${origin}/api/pixabot/${id}?size=${size}&animated=true${pal}`,
     };
   });
 
