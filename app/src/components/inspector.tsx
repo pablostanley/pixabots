@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { HexColorPicker } from "react-colorful";
 import { PixelIcon } from "@/components/ui/pixel-icon";
+import { useSfx } from "@/lib/use-sfx";
 
 const SWATCHES: string[] = [
   "#ffffff",
@@ -47,11 +48,15 @@ export function Inspector({
 }) {
   const active = hue !== 0 || saturate !== 1 || bg !== null;
   const [hexInput, setHexInput] = useState(bg ?? "");
+  const sfx = useSfx();
 
   const setBgColor = (color: string) => {
     setHexInput(color);
     const n = normalizeHex(color);
-    if (n) onBgChange(n, -1);
+    if (n) {
+      onBgChange(n, -1);
+      sfx.playColor(n);
+    }
   };
 
   return (
@@ -170,7 +175,11 @@ export function Inspector({
             max={359}
             step={1}
             value={hue}
-            onChange={(e) => onHueChange(Number(e.target.value))}
+            onChange={(e) => {
+              const v = Number(e.target.value);
+              onHueChange(v);
+              sfx.playSlider(v / 359);
+            }}
             onDoubleClick={() => onHueChange(0)}
             aria-label="Hue rotation (0–359 degrees)"
             className="h-6 appearance-none bg-transparent cursor-pointer
@@ -192,7 +201,11 @@ export function Inspector({
             max={2}
             step={0.05}
             value={saturate}
-            onChange={(e) => onSaturateChange(Number(e.target.value))}
+            onChange={(e) => {
+              const v = Number(e.target.value);
+              onSaturateChange(v);
+              sfx.playSlider(v / 2);
+            }}
             onDoubleClick={() => onSaturateChange(1)}
             aria-label="Saturation multiplier (0 to 2)"
             className="h-6 appearance-none bg-transparent cursor-pointer

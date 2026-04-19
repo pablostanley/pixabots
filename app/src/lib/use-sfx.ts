@@ -165,6 +165,92 @@ function playEvent(ev: SfxEvent) {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Continuous sliders + Kaoss color picker (efecto-inspired)
+// ---------------------------------------------------------------------------
+
+function rawSynth(freq: number, opts: Omit<VoiceOpts, "wave" | "detune"> & {
+  wave?: OscillatorType;
+  detune?: number;
+} = {}) {
+  const a = getCtx();
+  if (!a) return;
+  const { wave = "sine", dur = 0.04, gain = 0.05, delay = 0, cutoff = 3000, detune = 0 } = opts;
+  const now = a.currentTime + delay;
+  const osc = a.createOscillator();
+  const amp = a.createGain();
+  const filter = a.createBiquadFilter();
+  filter.type = "lowpass";
+  filter.frequency.value = cutoff;
+  filter.Q.value = 0.7;
+  osc.type = wave;
+  osc.frequency.value = freq;
+  if (detune) osc.detune.value = detune;
+  osc.connect(filter);
+  filter.connect(amp);
+  amp.connect(a.destination);
+  amp.gain.setValueAtTime(0, now);
+  amp.gain.linearRampToValueAtTime(gain, now + 0.003);
+  amp.gain.exponentialRampToValueAtTime(0.0005, now + dur);
+  osc.start(now);
+  osc.stop(now + dur + 0.02);
+}
+
+// Throttle state for slider/color (module scope so calls share rate across mounts)
+const SLIDER_THROTTLE_MS = 45;
+const COLOR_THROTTLE_MS = 32;
+let lastSliderAt = 0;
+let lastColorAt = 0;
+
+function playSliderNote(t: number) {
+  const now = performance.now();
+  if (now - lastSliderAt < SLIDER_THROTTLE_MS) return;
+  lastSliderAt = now;
+  // Map 0–1 to C4 (262) → C6 (1047) logarithmically so equal slider distance
+  // = equal musical interval.
+  const clamped = Math.max(0, Math.min(1, t));
+  const freq = 262 * Math.pow(1047 / 262, clamped);
+  rawSynth(freq, { wave: "sine", dur: 0.05, gain: 0.05, cutoff: 2800 });
+}
+
+function hexToHsv(hex: string): { h: number; s: number; v: number } {
+  const m = /^#?([0-9a-fA-F]{6})$/.exec(hex.trim());
+  if (!m) return { h: 0, s: 0, v: 0 };
+  const n = parseInt(m[1], 16);
+  const r = ((n >> 16) & 0xff) / 255;
+  const g = ((n >> 8) & 0xff) / 255;
+  const b = (n & 0xff) / 255;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const d = max - min;
+  let h = 0;
+  if (d !== 0) {
+    if (max === r) h = ((g - b) / d + 6) % 6;
+    else if (max === g) h = (b - r) / d + 2;
+    else h = (r - g) / d + 4;
+    h *= 60;
+  }
+  return { h, s: max === 0 ? 0 : d / max, v: max };
+}
+
+function playColorNote(hex: string) {
+  const now = performance.now();
+  if (now - lastColorAt < COLOR_THROTTLE_MS) return;
+  lastColorAt = now;
+  const { h, s, v } = hexToHsv(hex);
+  // Hue (0–360) → continuous semitone on C chromatic octave. Wraps at red.
+  const semitone = (h / 360) * 12;
+  const baseFreq = 262 * Math.pow(2, semitone / 12);
+  // Value/brightness → octave factor 0.5 (dark) to 2 (bright).
+  const octave = 0.5 + v * 1.5;
+  // Saturation → volume. Greys whisper, vivid colors sing.
+  const gain = 0.01 + s * 0.07;
+  const freq = baseFreq * octave;
+  // Main tone + a softer 2× harmonic for that Kaoss-pad shimmer.
+  rawSynth(freq, { wave: "sine", dur: 0.035, gain, cutoff: 3200 });
+  rawSynth(freq * 2, { wave: "sine", dur: 0.025, gain: gain * 0.4, cutoff: 3200 });
+}
+
 export function useSfx() {
   const enabled = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
@@ -182,5 +268,15 @@ export function useSfx() {
     playEvent(ev);
   };
 
-  return { enabled, toggle, play };
+  const playSlider = (t: number) => {
+    if (!enabled) return;
+    playSliderNote(t);
+  };
+
+  const playColor = (hex: string) => {
+    if (!enabled) return;
+    playColorNote(hex);
+  };
+
+  return { enabled, toggle, play, playSlider, playColor };
 }
