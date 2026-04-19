@@ -69,13 +69,11 @@ async function detectFrames(dir, name) {
 
 async function stitchFrames(framePaths, outPath) {
   const n = framePaths.length;
-  const composites = await Promise.all(
-    framePaths.map(async (p, i) => ({
-      input: await sharp(p).ensureAlpha().png().toBuffer(),
-      left: i * FRAME_SIZE,
-      top: 0,
-    }))
-  );
+  const composites = framePaths.map((input, i) => ({
+    input,
+    left: i * FRAME_SIZE,
+    top: 0,
+  }));
   await sharp({
     create: {
       width: n * FRAME_SIZE,

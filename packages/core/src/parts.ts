@@ -47,12 +47,10 @@ type PartInput = string | { name: string; frames?: number; kind?: PartAnimKind }
 function makeParts(category: PartCategory, entries: PartInput[]): PartOption[] {
   return entries.map(entry => {
     const e = typeof entry === 'string' ? { name: entry } : entry
-    return {
-      name: e.name,
-      path: `${category}/${e.name}.png`,
-      ...(e.frames && e.frames > 1 ? { frames: e.frames } : {}),
-      ...(e.kind && e.kind !== 'static' ? { kind: e.kind } : {}),
-    }
+    const option: PartOption = { name: e.name, path: `${category}/${e.name}.png` }
+    if (e.frames !== undefined) option.frames = e.frames
+    if (e.kind !== undefined) option.kind = e.kind
+    return option
   })
 }
 
