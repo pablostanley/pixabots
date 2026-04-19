@@ -4,7 +4,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 
 const BTN =
-  "size-8 shrink-0 flex items-center justify-center border border-border hover:bg-muted transition-colors cursor-pointer";
+  "size-8 shrink-0 flex items-center justify-center border border-border hover:bg-muted transition-colors cursor-pointer disabled:pointer-events-none disabled:opacity-40";
 
 /**
  * Pair of controls for /bot/[id]: re-roll the palette, or clear it. Both
@@ -44,17 +44,16 @@ export function PaletteShuffleButton() {
       >
         <PixelIcon name="shuffle" className="size-4" />
       </button>
-      {active && (
-        <button
-          type="button"
-          onClick={reset}
-          aria-label="Clear palette"
-          data-tooltip="Clear palette"
-          className={BTN}
-        >
-          <span aria-hidden="true" className="text-sm leading-none">↺</span>
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={reset}
+        disabled={!active}
+        aria-label="Clear palette"
+        data-tooltip="Clear palette"
+        className={BTN}
+      >
+        <span aria-hidden="true" className="text-sm leading-none">↺</span>
+      </button>
     </div>
   );
 }
