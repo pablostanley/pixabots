@@ -83,6 +83,7 @@
 - [x] Palette API — `?hue` + `?saturate` for recoloring any pixabot via Sharp modulate. Works on PNG/GIF/WebP. (PR #61)
 - [x] Multi-frame sprite infra — `@pixabots/core` 0.2.0: `PartOption.frames` + `FRAME_INDICES`. Render extracts correct frame per-tick per-layer with safe frame-0 fallback. Ready for eye-blink / heads-wiggle / top-spin art. (PR #62)
 - [x] Creator hue slider — live `filter: hue-rotate` preview; baked into PNG download + URL params on PNG/GIF links. (PR #63)
+- [x] Usage patterns doc — `/docs/usage` with copy-ready recipes (README, webhooks, seeded avatars, wall, branded). (PR #64)
 
 ## Up Next
 
@@ -169,6 +170,5 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 - [ ] Accessories — new category layer (hats, items, etc.)
 - [ ] Animation variants — wave, jump, spin, etc. (infra shipped via multi-frame sprites; still needs artwork + scheduled `FRAME_INDICES`)
 - [ ] Social cards — `GET /api/pixabot/{id}/og` for Open Graph images with name/title
-- [ ] GitHub avatar integration — use as profile pic via URL
 - [ ] Rate limiting — protect the API from abuse (especially animated endpoint)
 - [ ] Analytics — track which pixabots are most popular, API usage stats
