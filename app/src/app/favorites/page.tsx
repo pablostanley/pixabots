@@ -1,12 +1,15 @@
 "use client";
 
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import Link from "next/link";
 import { useFavorites } from "@/lib/use-favorites";
 import { FavoriteButton } from "@/components/favorite-button";
 
 export default function FavoritesPage() {
   const { ids, exportJson, importJson, clear } = useFavorites();
+  // Insertion order is chronological (oldest first); reverse so the grid
+  // shows the most recently starred bot in the top-left.
+  const displayIds = useMemo(() => [...ids].reverse(), [ids]);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleExport = () => {
@@ -77,7 +80,7 @@ export default function FavoritesPage() {
           )}
           {ids.length >= 2 && (
             <Link
-              href={`/compare?ids=${ids.slice(0, 6).join(",")}`}
+              href={`/compare?ids=${displayIds.slice(0, 6).join(",")}`}
               className="px-3 py-1.5 border border-border hover:bg-muted transition-colors text-sm"
             >
               Compare
@@ -109,7 +112,7 @@ export default function FavoritesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
-          {ids.map((id) => (
+          {displayIds.map((id) => (
             <Link
               key={id}
               href={`/bot/${id}`}
