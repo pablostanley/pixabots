@@ -14,6 +14,7 @@ import {
   type PartCategory,
 } from "@pixabots/core";
 import { PixelIcon } from "@/components/ui/pixel-icon";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useKeydown } from "@/lib/use-keydown";
 import { useShareOrCopy } from "@/lib/use-share-or-copy";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
@@ -96,6 +97,146 @@ function matchCount(filters: Filters): number {
   return total;
 }
 
+function CategoryDropdown({
+  cat,
+  filters,
+  onChange,
+}: {
+  cat: PartCategory;
+  filters: Filters;
+  onChange: (cat: PartCategory, value: string | null) => void;
+}) {
+  const selectedIdx = filters[cat];
+  const label = cat === "eyes" ? "face" : cat;
+  const selectedName = selectedIdx !== undefined ? PARTS[cat][selectedIdx].name : null;
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          className={`px-2 py-1 border transition-colors cursor-pointer ${
+            selectedName
+              ? "border-foreground bg-foreground/10"
+              : "border-border hover:bg-muted text-muted-foreground"
+          }`}
+        >
+          {label}
+          {selectedName ? `: ${selectedName}` : ""}
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="max-h-64 overflow-y-auto">
+        <DropdownMenuItem onClick={() => onChange(cat, null)} className="text-sm font-medium">
+          Any {label}
+        </DropdownMenuItem>
+        {PARTS[cat].map((p) => (
+          <DropdownMenuItem
+            key={p.name}
+            onClick={() => onChange(cat, p.name)}
+            className={`text-sm ${p.name === selectedName ? "bg-accent" : ""}`}
+          >
+            {p.name}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+/** Mobile-only: "Filter" button + bottom sheet with a flat list per category. */
+function MobileFilterSheet({
+  filters,
+  onChange,
+}: {
+  filters: Filters;
+  onChange: (cat: PartCategory, value: string | null) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const activeCount = Object.keys(filters).length;
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className={`sm:hidden flex items-center gap-1.5 px-2 py-1 border transition-colors cursor-pointer ${
+          activeCount > 0
+            ? "border-foreground bg-foreground/10 text-foreground"
+            : "border-border hover:bg-muted text-muted-foreground"
+        }`}
+      >
+        Filter
+        {activeCount > 0 && (
+          <span className="font-mono text-xs tabular-nums">{activeCount}</span>
+        )}
+      </button>
+      <DialogContent aria-describedby={undefined} className="sm:hidden">
+        <DialogTitle className="text-sm uppercase tracking-wide text-muted-foreground">Filter</DialogTitle>
+        <div className="flex flex-col gap-5 mt-3">
+          {CATEGORY_ORDER.map((cat) => {
+            const label = cat === "eyes" ? "face" : cat;
+            const selectedIdx = filters[cat];
+            const selectedName = selectedIdx !== undefined ? PARTS[cat][selectedIdx].name : null;
+            return (
+              <div key={cat} className="flex flex-col gap-1.5">
+                <div className="flex items-baseline justify-between text-xs uppercase tracking-wide text-muted-foreground">
+                  <span>{label}</span>
+                  {selectedName && (
+                    <button
+                      type="button"
+                      onClick={() => onChange(cat, null)}
+                      className="text-[10px] hover:text-foreground transition-colors cursor-pointer"
+                    >
+                      clear
+                    </button>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {PARTS[cat].map((p) => {
+                    const active = p.name === selectedName;
+                    return (
+                      <button
+                        key={p.name}
+                        type="button"
+                        onClick={() => onChange(cat, active ? null : p.name)}
+                        className={`px-2 py-1 border text-xs transition-colors cursor-pointer ${
+                          active
+                            ? "border-foreground bg-foreground/10 text-foreground"
+                            : "border-border hover:bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        {p.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <div className="flex items-center gap-2 mt-5">
+          {activeCount > 0 && (
+            <button
+              type="button"
+              onClick={() => {
+                for (const cat of CATEGORY_ORDER) onChange(cat, null);
+              }}
+              className="flex-1 h-10 border border-border hover:bg-muted transition-colors text-sm cursor-pointer"
+            >
+              Clear all
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            className="flex-1 h-10 border border-foreground bg-foreground text-background text-sm cursor-pointer"
+          >
+            Show bots
+          </button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function FilterBar({
   filters,
   onChange,
@@ -111,46 +252,16 @@ function FilterBar({
   const count = active ? matchCount(filters) : totalCombinations();
   return (
     <div className="flex flex-wrap items-center gap-2 mb-3 sm:mb-4 px-2 text-sm">
-      <span className="text-muted-foreground mr-1">Filter</span>
+      <span className="text-muted-foreground mr-1 hidden sm:inline">Filter</span>
       <span className="font-mono text-xs text-muted-foreground mr-1" aria-live="polite">
         {count.toLocaleString()} {count === 1 ? "bot" : "bots"}
       </span>
-      {CATEGORY_ORDER.map((cat) => {
-        const selectedIdx = filters[cat];
-        const label = cat === "eyes" ? "face" : cat;
-        const selectedName = selectedIdx !== undefined ? PARTS[cat][selectedIdx].name : null;
-        return (
-          <DropdownMenu key={cat}>
-            <DropdownMenuTrigger asChild>
-              <button
-                type="button"
-                className={`px-2 py-1 border transition-colors cursor-pointer ${
-                  selectedName
-                    ? "border-foreground bg-foreground/10"
-                    : "border-border hover:bg-muted text-muted-foreground"
-                }`}
-              >
-                {label}
-                {selectedName ? `: ${selectedName}` : ""}
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="max-h-64 overflow-y-auto">
-              <DropdownMenuItem onClick={() => onChange(cat, null)} className="text-sm font-medium">
-                Any {label}
-              </DropdownMenuItem>
-              {PARTS[cat].map((p) => (
-                <DropdownMenuItem
-                  key={p.name}
-                  onClick={() => onChange(cat, p.name)}
-                  className={`text-sm ${p.name === selectedName ? "bg-accent" : ""}`}
-                >
-                  {p.name}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        );
-      })}
+      <MobileFilterSheet filters={filters} onChange={onChange} />
+      <div className="hidden sm:flex items-center gap-2 flex-wrap">
+        {CATEGORY_ORDER.map((cat) => (
+          <CategoryDropdown key={cat} cat={cat} filters={filters} onChange={onChange} />
+        ))}
+      </div>
       {compareHref && (
         <Link
           href={compareHref}
