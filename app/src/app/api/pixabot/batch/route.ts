@@ -7,6 +7,7 @@ import {
   INVALID_SIZE_MESSAGE,
   DEFAULT_SIZE,
 } from "@/lib/api";
+import { normalizeHex } from "@/lib/palette";
 
 export const OPTIONS = optionsResponse;
 
@@ -67,11 +68,12 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Forward palette into the per-bot URLs so consumers get recolored
+  // Forward palette + bg into the per-bot URLs so consumers get recolored
   // variants without having to append the params themselves.
   const paletteParts: string[] = [];
   const hueRaw = params.get("hue");
   const satRaw = params.get("saturate");
+  const bgRaw = params.get("bg");
   if (hueRaw !== null) {
     const n = Number(hueRaw);
     if (Number.isFinite(n)) paletteParts.push(`hue=${((Math.round(n) % 360) + 360) % 360}`);
@@ -79,6 +81,10 @@ export async function GET(request: NextRequest) {
   if (satRaw !== null) {
     const n = Number(satRaw);
     if (Number.isFinite(n)) paletteParts.push(`saturate=${Math.max(0, Math.min(4, n))}`);
+  }
+  if (bgRaw !== null) {
+    const bg = normalizeHex(bgRaw);
+    if (bg) paletteParts.push(`bg=${encodeURIComponent(bg)}`);
   }
   const pal = paletteParts.length ? `&${paletteParts.join("&")}` : "";
 
