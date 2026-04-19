@@ -104,7 +104,7 @@ export function Inspector({
               aria-label="Reset effects"
               className="size-7 flex items-center justify-center border border-border hover:bg-muted transition-colors cursor-pointer"
             >
-              <span aria-hidden="true" className="text-sm">×</span>
+              <span aria-hidden="true" className="text-sm leading-none">↺</span>
             </button>
           )}
           <button
@@ -114,7 +114,7 @@ export function Inspector({
             aria-label="Close inspector"
             className="size-7 flex items-center justify-center border border-border hover:bg-muted transition-colors cursor-pointer ml-1"
           >
-            <PixelIcon name="chevron-right" className="size-3.5" />
+            <span aria-hidden="true" className="text-sm leading-none">×</span>
           </button>
         </div>
       </div>
