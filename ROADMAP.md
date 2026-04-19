@@ -80,6 +80,8 @@
 - [x] `@pixabots/react` package — new workspace package exporting `<Pixabot>` component with full prop API. Built, not yet published. (PR #58)
 - [x] BgPicker popover — single swatch next to part selectors opens a popover with HSL picker, hex input, and preset swatches. react-colorful dep. (PR #59)
 - [x] `pixabots` CLI — new workspace package; ANSI truecolor terminal render, --info, --save, --json. (PR #60)
+- [x] Palette API — `?hue` + `?saturate` for recoloring any pixabot via Sharp modulate. Works on PNG/GIF/WebP. (PR #61)
+- [x] Multi-frame sprite infra — `@pixabots/core` 0.2.0: `PartOption.frames` + `FRAME_INDICES`. Render extracts correct frame per-tick per-layer with safe frame-0 fallback. Ready for eye-blink / heads-wiggle / top-spin art. (PR #62)
 
 ## Up Next
 
@@ -163,9 +165,8 @@ Shipped: navigation (Home, Browse, Docs, API, SDK, Parts, Random), jump-by-ID (v
 ## Ideas
 
 - [ ] More parts — new variations for each category. Append-only to keep IDs stable.
-- [ ] Color/palette system — tint or recolor layers (expand beyond 9,856 combos)
 - [ ] Accessories — new category layer (hats, items, etc.)
-- [ ] Animation variants — wave, jump, spin, etc.
+- [ ] Animation variants — wave, jump, spin, etc. (infra shipped via multi-frame sprites; still needs artwork + scheduled `FRAME_INDICES`)
 - [ ] Social cards — `GET /api/pixabot/{id}/og` for Open Graph images with name/title
 - [ ] GitHub avatar integration — use as profile pic via URL
 - [ ] Rate limiting — protect the API from abuse (especially animated endpoint)
