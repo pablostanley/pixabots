@@ -190,7 +190,20 @@ export function Creator({
     window.history.replaceState(null, "", `/?${qs.toString()}`);
   }
 
-  function updateSelection(next: Record<PartCategory, number>) {
+  // Ring buffer of previous combos for U undo. Capped at HISTORY_MAX.
+  const historyRef = useRef<Record<PartCategory, number>[]>([]);
+  const HISTORY_MAX = 20;
+
+  function updateSelection(
+    next: Record<PartCategory, number>,
+    opts: { fromUndo?: boolean } = {}
+  ) {
+    // Only push the *previous* combo when the change is user-initiated, not
+    // a replay from undo itself (otherwise the stack would grow endlessly).
+    if (!opts.fromUndo) {
+      historyRef.current.push(selRef.current);
+      if (historyRef.current.length > HISTORY_MAX) historyRef.current.shift();
+    }
     selRef.current = next;
     setSelection(next);
     loadAndDraw(next);
@@ -204,6 +217,13 @@ export function Creator({
       el.classList.add("part-pulse");
     }
   }
+
+  const undo = () => {
+    const prev = historyRef.current.pop();
+    if (!prev) return;
+    updateSelection(prev, { fromUndo: true });
+    sfx.play({ kind: "cycle", category: "eyes", index: 0 });
+  };
 
   const cycle = (category: PartCategory) => {
     const prev = selRef.current;
@@ -393,6 +413,10 @@ export function Creator({
       case "f":
         e.preventDefault();
         setInspectorOpen((o) => !o);
+        break;
+      case "u":
+        e.preventDefault();
+        undo();
         break;
       case "ArrowRight":
         e.preventDefault();

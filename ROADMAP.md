@@ -104,6 +104,7 @@
 - [x] Creator JSON download — "JSON (metadata)" option alongside SVG in the Download dropdown + right-click submenu. (PR #82)
 - [x] `/random` page — 302 to a fresh `/bot/{id}`; forwards `hue`/`saturate`; `force-dynamic` so Next never bakes the target. (PR #83)
 - [x] Favorites export / import — versioned JSON envelope; Import + Export buttons on the favorites page; dedupe-preserving merge. (PR #84)
+- [x] BotEmbed OG-card tab — `/bot/[id]` embed block surfaces the OG image URL (`/api/og?type=single`) as a sixth snippet. (PR #85)
 
 ## Up Next
 
