@@ -155,6 +155,8 @@ When reviewing code, use the Before/After markdown table format from the skill. 
 - [x] `bg` rollout — threaded through `/random`, `/api/pixabot/batch`, `/bot/[id]`, `/compare`, `/embed`, `@pixabots/react@0.3.0` (published), and the `pixabots` CLI v0.3.0 (code merged, publish blocked on NPM_TOKEN scope). PRs #144, #145, #146, #147, #148, #149.
 - [x] Package rename — `app/package.json` is now `pixabots-app` (private) so the CLI's `pixabots` name is unambiguous. publish-cli.yml uses `./packages/cli` path filter. (PR #150)
 - [x] React auto-publish — `.github/workflows/publish-react.yml` triggers on `react-v*` tags; same NPM_TOKEN as core. (PR #148)
+- [x] `/docs/react` page — install, full prop table, seeded-avatar and themed-row examples, self-hosted origin note. Homepage doc links to it. (PR #152)
+- [x] OG social card `bg` — `/api/og?bg=…` (single / compare / grid), threaded through all `generateMetadata` sites so shared links unfurl with the page's bg color. (PR #153)
 
 ## Up Next
 
@@ -261,7 +263,7 @@ Ship Phase 1 first. Phase 2 and 3 only if someone actually asks.
 ## Blocked
 
 - [ ] **CLI npm publish** — `packages/cli` (`pixabots`) is ready to ship at v0.3.0 with the new `--bg` flag, but `NPM_TOKEN` is granular-scoped to `@pixabots/*` and rejects writes to the unscoped `pixabots` name (E403 on first `cli-v0.3.0` tag). Unblock: expand the token's package allow-list at npmjs.com → Account → Access Tokens to include `pixabots`, then push a fresh `cli-v0.3.0` tag.
-- [ ] **OG image `bg` support** — Low-priority cosmetic. The single-bot OG card (`/api/og?type=single&id=…`) currently renders on the card's own dark background. Could add `?bg=` to flatten the pixabot onto a custom color inside the card. Not requested.
+- [x] **OG image `bg` support** — Shipped (PR #153). Card background now matches `?bg=`; applies to single / compare / grid layouts.
 
 ## Bugs
 
