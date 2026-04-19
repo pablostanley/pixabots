@@ -23,6 +23,7 @@ import { Pixabot } from "@pixabots/react";
 <Pixabot id="random" size={128} />
 <Pixabot id="2156" format="svg" />
 <Pixabot id="2156" webp />
+<Pixabot id="2156" hue={200} saturate={0.8} />
 ```
 
 All `<img>` attributes pass through (`className`, `style`, `onClick`, etc). `image-rendering: pixelated` is applied automatically.
@@ -37,6 +38,8 @@ All `<img>` attributes pass through (`className`, `style`, `onClick`, etc). `ima
 | `speed` | `number` | `1` | 0.25–4 multiplier. Only with `animated`. |
 | `format` | `"svg"` | — | Vector output instead of raster. |
 | `webp` | `boolean` | `false` | With `animated`, use animated WebP (smaller, alpha). |
+| `hue` | `number` | — | Hue rotation in degrees (0–359). |
+| `saturate` | `number` | `1` | Saturation multiplier (0–4). 0 = greyscale. |
 | `origin` | `string` | `https://pixabots.com` | Override API host. |
 
 ## License

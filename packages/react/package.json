@@ -1,6 +1,6 @@
 {
   "name": "@pixabots/react",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "React component for Pixabots — drop <Pixabot id=\"xxxx\" /> anywhere",
   "license": "MIT",
   "author": "Pablo Stanley (https://pablostanley.substack.com)",
