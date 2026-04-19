@@ -12,6 +12,14 @@ export function isTypingTarget(target: EventTarget | null): boolean {
 }
 
 /**
+ * True when the key event carries a command / ctrl / alt modifier —
+ * i.e. it's probably a browser or OS shortcut we shouldn't hijack.
+ */
+export function hasModifier(e: KeyboardEvent): boolean {
+  return e.metaKey || e.ctrlKey || e.altKey;
+}
+
+/**
  * Subscribe to window keydown events without useEffect.
  * Uses useSyncExternalStore — React's blessed pattern for external
  * subscriptions with proper mount/unmount lifecycle.

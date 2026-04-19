@@ -4,6 +4,7 @@ import { useState } from "react";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import { SITE_URL } from "@/lib/constants";
 import { withPalette } from "@/lib/palette";
+import { POP_IN } from "@/lib/motion";
 
 type TabKey = "url" | "html" | "markdown" | "react" | "iframe" | "og";
 
@@ -118,7 +119,7 @@ export function BotEmbed({
           <PixelIcon
             key={copied ? "c" : "i"}
             name={copied ? "check" : "copy"}
-            className={`size-4 ${copied ? "animate-in zoom-in-95 fade-in-0 duration-150 ease-out" : ""}`}
+            className={`size-4 ${copied ? "${POP_IN}" : ""}`}
           />
         </button>
       </div>

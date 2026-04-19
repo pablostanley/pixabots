@@ -2,6 +2,7 @@
 
 import { useShareOrCopy } from "@/lib/use-share-or-copy";
 import { PixelIcon } from "@/components/ui/pixel-icon";
+import { POP_IN } from "@/lib/motion";
 
 /**
  * Share the current bot URL. Native share sheet on mobile (via
@@ -31,7 +32,7 @@ export function BotShareButton({ id }: { id: string }) {
       <PixelIcon
         key={copied ? "copied" : "idle"}
         name={copied ? "check" : "copy"}
-        className={`size-4 ${copied ? "animate-in zoom-in-95 fade-in-0 duration-150 ease-out" : ""}`}
+        className={`size-4 ${copied ? "${POP_IN}" : ""}`}
       />
     </button>
   );

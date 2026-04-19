@@ -15,11 +15,12 @@ import {
 } from "@pixabots/core";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { isTypingTarget, useKeydown } from "@/lib/use-keydown";
+import { hasModifier, isTypingTarget, useKeydown } from "@/lib/use-keydown";
 import { useShareOrCopy } from "@/lib/use-share-or-copy";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 import { setBrowseOrder } from "@/lib/browse-order";
 import { useSfx } from "@/lib/use-sfx";
+import { POP_IN } from "@/lib/motion";
 import { FavoriteButton } from "@/components/favorite-button";
 import {
   DropdownMenu,
@@ -387,7 +388,7 @@ function BotCard({ bot }: { bot: BotCell }) {
           <PixelIcon
             key={copied ? "copied" : "idle"}
             name={copied ? "check" : "copy"}
-            className={`size-3 ${copied ? "animate-in zoom-in-95 fade-in-0 duration-150 ease-out" : ""}`}
+            className={`size-3 ${copied ? "${POP_IN}" : ""}`}
           />
         </button>
         <button onClick={onDownload} className="size-6 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" data-tooltip="Download" aria-label="Download">
@@ -404,7 +405,7 @@ function BotCard({ bot }: { bot: BotCell }) {
             <PixelIcon
               key={copied ? "copied" : "idle"}
               name={copied ? "check" : "copy"}
-              className={`size-3.5 ${copied ? "animate-in zoom-in-95 fade-in-0 duration-150 ease-out" : ""}`}
+              className={`size-3.5 ${copied ? "${POP_IN}" : ""}`}
             />
           </button>
           <button onClick={onDownload} className="size-7 shrink-0 flex items-center justify-center border border-border bg-card hover:bg-muted transition-colors cursor-pointer" data-tooltip="Download" aria-label="Download">
@@ -486,7 +487,7 @@ function BrowseInner({ filters }: { filters: Filters }) {
     useCallback(
       (e: KeyboardEvent) => {
         if (isTypingTarget(e.target)) return;
-        if (e.metaKey || e.ctrlKey || e.altKey) return;
+        if (hasModifier(e)) return;
         if (e.key === "Escape" && Object.keys(filters).length > 0) {
           e.preventDefault();
           clearFilters();
