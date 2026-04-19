@@ -381,6 +381,10 @@ export function Creator({
         e.preventDefault();
         setDownloadOpen((o) => !o);
         break;
+      case "f":
+        e.preventDefault();
+        setInspectorOpen((o) => !o);
+        break;
       case "ArrowRight":
         e.preventDefault();
         cycle(layerOrder[0]);
