@@ -188,18 +188,18 @@
   --fd-sidebar-background: var(--background);
 }
 
-[data-docs] {
+#nd-docs-layout {
   font-family: var(--font-pixel), ui-monospace, monospace;
 }
 
-[data-docs] *,
-[data-docs] *::before,
-[data-docs] *::after {
+#nd-docs-layout *,
+#nd-docs-layout *::before,
+#nd-docs-layout *::after {
   border-radius: 0 !important;
 }
 
-[data-docs] [data-sidebar],
-[data-docs] .bg-fd-card {
+#nd-docs-layout [data-sidebar],
+#nd-docs-layout .bg-fd-card {
   overflow: visible;
   background: transparent !important;
 }
