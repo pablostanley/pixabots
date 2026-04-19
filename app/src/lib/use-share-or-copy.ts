@@ -1,14 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 type ShareData = { url: string; title?: string; text?: string };
 
 export function useShareOrCopy(resetMs = 1500) {
   const [copied, setCopied] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
-
-  useEffect(() => () => clearTimeout(timerRef.current), []);
+  // No unmount cleanup: React 19 silently drops setState on unmounted
+  // components, and the pending timer holds only its own closure — which
+  // is garbage-collected once it fires.
 
   const share = useCallback(
     async (data: ShareData) => {
