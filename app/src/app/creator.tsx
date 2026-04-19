@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
-import { useKeydown } from "@/lib/use-keydown";
+import { isTypingTarget, useKeydown } from "@/lib/use-keydown";
 import { usePaste, parsePastedId } from "@/lib/use-paste";
 import { parts, layerOrder, layerLabel, type PartCategory } from "@/lib/parts";
 import { encode, decode, isValidId, randomCombo, resolve, ANIM_FRAMES, FRAME_MS, type AnimFrame } from "@pixabots/core";
@@ -397,7 +397,7 @@ export function Creator({
 
   // Empty deps is safe — cycle/shuffle/toggleAnimation all use refs internally
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+    if (isTypingTarget(e.target)) return;
 
     // Track Konami sequence in parallel with normal shortcuts
     const seq = konamiRef.current;

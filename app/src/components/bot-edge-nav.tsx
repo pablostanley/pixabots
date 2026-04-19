@@ -3,7 +3,7 @@
 import { useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { PixelIcon } from "@/components/ui/pixel-icon";
-import { useKeydown } from "@/lib/use-keydown";
+import { isTypingTarget, useKeydown } from "@/lib/use-keydown";
 import { nextId, prevId, comboToIndex } from "@/lib/bot-nav";
 import { neighborInOrder, useBrowseOrder } from "@/lib/browse-order";
 import { botHref } from "@/lib/bot-href";
@@ -59,7 +59,7 @@ export function BotEdgeNav({
   useKeydown(
     useCallback(
       (e: KeyboardEvent) => {
-        if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+        if (isTypingTarget(e.target)) return;
         if (e.metaKey || e.ctrlKey || e.altKey) return;
         if (e.key === "ArrowLeft") {
           e.preventDefault();
