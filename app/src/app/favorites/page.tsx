@@ -6,7 +6,7 @@ import { useFavorites } from "@/lib/use-favorites";
 import { FavoriteButton } from "@/components/favorite-button";
 
 export default function FavoritesPage() {
-  const { ids, exportJson, importJson } = useFavorites();
+  const { ids, exportJson, importJson, clear } = useFavorites();
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleExport = () => {
@@ -60,6 +60,19 @@ export default function FavoritesPage() {
               className="px-3 py-1.5 border border-border hover:bg-muted transition-colors text-sm cursor-pointer"
             >
               Export
+            </button>
+          )}
+          {ids.length > 0 && (
+            <button
+              type="button"
+              onClick={() => {
+                if (confirm(`Remove all ${ids.length} favorite${ids.length === 1 ? "" : "s"}? This cannot be undone.`)) {
+                  clear();
+                }
+              }}
+              className="px-3 py-1.5 border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors text-sm cursor-pointer"
+            >
+              Clear all
             </button>
           )}
           {ids.length >= 2 && (

@@ -109,6 +109,7 @@
 - [x] Footer `/random` "surprise me" link — tiny discovery nudge surfacing PR #83. (PR #87)
 - [x] Creator redo — `Shift+U` replays the last undone combo; new user action clears redo history. (PR #88)
 - [x] Docs `/docs/shortcuts` — full keyboard reference page, linked from sidebar + command palette. (PR #89)
+- [x] Browse Reroll — re-rolls the visible grid without reload, respecting the active filter; scrolls to top. (PR #90)
 
 ## Up Next
 
