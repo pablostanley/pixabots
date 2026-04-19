@@ -16,6 +16,12 @@ import {
   MIN_SPEED,
   MAX_SPEED,
 } from "@/lib/api";
+import { checkRate, clientKey } from "@/lib/rate-limit";
+
+// Per-IP rate limit for animated renders (GIF / WebP are 5–50× costlier
+// than PNG). Limits per minute per lambda instance.
+const ANIMATED_LIMIT = 30;
+const ANIMATED_WINDOW_MS = 60_000;
 
 export const OPTIONS = optionsResponse;
 
@@ -111,6 +117,22 @@ export async function GET(
       });
     }
     if (animated) {
+      const rate = checkRate(`animated:${clientKey(request)}`, ANIMATED_LIMIT, ANIMATED_WINDOW_MS);
+      if (!rate.allowed) {
+        return Response.json(
+          { error: `Rate limit exceeded. Try again in ${rate.resetSeconds}s.` },
+          {
+            status: 429,
+            headers: {
+              ...CORS_HEADERS,
+              "Retry-After": String(rate.resetSeconds),
+              "X-RateLimit-Limit": String(rate.limit),
+              "X-RateLimit-Remaining": "0",
+              "X-RateLimit-Reset": String(Math.floor(Date.now() / 1000) + rate.resetSeconds),
+            },
+          }
+        );
+      }
       const wantsWebp = request.nextUrl.searchParams.get("webp") === "true";
       const outFormat = wantsWebp ? "webp" : "gif";
       const buf = await renderAnimatedPixabot(combo, size, speed, outFormat, palette);

@@ -256,6 +256,28 @@ Access-Control-Allow-Headers: Content-Type
 
 Works from any origin, including `file://` for local prototyping.
 
+## Rate limiting
+
+Expensive endpoints (animated GIF/WebP + OG image rendering) have a best-effort per-IP rate limit:
+
+| Path | Limit |
+|------|-------|
+| `/api/pixabot/{id}?animated=true` | 30 requests / minute |
+| `/api/og` | 20 requests / minute |
+
+Static PNG (`/api/pixabot/{id}`), SVG (`?format=svg`), JSON metadata, and `/batch` are not rate-limited — those are cheap and immutably cached at the CDN, so repeat hits never reach the origin.
+
+On exceed, the API returns `429 Too Many Requests` with:
+
+```
+Retry-After: 42
+X-RateLimit-Limit: 30
+X-RateLimit-Remaining: 0
+X-RateLimit-Reset: 1713478200
+```
+
+The limit is per-IP per-lambda-instance, in-memory. It's not a hard guarantee — cold starts reset the counter and multiple Vercel instances have independent counters. Think of it as a guardrail, not a firewall.
+
 ## OpenAPI Spec
 
 Full spec at [`/openapi.json`](https://pixabots.com/openapi.json).
