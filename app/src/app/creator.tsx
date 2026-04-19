@@ -86,6 +86,9 @@ export function Creator({ initialId }: { initialId: string | null }) {
   const [bg, setBg] = useState<string | null>(null);
   const bgRef = useRef<string | null>(null);
   bgRef.current = bg;
+  const [hue, setHue] = useState(0);
+  const hueRef = useRef(0);
+  hueRef.current = hue;
   const [locks, setLocks] = useState<Record<PartCategory, boolean>>({
     eyes: false,
     heads: false,
@@ -244,6 +247,10 @@ export function Creator({ initialId }: { initialId: string | null }) {
       ctx.fillRect(0, 0, size, size);
     }
     ctx.imageSmoothingEnabled = false;
+    if (hueRef.current !== 0) {
+      // Canvas filter applies to subsequent drawImage calls. Alpha preserved.
+      ctx.filter = `hue-rotate(${hueRef.current}deg)`;
+    }
     for (const category of layerOrder) {
       const img = imagesRef.current[category];
       if (img) ctx.drawImage(img, 0, 0, size, size);
@@ -365,7 +372,7 @@ export function Creator({ initialId }: { initialId: string | null }) {
               width={DISPLAY}
               height={DISPLAY}
               className="block w-full h-auto"
-              style={{ imageRendering: "pixelated" }}
+              style={{ imageRendering: "pixelated", filter: hue !== 0 ? `hue-rotate(${hue}deg)` : undefined }}
             />
           </div>
         </ContextMenuTrigger>
@@ -429,6 +436,28 @@ export function Creator({ initialId }: { initialId: string | null }) {
         </div>
       </div>
 
+      {/* Hue slider */}
+      <div className="w-full max-w-[504px] flex items-center gap-3 text-xs text-muted-foreground">
+        <span>Hue</span>
+        <input
+          type="range"
+          min={0}
+          max={359}
+          step={1}
+          value={hue}
+          onChange={(e) => setHue(Number(e.target.value))}
+          onDoubleClick={() => setHue(0)}
+          aria-label="Hue rotation (0–359 degrees)"
+          className="flex-1 h-6 appearance-none bg-transparent cursor-pointer
+            [&::-webkit-slider-runnable-track]:h-4 [&::-webkit-slider-runnable-track]:border [&::-webkit-slider-runnable-track]:border-border
+            [&::-webkit-slider-runnable-track]:bg-[linear-gradient(to_right,#ff0000_0%,#ffff00_17%,#00ff00_33%,#00ffff_50%,#0000ff_67%,#ff00ff_83%,#ff0000_100%)]
+            [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:bg-foreground [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-background [&::-webkit-slider-thumb]:-mt-0
+            [&::-moz-range-track]:h-4 [&::-moz-range-track]:border [&::-moz-range-track]:border-border
+            [&::-moz-range-thumb]:size-4 [&::-moz-range-thumb]:bg-foreground [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-background [&::-moz-range-thumb]:rounded-none"
+        />
+        <span className="font-mono w-10 text-right">{hue}°</span>
+      </div>
+
       {/* ID bar */}
       <div className="border border-border px-3 py-2 sm:px-4 sm:py-3 flex flex-wrap items-center gap-2 text-sm w-full max-w-[504px]">
         <span className="font-mono text-foreground">{pixabotId}</span>
@@ -446,10 +475,10 @@ export function Creator({ initialId }: { initialId: string | null }) {
           </span>
         </button>
         <div className="flex items-center gap-2 ml-auto">
-          <a href={apiUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+          <a href={`${apiUrl}${hue !== 0 ? `?hue=${hue}` : ""}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
             PNG
           </a>
-          <a href={`${apiUrl}?animated=true`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+          <a href={`${apiUrl}?animated=true${hue !== 0 ? `&hue=${hue}` : ""}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
             GIF
           </a>
           <a href={`${apiUrl}?format=json`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
