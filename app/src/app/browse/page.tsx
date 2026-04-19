@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback, useMemo, Suspense } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo, useSyncExternalStore, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
@@ -27,6 +27,18 @@ import {
 const BATCH_SIZE = 60;
 const FEATURED_EVERY = 8;
 const MAX_BOTS = 600;
+const DEEP_SCROLL_PX = 800;
+
+function subscribeScroll(cb: () => void) {
+  window.addEventListener("scroll", cb, { passive: true });
+  return () => window.removeEventListener("scroll", cb);
+}
+function isDeep(): boolean {
+  return window.scrollY > DEEP_SCROLL_PX;
+}
+function isDeepSsr(): boolean {
+  return false;
+}
 
 interface BotCell {
   id: string;
@@ -352,6 +364,8 @@ function BrowseInner() {
   const compareHref =
     bots.length >= 2 ? `/compare?ids=${bots.slice(0, 6).map((b) => b.id).join(",")}` : null;
 
+  const deepScrolled = useSyncExternalStore(subscribeScroll, isDeep, isDeepSsr);
+
   return (
     <main className="flex-1 p-2 sm:p-4">
       <FilterBar filters={filters} onChange={setFilter} onReroll={reroll} compareHref={compareHref} />
@@ -361,6 +375,17 @@ function BrowseInner() {
         ))}
       </div>
       <div ref={sentinelRef} className="h-1" />
+      {deepScrolled && (
+        <button
+          type="button"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          aria-label="Scroll to top"
+          data-tooltip="Scroll to top"
+          className="fixed bottom-4 right-4 z-30 size-10 flex items-center justify-center border border-border bg-background/90 backdrop-blur hover:bg-muted transition-colors cursor-pointer motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-bottom-2 motion-safe:duration-200"
+        >
+          <span aria-hidden="true" className="text-lg leading-none">↑</span>
+        </button>
+      )}
     </main>
   );
 }

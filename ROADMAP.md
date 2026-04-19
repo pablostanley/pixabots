@@ -120,6 +120,7 @@
 - [x] Global `M` — SiteHeader listens for `M` to toggle SFX from anywhere; shortcuts overlay + docs reflect it. (PR #98)
 - [x] Global `T` — SiteHeader's theme button gets a matching keyboard shortcut. (PR #99)
 - [x] Creator `R` — randomizes palette + background (pairs with `Space` = shuffle parts). (PR #100)
+- [x] BotDetail click-to-copy ID — big 4-char pixabot ID is now a button; copies to clipboard with "copied" feedback. (PR #101)
 
 ## Up Next
 
