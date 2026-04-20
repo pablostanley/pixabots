@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
-import { isTypingTarget, useKeydown } from "@/lib/use-keydown";
+import { hasModifier, isTypingTarget, useKeydown } from "@/lib/use-keydown";
 import { usePaste, parsePastedId } from "@/lib/use-paste";
 import { parts, layerOrder, layerLabel, type PartCategory } from "@/lib/parts";
 import { encode, decode, isValidId, randomCombo, resolve, ANIM_FRAMES, LOOP_LENGTH, FRAME_MS, resolveFrameIndex, PARTS, type AnimFrame } from "@pixabots/core";
@@ -417,6 +417,10 @@ export function Creator({
   // Empty deps is safe — cycle/shuffle/toggleAnimation all use refs internally
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (isTypingTarget(e.target)) return;
+    // Let browser shortcuts (⌘R reload, ⌘C copy, ⌘K palette, etc.) through.
+    // Otherwise ⌘R would fire the `r` case (randomPalette) and write random
+    // hue/saturate/bg into the URL right before the browser reloads it.
+    if (hasModifier(e)) return;
 
     // Track Konami sequence in parallel with normal shortcuts
     const seq = konamiRef.current;
