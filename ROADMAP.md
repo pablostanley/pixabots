@@ -165,8 +165,8 @@ When reviewing code, use the Before/After markdown table format from the skill. 
 
 Consolidated ticket for animation-API hardening. See [`IMPROVE_GIFS.md`](./IMPROVE_GIFS.md) for the full plan, status, and per-PR scope.
 
-- [ ] **P0 — animation staleness trap.** Deterministic URLs immutable-cache for 1yr; changing `ANIM_FRAMES` / sprites never propagates. Fix: `ANIM_VERSION` constant in `@pixabots/core` + `?v=N` cache-bust param + SDK auto-append. Runbook: bump on every animation change.
-- [ ] **P3 — docs clarity on animated sizes.** `api.mdx` reads as if only 1920 is supported; restate as "any integer 32–1920, same as PNG."
+- [~] **P0 — animation staleness trap.** In review. `ANIM_VERSION=1` exported from `@pixabots/core` (v0.5.0); `@pixabots/react` (v0.4.0) auto-appends `?v=`. Server silently accepts unknown param → URL-keyed CDN cache busts naturally. Docs + OpenAPI + runbook updated.
+- [x] **P3 — docs clarity on animated sizes.** Shipped (PR #163). `api.mdx` + `openapi.json` now state "any size from 32 to 1920, same as PNG."
 - [ ] **`/api/pixabot/{id}/frames` metadata endpoint.** Expose `ANIM_FRAMES` + `FRAME_MS` + sprite URLs as JSON so consumers can animate client-side (no rate limit, no stale cache).
 
 Backlog (not in current push): reduced-motion server hint, rate-limit headers on every response, `?paused=true`, raise `/api/og` rate limit, APNG/Lottie output.

@@ -1,5 +1,5 @@
 import { forwardRef, type ImgHTMLAttributes } from "react";
-import { isValidId, randomId } from "@pixabots/core";
+import { ANIM_VERSION, isValidId, randomId } from "@pixabots/core";
 
 const DEFAULT_ORIGIN = "https://pixabots.com";
 const DEFAULT_SIZE = 128;
@@ -39,6 +39,9 @@ function buildSrc(
     params.set("animated", "true");
     if (webp) params.set("webp", "true");
     if (speed && speed !== 1) params.set("speed", String(speed));
+    // Cache-bust animated URLs when core bumps its animation version so
+    // consumers automatically pick up new renders after `pnpm update`.
+    params.set("v", String(ANIM_VERSION));
   }
   if (hue && hue !== 0) params.set("hue", String(((Math.round(hue) % 360) + 360) % 360));
   if (saturate !== undefined && saturate !== 1) params.set("saturate", String(saturate));

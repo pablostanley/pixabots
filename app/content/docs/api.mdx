@@ -22,6 +22,7 @@ Returns a pixabot image or metadata.
 | `hue` | query | — | Hue rotation in degrees (0–359). Shifts all colors while preserving relative palette. |
 | `saturate` | query | — | Saturation multiplier (0 = greyscale, 1 = unchanged, up to 4 = very punchy). |
 | `bg` | query | — | Background color as `#rrggbb` hex. Flattens transparency onto a solid color. |
+| `v` | query | — | Cache-bust key. Pass an integer matching `ANIM_VERSION` from `@pixabots/core`; value is ignored by the renderer, so any change forces a new CDN cache entry. See [Animation versioning](#animation-versioning). |
 
 ### PNG (default)
 
@@ -255,6 +256,31 @@ Always use `image-rendering: pixelated` in CSS so browsers don't antialias the p
 ## Caching
 
 Deterministic endpoints return `Cache-Control: public, max-age=31536000, immutable`. Same ID + size + flags always produces the same image, so CDNs cache it forever. The `/random` endpoint never caches (302 redirect, target cached normally).
+
+## Animation versioning
+
+Animated output (`?animated=true`) is deterministic and immutably cached by the CDN for a year. That means if we change the animation — new frame timing, new blink schedule, new bounce curve — already-cached URLs keep serving the old render until the cache evicts.
+
+To opt into the latest render, add `?v=N` to the URL. `N` is the `ANIM_VERSION` integer exported by `@pixabots/core`:
+
+```ts
+import { ANIM_VERSION } from "@pixabots/core";
+// ANIM_VERSION === 1
+```
+
+```bash
+curl "https://pixabots.com/api/pixabot/2156?animated=true&v=1" -o bounce.gif
+```
+
+`@pixabots/react` automatically appends the current `v` to every animated `<Pixabot />`, so upgrading the npm package is enough to pick up new animations. Static `<img src>` and `<iframe>` embeds need the param appended manually after we bump `ANIM_VERSION`.
+
+The server ignores the value — any change to `v` just creates a fresh CDN cache entry.
+
+**Maintainer runbook** (when the animation changes):
+
+1. Bump `ANIM_VERSION` in `packages/core/src/animation.ts`.
+2. Bump `@pixabots/core` and `@pixabots/react` minor versions, publish.
+3. (Optional) Purge the Vercel CDN so pinned raw-URL consumers also get the new render.
 
 ## CORS
 

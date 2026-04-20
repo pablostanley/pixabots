@@ -17,7 +17,7 @@ Root question driving the work: **can third parties use our animations, and will
 
 ## PRs in this session
 
-### P0 — animation staleness trap `[ ]`
+### P0 — animation staleness trap `[~]` — in review
 
 **Problem.** `imageResponse()` sets 1-year immutable cache. If we ever edit `ANIM_FRAMES`, `FRAME_MS`, `FRAME_INDICES`, or sprite PNGs, existing deterministic URLs keep serving the old render until CDN entry evicts.
 
@@ -35,17 +35,19 @@ Root question driving the work: **can third parties use our animations, and will
 - `app/content/docs/api.mdx` — document `?v=N` + purge runbook
 - `app/public/openapi.json` — add `v` param
 
-**Tracked in**: PR TBD.
+**Shipped as**: PR pending open. `ANIM_VERSION = 1` exported from `@pixabots/core` (bumped 0.4.0 → 0.5.0). `@pixabots/react` (0.3.0 → 0.4.0) auto-appends `v=${ANIM_VERSION}` on animated URLs. Docs + OpenAPI spec document `?v=` param and the maintainer bump runbook. Server silently accepts the unknown param today — no route changes needed.
+
+Follow-up once merged: push `core-v0.5.0` and `react-v0.4.0` tags to trigger `publish-{core,react}.yml`.
 
 ---
 
-### P3 — docs clarity on animated sizes `[ ]`
+### P3 — docs clarity on animated sizes `[x]` — shipped (PR #163)
 
 **Problem.** `app/content/docs/api.mdx` phrases animated sizing as "Supports all sizes" (L19) and "All sizes are supported — including 1920px" (L49). Reads as if 1920 is special / the only size. Audit author (Pablo) misread this exact line.
 
 **Fix.** Change to "Any integer 32–1920, same as PNG." Match the PNG table. One-line edit.
 
-**Tracked in**: PR TBD.
+**Tracked in**: PR #163 — shipped. Replaced the two offending lines in `app/content/docs/api.mdx` and the `animated` param description in `app/public/openapi.json` with "any size from 32 to 1920, same as PNG."
 
 ---
 

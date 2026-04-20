@@ -79,6 +79,13 @@
             "required": false,
             "description": "Background color as `#rrggbb` hex. Flattens transparency onto a solid color. Applies to PNG / GIF / WebP / SVG outputs.",
             "schema": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" }
+          },
+          {
+            "name": "v",
+            "in": "query",
+            "required": false,
+            "description": "Cache-bust key. Pass an integer matching `ANIM_VERSION` from `@pixabots/core`; the value is ignored by the renderer, so any change forces a new immutable CDN cache entry. `@pixabots/react` appends this automatically for animated output.",
+            "schema": { "type": "integer", "minimum": 1 }
           }
         ],
         "responses": {
