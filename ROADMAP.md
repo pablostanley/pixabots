@@ -260,7 +260,8 @@ Ship Phase 1 first. Phase 2 and 3 only if someone actually asks.
 
 - [ ] More parts — new variations for each category. Append-only to keep IDs stable.
 - [ ] Accessories — new category layer (hats, items, etc.)
-- [ ] Animation variants — wave, jump, spin, etc. (infra shipped via multi-frame sprites; still needs artwork + scheduled `FRAME_INDICES`)
+- [ ] Animation variants — wave, jump, spin, etc. (infra shipped via multi-frame sprites; new parts can use `kind: 'sequence'` + numbered frames in `art/png/{cat}/{name}/`)
+- [ ] **Single-source the total-combos number.** 12+ files hardcode `10,752` (layout metadata, manifest, openapi.json, footer, docs, READMEs). Source of truth is `totalCombinations()` in `@pixabots/core`, but most of these sites can't call it (JSON files, MDX prose). Plan: add a `TOTAL_COMBOS` constant + `formatTotalCombos()` in `app/src/lib/constants.ts` backed by `totalCombinations()`, use it in every `.ts` / `.tsx` / `next/Metadata` consumer; leave `.mdx` / `.md` / `openapi.json` as one-line hardcoded values and write a tiny `pnpm check-combo-count` script that fails if any hardcoded number in the doc sweep disagrees with the live count. Catches future mismatches without moving the docs to JSX.
 - [x] Social cards — shipped via `/api/og?type=single|grid|compare` across PRs #79, #68, #108. `twitter:site` + `image:alt` added in PR #138.
 
 ## Blocked
