@@ -2,11 +2,11 @@ import { type NextRequest } from "next/server";
 import { isValidId } from "@pixabots/core";
 import { generateOgImage } from "@/lib/og-image";
 import { CORS_HEADERS, optionsResponse, imageResponse } from "@/lib/api";
-import { checkRate, clientKey } from "@/lib/rate-limit";
+import { checkRate, clientKey, isSameOrigin } from "@/lib/rate-limit";
 import { parseIdsCsv } from "@/lib/ids";
 import { normalizeHex } from "@/lib/palette";
 
-const OG_LIMIT = 20;
+const OG_LIMIT = 60;
 const OG_WINDOW_MS = 60_000;
 
 const MAX_TITLE_LEN = 60;
@@ -40,7 +40,9 @@ function parsePalette(
 }
 
 export async function GET(request: NextRequest) {
-  const rate = checkRate(`og:${clientKey(request)}`, OG_LIMIT, OG_WINDOW_MS);
+  const rate = isSameOrigin(request)
+    ? { allowed: true, remaining: OG_LIMIT, resetSeconds: 60, limit: OG_LIMIT }
+    : checkRate(`og:${clientKey(request)}`, OG_LIMIT, OG_WINDOW_MS);
   if (!rate.allowed) {
     return Response.json(
       { error: `Rate limit exceeded. Try again in ${rate.resetSeconds}s.` },

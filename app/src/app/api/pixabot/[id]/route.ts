@@ -17,12 +17,13 @@ import {
   MAX_SPEED,
   DETERMINISTIC_CACHE,
 } from "@/lib/api";
-import { checkRate, clientKey } from "@/lib/rate-limit";
+import { checkRate, clientKey, isSameOrigin } from "@/lib/rate-limit";
 import { normalizeHex } from "@/lib/palette";
 
 // Per-IP rate limit for animated renders (GIF / WebP are 5–50× costlier
-// than PNG). Limits per minute per lambda instance.
-const ANIMATED_LIMIT = 30;
+// than PNG). Limits per minute per lambda instance. Same-origin traffic
+// (our own /browse grid, etc.) bypasses this — see isSameOrigin below.
+const ANIMATED_LIMIT = 120;
 const ANIMATED_WINDOW_MS = 60_000;
 
 export const OPTIONS = optionsResponse;
@@ -133,7 +134,9 @@ export async function GET(
       });
     }
     if (animated) {
-      const rate = checkRate(`animated:${clientKey(request)}`, ANIMATED_LIMIT, ANIMATED_WINDOW_MS);
+      const rate = isSameOrigin(request)
+        ? { allowed: true, remaining: ANIMATED_LIMIT, resetSeconds: 60, limit: ANIMATED_LIMIT }
+        : checkRate(`animated:${clientKey(request)}`, ANIMATED_LIMIT, ANIMATED_WINDOW_MS);
       if (!rate.allowed) {
         return Response.json(
           { error: `Rate limit exceeded. Try again in ${rate.resetSeconds}s.` },

@@ -72,3 +72,17 @@ export function clientKey(request: Request): string {
   if (xff) return xff.split(",")[0].trim();
   return request.headers.get("x-real-ip") ?? "unknown";
 }
+
+/**
+ * True when the request came from our own pages (the browse grid, the bot
+ * detail page, etc.). Used to exempt UI traffic from the animated-render
+ * rate limit — /browse alone renders ~60 GIFs on first paint, which would
+ * blow past any sane per-IP cap. Sec-Fetch-Site is modern-browser-native
+ * (Chrome / Firefox / Safari) and cannot be forged by script from another
+ * origin, so it's a reasonable guard for "this is our UI, not abuse."
+ * External consumers (curl, servers, other sites hotlinking) get
+ * `cross-site` or no header → still rate-limited.
+ */
+export function isSameOrigin(request: Request): boolean {
+  return request.headers.get("sec-fetch-site") === "same-origin";
+}
