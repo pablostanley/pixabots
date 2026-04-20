@@ -29,5 +29,8 @@ jobs:
       - name: Build + test @pixabots/core
         run: pnpm --filter @pixabots/core test
 
+      - name: Check combo-count drift in static files
+        run: node scripts/check-combo-count.mjs
+
       - name: Build app
         run: pnpm --filter pixabots-app build
