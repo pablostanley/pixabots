@@ -7,7 +7,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ShortcutsOverlay } from "@/components/shortcuts-overlay";
 import { CommandPalette } from "@/components/command-palette";
-import { SITE_URL } from "@/lib/constants";
+import { SITE_URL, TOTAL_COMBOS_LABEL } from "@/lib/constants";
 import "./globals.css";
 
 const pixelify = Pixelify_Sans({
@@ -16,20 +16,20 @@ const pixelify = Pixelify_Sans({
   variable: "--font-pixel",
 });
 
+const DESCRIPTION = `${TOTAL_COMBOS_LABEL} unique pixel art characters with deterministic IDs. Free API for avatars, animated GIFs, and more.`;
+
 export const metadata: Metadata = {
   title: {
     default: "Pixabots — Pixel Character Avatars",
     template: "%s — Pixabots",
   },
-  description:
-    "10,752 unique pixel art characters with deterministic IDs. Free API for avatars, animated GIFs, and more.",
+  description: DESCRIPTION,
   metadataBase: new URL(SITE_URL),
   openGraph: {
     type: "website",
     siteName: "Pixabots",
     title: "Pixabots — Pixel Character Avatars",
-    description:
-      "10,752 unique pixel art characters with deterministic IDs. Free API for avatars, animated GIFs, and more.",
+    description: DESCRIPTION,
     url: SITE_URL,
     images: [
       {
@@ -43,8 +43,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Pixabots — Pixel Character Avatars",
-    description:
-      "10,752 unique pixel art characters with deterministic IDs. Free API for avatars, animated GIFs, and more.",
+    description: DESCRIPTION,
     images: [
       {
         url: `${SITE_URL}/api/og?type=grid&title=Pixabots&seed=home`,

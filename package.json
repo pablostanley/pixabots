@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "pnpm --filter pixabots-app dev",
     "build": "pnpm --filter @pixabots/core build && pnpm --filter pixabots-app build",
-    "generate-grids": "node generate-grids.mjs"
+    "generate-grids": "node generate-grids.mjs",
+    "check-combo-count": "pnpm --filter @pixabots/core build && node scripts/check-combo-count.mjs"
   },
   "devDependencies": {
     "next": "16.2.3"

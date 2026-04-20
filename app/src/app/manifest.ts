@@ -1,11 +1,11 @@
 import type { MetadataRoute } from "next";
+import { TOTAL_COMBOS_LABEL } from "@/lib/constants";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Pixabots",
     short_name: "Pixabots",
-    description:
-      "10,752 unique pixel art characters with deterministic IDs. Free API for avatars and animated GIFs.",
+    description: `${TOTAL_COMBOS_LABEL} unique pixel art characters with deterministic IDs. Free API for avatars and animated GIFs.`,
     start_url: "/",
     display: "standalone",
     background_color: "#000000",
