@@ -17,7 +17,16 @@ export function isValidSize(n: number) {
 
 export const INVALID_SIZE_MESSAGE = `Invalid size. Must be an integer between ${MIN_SIZE} and ${MAX_SIZE}.`;
 
-const IMMUTABLE_CACHE = "public, max-age=31536000, immutable";
+/**
+ * Deterministic renders (a given `/api/pixabot/{id}?...` URL always
+ * produces the same bytes at any point in time, but sprite art can change
+ * when we ship new part variants). 1-day fresh window for CDN / browser
+ * cache, then 7 days of stale-while-revalidate — art updates propagate
+ * within a day without a manual CDN purge, but repeat loads stay fast.
+ * Manual purge still wins if we need instant rollout.
+ */
+export const DETERMINISTIC_CACHE =
+  "public, max-age=86400, stale-while-revalidate=604800";
 
 export function optionsResponse() {
   return new Response(null, { status: 204, headers: CORS_HEADERS });
@@ -27,8 +36,8 @@ export function imageResponse(buffer: Buffer, contentType: string) {
   return new Response(new Uint8Array(buffer), {
     headers: {
       "Content-Type": contentType,
-      "Cache-Control": IMMUTABLE_CACHE,
-      "CDN-Cache-Control": IMMUTABLE_CACHE,
+      "Cache-Control": DETERMINISTIC_CACHE,
+      "CDN-Cache-Control": DETERMINISTIC_CACHE,
       ...CORS_HEADERS,
     },
   });
