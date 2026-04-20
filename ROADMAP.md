@@ -165,6 +165,7 @@ When reviewing code, use the Before/After markdown table format from the skill. 
 - [x] **Single-source `TOTAL_COMBOS`.** Before: 15 files hardcoded `9,856` → `10,752`; shipping spikes meant editing all of them. Now `TOTAL_COMBOS_LABEL` in `@/lib/constants` drives the in-code consumers; static files (MDX / READMEs / openapi.json) still hardcode but `pnpm check-combo-count` (CI step) fails if they drift from `totalCombinations()`. (PR #162)
 - [x] **Browse 429s.** `/browse` fires ~60 animated renders on first paint. Animated rate limit was 30/min per IP — 30 succeed, the rest break. Added `isSameOrigin(request)` that checks `Sec-Fetch-Site: same-origin` to exempt our own UI. External consumers still capped, but caps bumped to 120/min animated + 60/min OG. (PR #170)
 - [x] **Cache header revalidation.** `Cache-Control: immutable` was wrong once PR #156 made same-ID sprite art mutable. Swapped for 1-day fresh + 7-day stale-while-revalidate — art updates propagate within ~1 day without a manual dashboard purge. Manual purge still works for urgent rollout. (PR #166, #168, #169)
+- [x] **Animated `cheeky-terminal` (16-frame sequence) + `terminal-round` + `glasses` (blink).** Upgraded three previously-static eye parts to animated. `cheeky-terminal` is the first 16-frame sequence (fills one full super-loop). `ANIM_VERSION` 1→2 to bust CDN caches. Parts.ts docstring updated to include N=16 as valid sequence length.
 
 ## Improve GIFs / Animated API
 
