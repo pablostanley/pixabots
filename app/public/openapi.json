@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Pixabots API",
-    "description": "Deterministic pixel character avatars. 9,856 unique combinations, each with a 4-char base36 ID.",
+    "description": "Deterministic pixel character avatars. 10,752 unique combinations, each with a 4-char base36 ID.",
     "version": "0.1.0",
     "license": { "name": "MIT" },
     "contact": { "name": "Pablo Stanley", "url": "https://pablostanley.substack.com" }

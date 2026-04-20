@@ -96,12 +96,12 @@ Access the full parts catalog:
 ```typescript
 import { PARTS, partCount, getPart, getPartIndex, totalCombinations } from "@pixabots/core";
 
-totalCombinations();  // 9856
+totalCombinations();  // 10752
 
 partCount("eyes");  // 16
 partCount("heads"); // 8
 partCount("body");  // 7
-partCount("top");   // 11
+partCount("top");   // 12
 
 getPart("eyes", 2);  // { name: "glasses", path: "eyes/glasses.png" }
 
@@ -119,13 +119,39 @@ FRAME_MS;      // 72 (ms per frame)
 ANIM_FRAMES;   // 8-frame array of { top, heads, eyes, body } offsets
 ```
 
+## Sub-animations (sprite-sheet parts)
+
+Some parts ship as horizontal sprite sheets (`frames × 32` wide) so they can animate inside the 16-tick idle super-loop. The bounce itself (`ANIM_FRAMES`) stays 8 ticks and repeats twice; the longer super-loop gives blinks room to breathe. Each `PartOption` declares a `kind`:
+
+- `static` (default) — always frame 0.
+- `blink` — 2-frame sheet `[open, closed]`. 16-tick schedule: `[0,1,0,1,0,0,0,0, 0,0,0,0,0,0,0,0]` (two blinks then eight ticks held open).
+- `sequence` — N-frame sheet played in order. N should divide `LOOP_LENGTH` (1 / 2 / 4 / 8 / 16) so the sub-loop fits the super-loop.
+
+Resolve a tick → frame index via `resolveFrameIndex`:
+
+```typescript
+import { PARTS, LOOP_LENGTH, resolveFrameIndex, BLINK_SCHEDULE } from "@pixabots/core";
+
+const visor = PARTS.eyes.find(p => p.name === "visor");
+// { name: "visor", path: "eyes/visor.png", frames: 8, kind: "sequence" }
+
+for (let tick = 0; tick < LOOP_LENGTH; tick++) {
+  const idx = resolveFrameIndex(visor, tick);
+  // sx = idx * 32 to source-crop the sprite sheet
+}
+
+LOOP_LENGTH;     // 16
+BLINK_SCHEDULE;  // [0,1,0,1,0,0,0,0, 0,0,0,0,0,0,0,0]
+```
+
 ## Types
 
 ```typescript
-import type { PixabotCombo, PartCategory, PartOption, AnimFrame } from "@pixabots/core";
+import type { PixabotCombo, PartCategory, PartOption, PartAnimKind, AnimFrame } from "@pixabots/core";
 
 // PixabotCombo = { eyes: number, heads: number, body: number, top: number }
 // PartCategory = "eyes" | "heads" | "body" | "top"
-// PartOption = { name: string, path: string }
+// PartAnimKind = "static" | "blink" | "sequence"
+// PartOption = { name: string, path: string, frames?: number, kind?: PartAnimKind }
 // AnimFrame = { top: number, heads: number, eyes: number, body: number }
 ```

@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Pixabots",
     short_name: "Pixabots",
     description:
-      "9,856 unique pixel art characters with deterministic IDs. Free API for avatars and animated GIFs.",
+      "10,752 unique pixel art characters with deterministic IDs. Free API for avatars and animated GIFs.",
     start_url: "/",
     display: "standalone",
     background_color: "#000000",

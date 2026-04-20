@@ -4,11 +4,13 @@ import {
   PARTS,
   LAYER_ORDER,
   ANIM_FRAMES,
-  FRAME_INDICES,
+  LOOP_LENGTH,
   FRAME_MS,
+  resolveFrameIndex,
   type PixabotCombo,
   type AnimFrame,
   type PartCategory,
+  type PartOption,
 } from "@pixabots/core";
 import { PARTS_DIR } from "@/lib/paths";
 
@@ -182,6 +184,7 @@ export async function renderPixabotSvg(
 }
 
 async function renderFrameNative(
+  partByCategory: Record<PartCategory, PartOption>,
   layers: Record<PartCategory, LayerSheet>,
   bodyTop: Buffer,
   bodyBottom: Buffer,
@@ -190,12 +193,12 @@ async function renderFrameNative(
 ): Promise<Buffer> {
   const composites: sharp.OverlayOptions[] = [];
 
-  // Per-layer sub-animation: pick the right sprite frame for this tick,
-  // clamped to each part's available frame count.
+  // Per-layer sub-animation: resolveFrameIndex maps tick → sheet frame
+  // based on each part's `kind` (static / blink / sequence).
   const frameByCategory: Record<PartCategory, Buffer> = Object.fromEntries(
     await Promise.all(
       LAYER_ORDER.map(async (cat) => {
-        const scheduled = FRAME_INDICES[cat][tick] ?? 0;
+        const scheduled = resolveFrameIndex(partByCategory[cat], tick);
         return [cat, await extractFrame(layers[cat], scheduled)] as const;
       })
     )
@@ -258,15 +261,30 @@ export async function renderAnimatedPixabot(
       .toBuffer(),
   ]);
 
-  // Composite each frame at native 32x32. Stack all 8 (32x256 raw, ~32KB)
-  // and resize once. Cuts memory ~size² vs upscaling each frame independently.
+  // Pre-resolve each layer's PartOption once; reused by every tick.
+  const partByCategory = Object.fromEntries(
+    LAYER_ORDER.map((cat) => [cat, PARTS[cat][combo[cat]]])
+  ) as Record<PartCategory, PartOption>;
+
+  // If every part is static (no blink / sequence), the blink-hold region
+  // of the 16-tick super-loop is just the bounce playing twice — halve
+  // the encoded frames to keep GIFs small.
+  const anyAnimated = LAYER_ORDER.some(
+    (cat) => (partByCategory[cat].frames ?? 1) > 1
+  );
+  const ticks = anyAnimated ? LOOP_LENGTH : ANIM_FRAMES.length;
+
+  // Composite each tick of the super-loop (bounce wraps at ANIM_FRAMES.length).
+  // Stack all ticks in one raw strip and resize once — cuts memory ~size²
+  // vs upscaling each frame independently.
   const nativeFrames = await Promise.all(
-    ANIM_FRAMES.map((offsets, tick) =>
-      renderFrameNative(layers, bodyTop, bodyBottom, offsets, tick)
-    )
+    Array.from({ length: ticks }, (_, tick) => {
+      const offsets = ANIM_FRAMES[tick % ANIM_FRAMES.length];
+      return renderFrameNative(partByCategory, layers, bodyTop, bodyBottom, offsets, tick);
+    })
   );
   const nativeStacked = Buffer.concat(nativeFrames);
-  const nativeStripHeight = NATIVE_SIZE * ANIM_FRAMES.length;
+  const nativeStripHeight = NATIVE_SIZE * ticks;
 
   // Palette transform + bg flatten at native scale before resize —
   // fewer pixels, same result.
@@ -280,7 +298,7 @@ export async function renderAnimatedPixabot(
     : nativeStacked;
   const tintedChannels = bg ? 3 : 4;
 
-  const targetStripHeight = size * ANIM_FRAMES.length;
+  const targetStripHeight = size * ticks;
   const targetStripped =
     size === NATIVE_SIZE
       ? tintedStacked
@@ -292,7 +310,7 @@ export async function renderAnimatedPixabot(
           .toBuffer();
 
   const delay = Math.max(20, Math.round(FRAME_MS / speed));
-  const delays = ANIM_FRAMES.map(() => delay);
+  const delays = Array.from({ length: ticks }, () => delay);
 
   const pipeline = sharp(targetStripped, {
     raw: {

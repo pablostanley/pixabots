@@ -1,6 +1,7 @@
 export {
   type PartCategory,
   type PartOption,
+  type PartAnimKind,
   LAYER_ORDER,
   CATEGORY_ORDER,
   PARTS,
@@ -33,5 +34,7 @@ export {
   type AnimFrame,
   FRAME_MS,
   ANIM_FRAMES,
-  FRAME_INDICES,
+  LOOP_LENGTH,
+  BLINK_SCHEDULE,
+  resolveFrameIndex,
 } from './animation.js'

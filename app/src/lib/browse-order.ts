@@ -6,7 +6,7 @@ import { useSyncExternalStore } from "react";
  * Tiny module-level store that the browse grid publishes to, so the bot
  * detail dialog (opened via the `/browse/@modal/(..)bot/[id]` intercept)
  * can navigate prev/next through the _current grid order_ instead of
- * walking the canonical 9,856 combo index.
+ * walking the canonical 10,752 combo index.
  *
  * The grid is random per session (and per reroll / filter), so walking
  * the visible list matches the user's mental model when paging through

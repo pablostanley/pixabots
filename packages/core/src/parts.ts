@@ -8,18 +8,32 @@
 
 export type PartCategory = 'eyes' | 'heads' | 'body' | 'top'
 
+/**
+ * Per-part sub-animation kind. Selects which frame to show on each tick
+ * of the 8-frame idle bounce.
+ *
+ * - `static`:   always frame 0. Default when `frames` is 1 or omitted.
+ * - `blink`:    2-frame sprite sheet ordered [open, closed]. Tick schedule
+ *               `[0,1,0,1,0,0,0,0]` — two blinks then hold-open.
+ * - `sequence`: N-frame sheet played in order. Advances one frame per tick
+ *               and loops to fit the 8-tick bounce (N should divide 8: 1/2/4/8).
+ *
+ * Add new kinds here as new named patterns become useful.
+ */
+export type PartAnimKind = 'static' | 'blink' | 'sequence'
+
 export interface PartOption {
   name: string
   /** Canonical path segment: "{category}/{name}.png" */
   path: string
   /**
    * Number of horizontal frames in the sprite sheet (sheet width = frames × 32).
-   * Defaults to 1 (single 32×32 sprite). Authors adding a sub-animation
-   * (e.g. a blinking eye) bump this and draw frames left-to-right in one
-   * PNG. Runtime falls back to frame 0 for parts that don't provide enough
-   * frames for a given tick's scheduled index.
+   * Defaults to 1 (single 32×32 sprite). For blink: 2. For sequence: N where
+   * N ∈ {1, 2, 4, 8} so it fits the 8-tick canonical bounce loop.
    */
   frames?: number
+  /** Sub-animation kind (see PartAnimKind). Defaults to 'static'. */
+  kind?: PartAnimKind
 }
 
 /** Layer compositing order (bottom to top): top, body, heads, eyes */
@@ -28,8 +42,16 @@ export const LAYER_ORDER: PartCategory[] = ['top', 'body', 'heads', 'eyes']
 /** Category encoding order — fixed, used for ID encoding */
 export const CATEGORY_ORDER: PartCategory[] = ['eyes', 'heads', 'body', 'top']
 
-function makeParts(category: PartCategory, names: string[]): PartOption[] {
-  return names.map(name => ({ name, path: `${category}/${name}.png` }))
+type PartInput = string | { name: string; frames?: number; kind?: PartAnimKind }
+
+function makeParts(category: PartCategory, entries: PartInput[]): PartOption[] {
+  return entries.map(entry => {
+    const e = typeof entry === 'string' ? { name: entry } : entry
+    const option: PartOption = { name: e.name, path: `${category}/${e.name}.png` }
+    if (e.frames !== undefined) option.frames = e.frames
+    if (e.kind !== undefined) option.kind = e.kind
+    return option
+  })
 }
 
 export const PARTS: Record<PartCategory, PartOption[]> = {
@@ -37,19 +59,19 @@ export const PARTS: Record<PartCategory, PartOption[]> = {
     'big-face',
     'cheeky-terminal',
     'glasses',
-    'human',
-    'human-2',
+    { name: 'human', frames: 2, kind: 'blink' },
+    { name: 'human-2', frames: 2, kind: 'blink' },
     'monitor',
     'monitor-round',
     'mustache',
-    'terminal',
-    'terminal-green',
+    { name: 'terminal', frames: 2, kind: 'blink' },
+    { name: 'terminal-green', frames: 2, kind: 'blink' },
     'terminal-light',
     'terminal-round',
-    'tight-visor',
-    'visor',
-    'wayfarer',
-    'wayfarer-face',
+    { name: 'tight-visor', frames: 8, kind: 'sequence' },
+    { name: 'visor', frames: 8, kind: 'sequence' },
+    { name: 'wayfarer', frames: 4, kind: 'sequence' },
+    { name: 'wayfarer-face', frames: 8, kind: 'sequence' },
   ]),
   heads: makeParts('heads', [
     'ac',
@@ -82,6 +104,7 @@ export const PARTS: Record<PartCategory, PartOption[]> = {
     'radar',
     'bun',
     'horns',
+    'spikes',
   ]),
 }
 
