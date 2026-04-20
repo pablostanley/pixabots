@@ -10,13 +10,14 @@ export type PartCategory = 'eyes' | 'heads' | 'body' | 'top'
 
 /**
  * Per-part sub-animation kind. Selects which frame to show on each tick
- * of the 8-frame idle bounce.
+ * of the 16-tick idle super-loop.
  *
  * - `static`:   always frame 0. Default when `frames` is 1 or omitted.
- * - `blink`:    2-frame sprite sheet ordered [open, closed]. Tick schedule
- *               `[0,1,0,1,0,0,0,0]` — two blinks then hold-open.
+ * - `blink`:    2-frame sprite sheet ordered [open, closed]. Driven by
+ *               `BLINK_SCHEDULE` in animation.ts.
  * - `sequence`: N-frame sheet played in order. Advances one frame per tick
- *               and loops to fit the 8-tick bounce (N should divide 8: 1/2/4/8).
+ *               and loops inside the 16-tick super-loop (N should divide
+ *               LOOP_LENGTH: 1/2/4/8/16).
  *
  * Add new kinds here as new named patterns become useful.
  */
@@ -29,7 +30,7 @@ export interface PartOption {
   /**
    * Number of horizontal frames in the sprite sheet (sheet width = frames × 32).
    * Defaults to 1 (single 32×32 sprite). For blink: 2. For sequence: N where
-   * N ∈ {1, 2, 4, 8} so it fits the 8-tick canonical bounce loop.
+   * N ∈ {1, 2, 4, 8, 16} so it fits the 16-tick super-loop.
    */
   frames?: number
   /** Sub-animation kind (see PartAnimKind). Defaults to 'static'. */
@@ -57,7 +58,7 @@ function makeParts(category: PartCategory, entries: PartInput[]): PartOption[] {
 export const PARTS: Record<PartCategory, PartOption[]> = {
   eyes: makeParts('eyes', [
     'big-face',
-    'cheeky-terminal',
+    { name: 'cheeky-terminal', frames: 16, kind: 'sequence' },
     'glasses',
     { name: 'human', frames: 2, kind: 'blink' },
     { name: 'human-2', frames: 2, kind: 'blink' },
@@ -67,7 +68,7 @@ export const PARTS: Record<PartCategory, PartOption[]> = {
     { name: 'terminal', frames: 2, kind: 'blink' },
     { name: 'terminal-green', frames: 2, kind: 'blink' },
     'terminal-light',
-    'terminal-round',
+    { name: 'terminal-round', frames: 2, kind: 'blink' },
     { name: 'tight-visor', frames: 8, kind: 'sequence' },
     { name: 'visor', frames: 8, kind: 'sequence' },
     { name: 'wayfarer', frames: 4, kind: 'sequence' },

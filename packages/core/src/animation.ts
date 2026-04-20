@@ -21,7 +21,7 @@ import type { PartOption } from './parts'
  * output too and require a Vercel CDN purge on deploy, not a version
  * bump here.
  */
-export const ANIM_VERSION = 1
+export const ANIM_VERSION = 2
 
 export interface AnimFrame {
   top: number
