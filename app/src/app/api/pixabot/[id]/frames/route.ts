@@ -13,7 +13,7 @@ import {
   resolveFrameIndex,
   type PartCategory,
 } from "@pixabots/core";
-import { CORS_HEADERS, optionsResponse } from "@/lib/api";
+import { CORS_HEADERS, optionsResponse, DETERMINISTIC_CACHE } from "@/lib/api";
 
 export const OPTIONS = optionsResponse;
 
@@ -75,8 +75,8 @@ export async function GET(
     {
       headers: {
         ...CORS_HEADERS,
-        "Cache-Control": "public, max-age=31536000, immutable",
-        "CDN-Cache-Control": "public, max-age=31536000, immutable",
+        "Cache-Control": DETERMINISTIC_CACHE,
+        "CDN-Cache-Control": DETERMINISTIC_CACHE,
       },
     }
   );
