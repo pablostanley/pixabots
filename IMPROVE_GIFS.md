@@ -51,7 +51,7 @@ Root question driving the work: **can third parties use our animations, and will
 
 ---
 
-### nice-to-have — `/api/pixabot/{id}/frames` endpoint `[~]` — in review
+### nice-to-have — `/api/pixabot/{id}/frames` endpoint `[x]` — shipped (PR #165)
 
 **Problem.** Consumers who want scrubbable timelines, CSS `steps()` sprite animation, or autoplay control have to either (a) accept our baked GIF or (b) reverse-engineer frame timing from `@pixabots/core` source. The rate-limit (30 anim/min per IP per lambda) also hurts heavy consumers.
 
@@ -84,7 +84,7 @@ Separately: expose per-layer sprite URLs as sub-resources, or use existing `/par
 - `app/content/docs/api.mdx` — new section
 - `app/public/openapi.json` — add path
 
-**Tracked in**: PR pending open (`feat/frames-metadata-endpoint`). Emits 16-tick super-loop with offsets + per-layer sprite-sheet index + sprite URLs + `animVersion`. Immutably cached — same `animVersion` served for consumers' lifetime until bumped.
+**Shipped as**: PR #165. Emits 16-tick super-loop with offsets + per-layer sprite-sheet index + sprite URLs + `animVersion`. Immutably cached — same `animVersion` served for consumers' lifetime until bumped.
 
 ---
 
@@ -105,3 +105,4 @@ Discovered during audit, not shipping in this push:
 <!-- Append notes as PRs progress. Keep this section living. -->
 
 - **2026-04-19**: ticket opened after animation-API audit. Rebased `worktree-animation-api-docs` onto `main` (picked up PR #156 sub-animations, PR #158 ⌘R fix, PR #160 SW cache bump). Sub-animations infra already uses `FRAME_INDICES` — `ANIM_VERSION` bump already implicit in the SW's `VERSION` const for service worker, but that's client-only; API cache keys still don't version.
+- **2026-04-19 (EOD)**: all three in-session PRs merged end-to-end in a self-supervised loop. Publish workflows for `@pixabots/core@0.5.0` + `@pixabots/react@0.4.0` succeeded on tag push (30–34s each). `/api/pixabot/{id}/frames` live on prod via PR #165. P0, P3, frames endpoint all shipped. Backlog items (reduced-motion server hint, per-response rate-limit headers, `?paused=true`, `/api/og` limit bump, APNG/Lottie) still open — pick up next time a consumer asks or a real limit hit surfaces.

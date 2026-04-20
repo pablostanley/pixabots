@@ -167,7 +167,7 @@ Consolidated ticket for animation-API hardening. See [`IMPROVE_GIFS.md`](./IMPRO
 
 - [x] **P0 — animation staleness trap.** Shipped (PR #164). `ANIM_VERSION=1` exported from `@pixabots/core` (v0.5.0); `@pixabots/react` (v0.4.0) auto-appends `?v=`. Server silently accepts unknown param → URL-keyed CDN cache busts naturally. Docs + OpenAPI + runbook updated. `core-v0.5.0` + `react-v0.4.0` tags pushed to trigger publish workflows.
 - [x] **P3 — docs clarity on animated sizes.** Shipped (PR #163). `api.mdx` + `openapi.json` now state "any size from 32 to 1920, same as PNG."
-- [~] **`/api/pixabot/{id}/frames` metadata endpoint.** In review. Returns 16-tick super-loop with per-layer offsets + sprite-sheet indices + sprite URLs + `animVersion`. Sidesteps animated-GIF rate limit for consumers who want canvas / CSS-steps playback control. Immutably cached.
+- [x] **`/api/pixabot/{id}/frames` metadata endpoint.** Shipped (PR #165). Returns 16-tick super-loop with per-layer offsets + sprite-sheet indices + sprite URLs + `animVersion`. Sidesteps animated-GIF rate limit for consumers who want canvas / CSS-steps playback control. Immutably cached.
 
 Backlog (not in current push): reduced-motion server hint, rate-limit headers on every response, `?paused=true`, raise `/api/og` rate limit, APNG/Lottie output.
 
