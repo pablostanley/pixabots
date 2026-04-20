@@ -30,8 +30,11 @@ pixabots/
 - **Pixel art**: never antialiased — `imageSmoothingEnabled = false` on canvas, `image-rendering: pixelated` in CSS, Sharp `kernel: nearest`
 - **Parts arrays are APPEND-ONLY** — never reorder or remove entries. This keeps existing IDs stable forever.
 - **ID system**: 4-char base36 string, one char per category (eyes, heads, body, top). Deterministic, reversible, no database.
-- **Animation**: 8-frame bounce at 72ms/frame. Data lives in `packages/core/src/animation.ts` — always import from there, never duplicate.
-- **Shared API helpers**: CORS headers, OPTIONS handler, imageResponse() live in `app/src/lib/api.ts`
+- **Animation**: 16-tick super-loop (`LOOP_LENGTH`). 8-frame idle bounce (`ANIM_FRAMES`) runs twice inside it to give blink schedules room to breathe. 72ms/tick. All schedule data lives in `packages/core/src/animation.ts` — always import from there, never duplicate.
+- **Sub-animations**: per-part `kind: 'static' | 'blink' | 'sequence'` on `PartOption` decides how sprite-sheet frames cycle. `resolveFrameIndex(part, tick)` in core is the one source that maps tick → frame. Never hand-roll the schedule.
+- **Shared API helpers**: CORS headers, OPTIONS handler, `imageResponse()`, `DETERMINISTIC_CACHE`, and `isSameOrigin()` all live in `app/src/lib/api.ts` + `app/src/lib/rate-limit.ts`.
+- **Total combos**: import `TOTAL_COMBOS` / `TOTAL_COMBOS_LABEL` from `@/lib/constants` in code. Never hardcode the number. Static files (MDX, JSON, Markdown) hardcode it but `pnpm check-combo-count` (also a CI step) fails PRs that drift.
+- **Keyboard handlers**: always guard with `hasModifier(e)` from `@/lib/use-keydown`. Without it, ⌘R / ⌘D / ⌘F etc. fire the matching single-letter shortcut before the browser reload/bookmark, corrupting URL state mid-navigation.
 
 ## npm packages
 
@@ -45,36 +48,48 @@ Release flow (per package):
 
 Monitor with `gh run list --workflow=publish-{core,react,cli}.yml`.
 
-**CLI publish caveat:** the `pixabots` package is unscoped, so the `NPM_TOKEN` (granular, scoped to `@pixabots/*`) can't write to it yet. Expand the token's package allow-list to include `pixabots` before running `publish-cli.yml`.
+The `pixabots` CLI required a one-time manual `npm publish` from a human's machine (granular tokens can't create unscoped packages). Once live on npm, the token's allow-list was extended to include `pixabots`, so every subsequent `cli-v*` tag publishes via the workflow.
 
 designteam.app currently inlines `randomPixabotId()` — should swap for `@pixabots/core`'s `randomId()` now that it's on npm.
 
 ## Adding new parts
 
-1. Add PNGs to `art/png/{category}/`
-2. Copy to `app/public/parts/{category}/`
-3. **Append** to the arrays in `packages/core/src/parts.ts` (never reorder!)
-4. Rebuild: `pnpm --filter @pixabots/core build`
-5. Bump version + push `core-v<new>` tag — the publish workflow ships it to npm
+### Static parts (single 32×32 PNG)
 
-### Multi-frame sprites (sub-animations)
+1. Drop the PNG in `art/png/{category}/{name}.png`.
+2. Run `node scripts/stitch-frames.mjs` — copies flat PNGs through to `app/public/parts/{category}/{name}.png`.
+3. **Append** the name to the array in `packages/core/src/parts.ts` (never reorder!).
+4. Update the hardcoded combo count in MDX / README / openapi.json (everything else auto-updates). `pnpm check-combo-count` tells you which files disagree.
+5. Rebuild: `pnpm --filter @pixabots/core build`.
+6. Bump `packages/core/package.json` minor, push `core-v<new>` tag — the publish workflow ships to npm. (Bump `@pixabots/react` minor + tag too if consumers need the new PartOption.)
 
-A part can ship a horizontal sprite sheet (width = `frames × 32`, height = 32) for per-tick sub-animations like blinking or looking around.
+### Animated parts (sub-animations)
 
-1. Draw the sheet frames left-to-right, single PNG
-2. In `packages/core/src/parts.ts` set `frames: N` on the part entry (default 1)
-3. Edit `FRAME_INDICES[category]` in `packages/core/src/animation.ts` to schedule frames per tick (array length = ANIM_FRAMES length)
-4. Parts in the same category with fewer frames automatically fall back to frame 0 — safe to mix multi-frame and single-frame parts.
+A part animates by shipping multiple frames in a subdirectory under `art/png/{category}/{name}/`. The stitcher detects two layouts automatically:
 
-Body sub-animations aren't wired yet (the feet-planted split needs per-frame top/bottom rows); heads/eyes/top are ready.
+- **Blink** — two files: `{name}-open.png` + `{name}-closed.png`. Stitches to a 2-frame sheet ordered `[open, closed]`. Runtime schedule (from `BLINK_SCHEDULE`): open-closed-open-closed-hold-open — two fast blinks then 8 ticks held open inside the 16-tick super-loop.
+- **Sequence** — numbered files: `{name}-01.png` … `{name}-NN.png`. Stitches to an N-frame sheet played in order. N should divide `LOOP_LENGTH` (1 / 2 / 4 / 8 / 16) so the sub-loop fits evenly — the stitcher doesn't enforce this, but mismatched N will visibly drift against the bounce.
+
+Workflow:
+
+1. Draw the frames into the subdirectory using the naming rules above.
+2. Run `node scripts/stitch-frames.mjs`.
+3. In `packages/core/src/parts.ts`, change the part from `'name'` to `{ name: 'name', frames: N, kind: 'blink' | 'sequence' }`.
+4. Rebuild core, ship via tag.
+
+If animation data itself changes (schedule, frame count, `ANIM_FRAMES`, etc.) rather than just art, also bump `ANIM_VERSION` in `packages/core/src/animation.ts` so CDN-cached URLs break cleanly.
+
+Body sub-animations aren't wired yet (the feet-planted split in the server renderer still uses the frame-0 top/bottom split); eyes/heads/top are wired end-to-end.
 
 ## API
 
-- `GET /api/pixabot/{id}` — PNG image. `?size=<any integer 32–1920>`, `?format=json` for metadata, `?animated=true` for animated GIF (all sizes supported), `?speed=0.25–4` for animation speed
-- `GET /api/pixabot/random` — 302 redirect to random pixabot (or `?format=json`)
-- JSON responses include `png` and `gif` URLs
-- OpenAPI 3.1 spec at `/openapi.json`
-- CORS enabled, 1-day fresh + 7-day stale-while-revalidate caching on deterministic endpoints (see `DETERMINISTIC_CACHE` in `app/src/lib/api.ts`)
+- `GET /api/pixabot/{id}` — PNG image. `?size=<any integer 32–1920>`, `?format=json|svg`, `?animated=true` for GIF, `?webp=true` with `animated=true` for animated WebP, `?speed=0.25–4`, `?hue=0–359`, `?saturate=0–4`, `?bg=%23rrggbb`, `?v=N` cache-bust.
+- `GET /api/pixabot/{id}/frames` — JSON timeline of the idle loop: per-tick layer offsets + sprite-sheet indices, per-layer sprite URLs, `animVersion`, `frameMs`, `loopLength`. Consumers that want client-side playback (canvas, CSS sprite) use this to dodge the animated-render rate limit.
+- `GET /api/pixabot/random` — 302 redirect to random pixabot (or `?format=json`). Forwards `size`, `animated`, `speed`, `webp`, `hue`, `saturate`, `bg`.
+- `GET /api/pixabot/batch?ids=a,b,…` or `?count=N` — up to 100 pixabots as JSON; forwards palette + bg into returned png/gif URLs.
+- JSON responses include `png` and `gif` URLs.
+- OpenAPI 3.1 spec at `/openapi.json`.
+- CORS enabled. 1-day fresh + 7-day stale-while-revalidate on deterministic endpoints (`DETERMINISTIC_CACHE` in `app/src/lib/api.ts`). Same-origin requests bypass rate limits via `isSameOrigin()` (checks `Sec-Fetch-Site: same-origin`) — external consumers capped at 120 animated/min + 60 OG/min per IP per lambda.
 
 ## Deployment
 

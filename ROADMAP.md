@@ -160,6 +160,11 @@ When reviewing code, use the Before/After markdown table format from the skill. 
 - [x] `pixabots` CLI v0.3.0 published — manual first publish (npm granular token can't create unscoped packages). Future `cli-v*` tags auto-publish once `NPM_TOKEN` allow-list is expanded to include `pixabots`.
 - [x] Sub-animations — `kind: 'blink' \| 'sequence'` per part with per-tick sprite sheets. 16-tick super-loop; bounce runs twice. Stitcher script turns per-frame art subdirs into sheets. 4 blink eyes + 4 sequence eyes live. Static combos keep their 8-frame GIFs. (PR #156)
 - [x] `top/spikes` appended — new top part; total combos 9,856 → 10,752. (PR #156)
+- [x] **⌘R no longer shuffles palette.** Creator keydown handler wasn't guarding modifiers — ⌘R fired `randomPalette()` before the browser reload, writing random hue/sat/bg into the URL; the reload then read them back. Added `hasModifier(e)` guard. Also quietly fixes ⌘D / ⌘F / ⌘P / ⌘X / ⌘U / ⌘C from hijacking the corresponding single-letter shortcuts. (PR #158)
+- [x] **Service worker cache bump.** PR #156 changed sprite layouts (32×32 → sheet) at the same URLs; SW was cache-first and never invalidated. Bumped `VERSION` v1 → v2 so the existing activate handler purges stale entries on next load. (PR #160)
+- [x] **Single-source `TOTAL_COMBOS`.** Before: 15 files hardcoded `9,856` → `10,752`; shipping spikes meant editing all of them. Now `TOTAL_COMBOS_LABEL` in `@/lib/constants` drives the in-code consumers; static files (MDX / READMEs / openapi.json) still hardcode but `pnpm check-combo-count` (CI step) fails if they drift from `totalCombinations()`. (PR #162)
+- [x] **Browse 429s.** `/browse` fires ~60 animated renders on first paint. Animated rate limit was 30/min per IP — 30 succeed, the rest break. Added `isSameOrigin(request)` that checks `Sec-Fetch-Site: same-origin` to exempt our own UI. External consumers still capped, but caps bumped to 120/min animated + 60/min OG. (PR #170)
+- [x] **Cache header revalidation.** `Cache-Control: immutable` was wrong once PR #156 made same-ID sprite art mutable. Swapped for 1-day fresh + 7-day stale-while-revalidate — art updates propagate within ~1 day without a manual dashboard purge. Manual purge still works for urgent rollout. (PR #166, #168, #169)
 
 ## Improve GIFs / Animated API
 
