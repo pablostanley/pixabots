@@ -42,7 +42,7 @@
             "name": "animated",
             "in": "query",
             "required": false,
-            "description": "Set to `true` to get an animated GIF of the bounce animation instead of a static PNG. Any other value (or absent) returns a static PNG. All sizes supported.",
+            "description": "Set to `true` to get an animated GIF of the bounce animation instead of a static PNG. Any other value (or absent) returns a static PNG. Any size from 32 to 1920, same as PNG.",
             "schema": { "type": "string", "enum": ["true", "false"] }
           },
           {
