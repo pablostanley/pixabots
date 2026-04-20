@@ -74,7 +74,7 @@ Body sub-animations aren't wired yet (the feet-planted split needs per-frame top
 - `GET /api/pixabot/random` — 302 redirect to random pixabot (or `?format=json`)
 - JSON responses include `png` and `gif` URLs
 - OpenAPI 3.1 spec at `/openapi.json`
-- CORS enabled, immutable caching on deterministic endpoints
+- CORS enabled, 1-day fresh + 7-day stale-while-revalidate caching on deterministic endpoints (see `DETERMINISTIC_CACHE` in `app/src/lib/api.ts`)
 
 ## Deployment
 

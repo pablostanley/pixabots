@@ -3,7 +3,7 @@ title: API
 description: REST API for fetching pixabot images, animations, and metadata
 ---
 
-All endpoints are **CORS-enabled** (`Access-Control-Allow-Origin: *`) and return immutable cache headers for deterministic URLs. You can embed pixabots directly from any site — no proxy, no key, no auth.
+All endpoints are **CORS-enabled** (`Access-Control-Allow-Origin: *`) and return cache-friendly headers (1-day fresh + 7-day stale-while-revalidate) for deterministic URLs. You can embed pixabots directly from any site — no proxy, no key, no auth.
 
 ## GET /api/pixabot/\{id\}
 
@@ -231,7 +231,7 @@ curl https://pixabots.com/api/pixabot/random?format=json
 
 ## Embedding
 
-Drop a pixabot anywhere — any site, any framework. CORS is wide open and images cache on the CDN forever.
+Drop a pixabot anywhere — any site, any framework. CORS is wide open and images cache on the CDN for a day (with 7 more days of stale-while-revalidate) so repeat loads stay instant.
 
 ### HTML
 
@@ -300,11 +300,11 @@ Always use `image-rendering: pixelated` in CSS so browsers don't antialias the p
 
 ## Caching
 
-Deterministic endpoints return `Cache-Control: public, max-age=31536000, immutable`. Same ID + size + flags always produces the same image, so CDNs cache it forever. The `/random` endpoint never caches (302 redirect, target cached normally).
+Deterministic endpoints return `Cache-Control: public, max-age=86400, stale-while-revalidate=604800`. Same ID + size + flags always produces the same image for a given animation version, so the CDN keeps it fresh for a day and can serve stale for another 7 days while re-fetching in the background. That gives sprite / animation changes a natural rollout window (≤ 1 day for fresh traffic, ≤ 8 days for the long tail). The `/random` endpoint never caches (302 redirect, target cached normally).
 
 ## Animation versioning
 
-Animated output (`?animated=true`) is deterministic and immutably cached by the CDN for a year. That means if we change the animation — new frame timing, new blink schedule, new bounce curve — already-cached URLs keep serving the old render until the cache evicts.
+Animated output (`?animated=true`) is deterministic and CDN-cached for 1 day + 7 days of stale-while-revalidate. If we change the animation — new frame timing, new blink schedule, new bounce curve — fresh traffic picks up the new render within a day, and the long-tail (CDN SWR + consumer HTTP cache) can linger up to 8 days. Use `?v=N` when you need instant propagation.
 
 To opt into the latest render, add `?v=N` to the URL. `N` is the `ANIM_VERSION` integer exported by `@pixabots/core`:
 

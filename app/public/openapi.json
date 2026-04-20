@@ -15,7 +15,7 @@
       "get": {
         "operationId": "getPixabot",
         "summary": "Get a pixabot by ID",
-        "description": "Returns a pixel-perfect PNG image by default, or JSON metadata with `?format=json`. PNGs are cached with immutable headers.",
+        "description": "Returns a pixel-perfect PNG image by default, or JSON metadata with `?format=json`. PNGs are CDN-cached (1-day fresh + 7-day stale-while-revalidate).",
         "parameters": [
           {
             "name": "id",
@@ -84,7 +84,7 @@
             "name": "v",
             "in": "query",
             "required": false,
-            "description": "Cache-bust key. Pass an integer matching `ANIM_VERSION` from `@pixabots/core`; the value is ignored by the renderer, so any change forces a new immutable CDN cache entry. `@pixabots/react` appends this automatically for animated output.",
+            "description": "Cache-bust key. Pass an integer matching `ANIM_VERSION` from `@pixabots/core`; the value is ignored by the renderer, so any change forces a new CDN cache entry and sidesteps the 1-day fresh / 8-day stale-while-revalidate window. `@pixabots/react` appends this automatically for animated output.",
             "schema": { "type": "integer", "minimum": 1 }
           }
         ],
