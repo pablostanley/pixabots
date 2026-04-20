@@ -15,6 +15,7 @@ import {
   DEFAULT_SIZE,
   MIN_SPEED,
   MAX_SPEED,
+  DETERMINISTIC_CACHE,
 } from "@/lib/api";
 import { checkRate, clientKey } from "@/lib/rate-limit";
 import { normalizeHex } from "@/lib/palette";
@@ -125,8 +126,8 @@ export async function GET(
       return new Response(svg, {
         headers: {
           "Content-Type": "image/svg+xml; charset=utf-8",
-          "Cache-Control": "public, max-age=31536000, immutable",
-          "CDN-Cache-Control": "public, max-age=31536000, immutable",
+          "Cache-Control": DETERMINISTIC_CACHE,
+          "CDN-Cache-Control": DETERMINISTIC_CACHE,
           ...CORS_HEADERS,
         },
       });

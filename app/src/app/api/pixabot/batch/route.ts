@@ -6,13 +6,13 @@ import {
   isValidSize,
   INVALID_SIZE_MESSAGE,
   DEFAULT_SIZE,
+  DETERMINISTIC_CACHE,
 } from "@/lib/api";
 import { normalizeHex } from "@/lib/palette";
 
 export const OPTIONS = optionsResponse;
 
 const MAX_IDS = 100;
-const IMMUTABLE = "public, max-age=31536000, immutable";
 
 export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
@@ -106,7 +106,7 @@ export async function GET(request: NextRequest) {
     {
       headers: {
         ...CORS_HEADERS,
-        "Cache-Control": deterministic ? IMMUTABLE : "no-store",
+        "Cache-Control": deterministic ? DETERMINISTIC_CACHE : "no-store",
       },
     }
   );
