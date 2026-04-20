@@ -59,7 +59,7 @@ export const PARTS: Record<PartCategory, PartOption[]> = {
   eyes: makeParts('eyes', [
     'big-face',
     { name: 'cheeky-terminal', frames: 16, kind: 'sequence' },
-    'glasses',
+    { name: 'glasses', frames: 2, kind: 'blink' },
     { name: 'human', frames: 2, kind: 'blink' },
     { name: 'human-2', frames: 2, kind: 'blink' },
     'monitor',
