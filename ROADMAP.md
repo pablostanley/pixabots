@@ -161,6 +161,16 @@ When reviewing code, use the Before/After markdown table format from the skill. 
 - [x] Sub-animations — `kind: 'blink' \| 'sequence'` per part with per-tick sprite sheets. 16-tick super-loop; bounce runs twice. Stitcher script turns per-frame art subdirs into sheets. 4 blink eyes + 4 sequence eyes live. Static combos keep their 8-frame GIFs. (PR #156)
 - [x] `top/spikes` appended — new top part; total combos 9,856 → 10,752. (PR #156)
 
+## Improve GIFs / Animated API
+
+Consolidated ticket for animation-API hardening. See [`IMPROVE_GIFS.md`](./IMPROVE_GIFS.md) for the full plan, status, and per-PR scope.
+
+- [ ] **P0 — animation staleness trap.** Deterministic URLs immutable-cache for 1yr; changing `ANIM_FRAMES` / sprites never propagates. Fix: `ANIM_VERSION` constant in `@pixabots/core` + `?v=N` cache-bust param + SDK auto-append. Runbook: bump on every animation change.
+- [ ] **P3 — docs clarity on animated sizes.** `api.mdx` reads as if only 1920 is supported; restate as "any integer 32–1920, same as PNG."
+- [ ] **`/api/pixabot/{id}/frames` metadata endpoint.** Expose `ANIM_FRAMES` + `FRAME_MS` + sprite URLs as JSON so consumers can animate client-side (no rate limit, no stale cache).
+
+Backlog (not in current push): reduced-motion server hint, rate-limit headers on every response, `?paused=true`, raise `/api/og` rate limit, APNG/Lottie output.
+
 ## Up Next
 
 Prioritized tickets to work through. Each is self-contained and shippable.
