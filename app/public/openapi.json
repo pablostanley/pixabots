@@ -232,6 +232,112 @@
         }
       }
     },
+    "/api/pixabot/{id}/frames": {
+      "get": {
+        "operationId": "getPixabotFrames",
+        "summary": "Get the animation timeline (JSON) for a pixabot",
+        "description": "Returns the per-tick offsets, per-layer sprite-sheet frame indices, and sprite URLs needed to render the bounce animation client-side. Useful for consumers who want canvas / CSS-steps playback control without hitting the animated-GIF rate limit. Immutably cached.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "4-character base36 pixabot ID",
+            "schema": { "type": "string", "pattern": "^[0-9a-z]{4}$" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Animation metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string", "example": "2156" },
+                    "combo": {
+                      "type": "object",
+                      "properties": {
+                        "eyes": { "type": "integer" },
+                        "heads": { "type": "integer" },
+                        "body": { "type": "integer" },
+                        "top": { "type": "integer" }
+                      }
+                    },
+                    "parts": {
+                      "type": "object",
+                      "properties": {
+                        "eyes": { "type": "string" },
+                        "heads": { "type": "string" },
+                        "body": { "type": "string" },
+                        "top": { "type": "string" }
+                      }
+                    },
+                    "animVersion": { "type": "integer", "example": 1 },
+                    "frameMs": { "type": "integer", "example": 72 },
+                    "loopLength": { "type": "integer", "example": 16 },
+                    "layerOrder": {
+                      "type": "array",
+                      "items": { "type": "string", "enum": ["top", "body", "heads", "eyes"] }
+                    },
+                    "nativeSize": { "type": "integer", "example": 32 },
+                    "frames": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "tick": { "type": "integer" },
+                          "offsets": {
+                            "type": "object",
+                            "properties": {
+                              "top": { "type": "number" },
+                              "heads": { "type": "number" },
+                              "eyes": { "type": "number" },
+                              "body": { "type": "number" }
+                            }
+                          },
+                          "spriteIndex": {
+                            "type": "object",
+                            "properties": {
+                              "top": { "type": "integer" },
+                              "heads": { "type": "integer" },
+                              "eyes": { "type": "integer" },
+                              "body": { "type": "integer" }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "sprites": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                          "url": { "type": "string", "format": "uri" },
+                          "frames": { "type": "integer" },
+                          "kind": { "type": "string", "enum": ["static", "blink", "sequence"] }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid pixabot ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "error": { "type": "string" } }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/pixabot/batch": {
       "get": {
         "operationId": "getPixabotBatch",
