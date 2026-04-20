@@ -7,6 +7,22 @@
 
 import type { PartOption } from './parts'
 
+/**
+ * Animation output version. Bump on any change that alters rendered
+ * animated frames (ANIM_FRAMES, FRAME_MS, LOOP_LENGTH, BLINK_SCHEDULE,
+ * resolveFrameIndex, or the per-frame compositing pipeline on the API).
+ *
+ * Used as a cache-busting query param (`?v=N`) on `/api/pixabot/{id}`
+ * so consumers who upgrade `@pixabots/core` or `@pixabots/react`
+ * automatically fetch the updated render instead of the CDN's
+ * immutable-cached copy.
+ *
+ * Sprite-PNG changes are a separate concern — they affect static PNG
+ * output too and require a Vercel CDN purge on deploy, not a version
+ * bump here.
+ */
+export const ANIM_VERSION = 1
+
 export interface AnimFrame {
   top: number
   heads: number

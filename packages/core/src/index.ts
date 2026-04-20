@@ -32,6 +32,7 @@ export {
 
 export {
   type AnimFrame,
+  ANIM_VERSION,
   FRAME_MS,
   ANIM_FRAMES,
   LOOP_LENGTH,
