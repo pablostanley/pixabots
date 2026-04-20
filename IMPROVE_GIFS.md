@@ -17,7 +17,7 @@ Root question driving the work: **can third parties use our animations, and will
 
 ## PRs in this session
 
-### P0 — animation staleness trap `[~]` — in review
+### P0 — animation staleness trap `[x]` — shipped (PR #164)
 
 **Problem.** `imageResponse()` sets 1-year immutable cache. If we ever edit `ANIM_FRAMES`, `FRAME_MS`, `FRAME_INDICES`, or sprite PNGs, existing deterministic URLs keep serving the old render until CDN entry evicts.
 
@@ -35,9 +35,9 @@ Root question driving the work: **can third parties use our animations, and will
 - `app/content/docs/api.mdx` — document `?v=N` + purge runbook
 - `app/public/openapi.json` — add `v` param
 
-**Shipped as**: PR pending open. `ANIM_VERSION = 1` exported from `@pixabots/core` (bumped 0.4.0 → 0.5.0). `@pixabots/react` (0.3.0 → 0.4.0) auto-appends `v=${ANIM_VERSION}` on animated URLs. Docs + OpenAPI spec document `?v=` param and the maintainer bump runbook. Server silently accepts the unknown param today — no route changes needed.
+**Shipped as**: PR #164. `ANIM_VERSION = 1` exported from `@pixabots/core` (bumped 0.4.0 → 0.5.0). `@pixabots/react` (0.3.0 → 0.4.0) auto-appends `v=${ANIM_VERSION}` on animated URLs. Docs + OpenAPI spec document `?v=` param and the maintainer bump runbook. Server silently accepts the unknown param — no route changes needed.
 
-Follow-up once merged: push `core-v0.5.0` and `react-v0.4.0` tags to trigger `publish-{core,react}.yml`.
+`core-v0.5.0` + `react-v0.4.0` tags pushed post-merge to trigger `publish-core.yml` + `publish-react.yml`.
 
 ---
 
@@ -51,7 +51,7 @@ Follow-up once merged: push `core-v0.5.0` and `react-v0.4.0` tags to trigger `pu
 
 ---
 
-### nice-to-have — `/api/pixabot/{id}/frames` endpoint `[ ]`
+### nice-to-have — `/api/pixabot/{id}/frames` endpoint `[~]` — in review
 
 **Problem.** Consumers who want scrubbable timelines, CSS `steps()` sprite animation, or autoplay control have to either (a) accept our baked GIF or (b) reverse-engineer frame timing from `@pixabots/core` source. The rate-limit (30 anim/min per IP per lambda) also hurts heavy consumers.
 
@@ -84,7 +84,7 @@ Separately: expose per-layer sprite URLs as sub-resources, or use existing `/par
 - `app/content/docs/api.mdx` — new section
 - `app/public/openapi.json` — add path
 
-**Tracked in**: PR TBD.
+**Tracked in**: PR pending open (`feat/frames-metadata-endpoint`). Emits 16-tick super-loop with offsets + per-layer sprite-sheet index + sprite URLs + `animVersion`. Immutably cached — same `animVersion` served for consumers' lifetime until bumped.
 
 ---
 

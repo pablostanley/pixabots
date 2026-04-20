@@ -130,6 +130,51 @@ curl https://pixabots.com/api/pixabot/zzzz
 
 ---
 
+## GET /api/pixabot/\{id\}/frames
+
+Returns the animation timeline for a pixabot as JSON. Hand it to a `<canvas>` / CSS sprite-sheet renderer to animate client-side — skips the animated-GIF rate limit, stays immutably cached, and lets you scrub, pause, or speed-up without re-hitting the API.
+
+```bash
+curl https://pixabots.com/api/pixabot/2156/frames
+```
+
+```json
+{
+  "id": "2156",
+  "combo": { "eyes": 2, "heads": 1, "body": 5, "top": 6 },
+  "parts": { "eyes": "glasses", "heads": "blob", "body": "wings", "top": "mohawk" },
+  "animVersion": 1,
+  "frameMs": 72,
+  "loopLength": 16,
+  "layerOrder": ["top", "body", "heads", "eyes"],
+  "nativeSize": 32,
+  "frames": [
+    {
+      "tick": 0,
+      "offsets":     { "top": 0, "heads": 0, "eyes": 0, "body": 0 },
+      "spriteIndex": { "top": 0, "heads": 0, "eyes": 0, "body": 0 }
+    },
+    ...
+  ],
+  "sprites": {
+    "top":   { "url": "https://pixabots.com/parts/top/mohawk.png",   "frames": 1, "kind": "static" },
+    "body":  { "url": "https://pixabots.com/parts/body/wings.png",   "frames": 1, "kind": "static" },
+    "heads": { "url": "https://pixabots.com/parts/heads/blob.png",   "frames": 1, "kind": "static" },
+    "eyes":  { "url": "https://pixabots.com/parts/eyes/glasses.png", "frames": 2, "kind": "blink" }
+  }
+}
+```
+
+To render one frame at tick `t`:
+
+1. For each layer in `layerOrder`, draw `sprites[layer].url` into a 32×32 canvas, cropping horizontally to the `32 × spriteIndex[layer]` column.
+2. Offset each layer vertically by `frames[t].offsets[layer]` native pixels.
+3. Advance `t` every `frameMs` ms, wrapping at `loopLength`.
+
+`animVersion` matches `ANIM_VERSION` from `@pixabots/core`. Cache-bust your client when it changes.
+
+---
+
 ## GET /api/pixabot/batch
 
 Get metadata (id, combo, parts, png, gif URLs) for many pixabots in one JSON response.

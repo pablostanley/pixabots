@@ -165,9 +165,9 @@ When reviewing code, use the Before/After markdown table format from the skill. 
 
 Consolidated ticket for animation-API hardening. See [`IMPROVE_GIFS.md`](./IMPROVE_GIFS.md) for the full plan, status, and per-PR scope.
 
-- [~] **P0 — animation staleness trap.** In review. `ANIM_VERSION=1` exported from `@pixabots/core` (v0.5.0); `@pixabots/react` (v0.4.0) auto-appends `?v=`. Server silently accepts unknown param → URL-keyed CDN cache busts naturally. Docs + OpenAPI + runbook updated.
+- [x] **P0 — animation staleness trap.** Shipped (PR #164). `ANIM_VERSION=1` exported from `@pixabots/core` (v0.5.0); `@pixabots/react` (v0.4.0) auto-appends `?v=`. Server silently accepts unknown param → URL-keyed CDN cache busts naturally. Docs + OpenAPI + runbook updated. `core-v0.5.0` + `react-v0.4.0` tags pushed to trigger publish workflows.
 - [x] **P3 — docs clarity on animated sizes.** Shipped (PR #163). `api.mdx` + `openapi.json` now state "any size from 32 to 1920, same as PNG."
-- [ ] **`/api/pixabot/{id}/frames` metadata endpoint.** Expose `ANIM_FRAMES` + `FRAME_MS` + sprite URLs as JSON so consumers can animate client-side (no rate limit, no stale cache).
+- [~] **`/api/pixabot/{id}/frames` metadata endpoint.** In review. Returns 16-tick super-loop with per-layer offsets + sprite-sheet indices + sprite URLs + `animVersion`. Sidesteps animated-GIF rate limit for consumers who want canvas / CSS-steps playback control. Immutably cached.
 
 Backlog (not in current push): reduced-motion server hint, rate-limit headers on every response, `?paused=true`, raise `/api/og` rate limit, APNG/Lottie output.
 
