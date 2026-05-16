@@ -370,7 +370,7 @@ export function Creator({
     }
     for (const category of layerOrder) {
       const img = imagesRef.current[category];
-      if (img) ctx.drawImage(img, 0, 0, size, size);
+      if (img) ctx.drawImage(img, 0, 0, NATIVE, NATIVE, 0, 0, size, size);
     }
     const link = document.createElement("a");
     link.download = `pixabot-${size}x${size}.png`;

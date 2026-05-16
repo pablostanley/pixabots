@@ -166,6 +166,7 @@ When reviewing code, use the Before/After markdown table format from the skill. 
 - [x] **Browse 429s.** `/browse` fires ~60 animated renders on first paint. Animated rate limit was 30/min per IP — 30 succeed, the rest break. Added `isSameOrigin(request)` that checks `Sec-Fetch-Site: same-origin` to exempt our own UI. External consumers still capped, but caps bumped to 120/min animated + 60/min OG. (PR #170)
 - [x] **Cache header revalidation.** `Cache-Control: immutable` was wrong once PR #156 made same-ID sprite art mutable. Swapped for 1-day fresh + 7-day stale-while-revalidate — art updates propagate within ~1 day without a manual dashboard purge. Manual purge still works for urgent rollout. (PR #166, #168, #169)
 - [x] **Animated `cheeky-terminal` (16-frame sequence) + `terminal-round` + `glasses` (blink).** Upgraded three previously-static eye parts to animated. `cheeky-terminal` is the first 16-frame sequence (fills one full super-loop). `ANIM_VERSION` 1→2 to bust CDN caches. Parts.ts docstring updated to include N=16 as valid sequence length.
+- [x] **Client PNG download baked full sprite sheet.** Creator `download()` used 5-arg `drawImage(img, 0, 0, size, size)` which stretched whole sheet — animated faces showed both blink frames side-by-side. Switched to 9-arg form with source rect `(0, 0, NATIVE, NATIVE)` so only frame 0 is sampled. Works for every layer (eyes/heads/body/top), every kind (static/blink/sequence).
 
 ## Improve GIFs / Animated API
 
