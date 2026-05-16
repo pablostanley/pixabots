@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import { Pixelify_Sans } from "next/font/google";
 import { RootProvider } from "fumadocs-ui/provider/next";
 import { Analytics } from "@vercel/analytics/next";
@@ -6,9 +7,10 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ShortcutsOverlay } from "@/components/shortcuts-overlay";
-import { CommandPalette } from "@/components/command-palette";
 import { SITE_URL, TOTAL_COMBOS_LABEL } from "@/lib/constants";
 import "./globals.css";
+
+const CommandPalette = dynamic(() => import("@/components/command-palette").then((m) => m.CommandPalette));
 
 const pixelify = Pixelify_Sans({
   subsets: ["latin"],

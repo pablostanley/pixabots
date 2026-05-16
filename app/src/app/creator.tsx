@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
+import dynamic from "next/dynamic";
 import { hasModifier, isTypingTarget, useKeydown } from "@/lib/use-keydown";
 import { usePaste, parsePastedId } from "@/lib/use-paste";
 import { parts, layerOrder, layerLabel, type PartCategory } from "@/lib/parts";
@@ -10,7 +11,8 @@ import { PixelIcon } from "@/components/ui/pixel-icon";
 import { useShareOrCopy } from "@/lib/use-share-or-copy";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 import { ShuffleHint, dismissShuffleHint } from "@/components/shuffle-hint";
-import { Inspector } from "@/components/inspector";
+
+const Inspector = dynamic(() => import("@/components/inspector").then((m) => m.Inspector), { ssr: false });
 import { BG_CHOICES, withPalette } from "@/lib/palette";
 import { useSfx } from "@/lib/use-sfx";
 import { POP_IN } from "@/lib/motion";
@@ -133,7 +135,8 @@ export function Creator({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const canvasWrapRef = useRef<HTMLDivElement>(null);
   const imagesRef = useRef<Record<string, HTMLImageElement>>({});
-  const intervalRef = useRef<ReturnType<typeof setInterval>>(undefined);
+  const rafRef = useRef<number | undefined>(undefined);
+  const lastTickAtRef = useRef(0);
   const frameRef = useRef(0);
   const genRef = useRef(0);
   const selRef = useRef(selection);
@@ -150,7 +153,7 @@ export function Creator({
     if (gen !== genRef.current) return;
     imagesRef.current = loaded;
     if (!canvasRef.current) return;
-    if (intervalRef.current) return; // animation running — will pick up new images next tick
+    if (rafRef.current !== undefined) return; // animation running — will pick up new images next tick
     if (animatingRef.current) {
       startAnimation();
     } else {
@@ -159,7 +162,7 @@ export function Creator({
   }
 
   function startAnimation() {
-    if (intervalRef.current) return;
+    if (rafRef.current !== undefined) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       animatingRef.current = false;
       setAnimating(false);
@@ -167,22 +170,27 @@ export function Creator({
       return;
     }
     frameRef.current = 0;
-    intervalRef.current = setInterval(() => {
-      if (canvasRef.current) {
-        const tick = frameRef.current;
-        const offsets = ANIM_FRAMES[tick % ANIM_FRAMES.length];
-        drawOnCanvas(canvasRef.current, imagesRef.current, selRef.current, offsets, bgRef.current, tick);
-        frameRef.current = (tick + 1) % LOOP_LENGTH;
-      }
-    }, FRAME_MS);
+    lastTickAtRef.current = 0;
+    const step = (now: number) => {
+      rafRef.current = requestAnimationFrame(step);
+      if (lastTickAtRef.current === 0) lastTickAtRef.current = now;
+      if (now - lastTickAtRef.current < FRAME_MS) return;
+      lastTickAtRef.current = now;
+      if (!canvasRef.current) return;
+      const tick = frameRef.current;
+      const offsets = ANIM_FRAMES[tick % ANIM_FRAMES.length];
+      drawOnCanvas(canvasRef.current, imagesRef.current, selRef.current, offsets, bgRef.current, tick);
+      frameRef.current = (tick + 1) % LOOP_LENGTH;
+    };
+    rafRef.current = requestAnimationFrame(step);
     animatingRef.current = true;
     setAnimating(true);
   }
 
   function stopAnimation() {
-    if (!intervalRef.current) return;
-    clearInterval(intervalRef.current);
-    intervalRef.current = undefined;
+    if (rafRef.current === undefined) return;
+    cancelAnimationFrame(rafRef.current);
+    rafRef.current = undefined;
     frameRef.current = 0;
     if (canvasRef.current) drawOnCanvas(canvasRef.current, imagesRef.current, selRef.current, undefined, bgRef.current, 0);
     animatingRef.current = false;
@@ -326,7 +334,7 @@ export function Creator({
   const applyBg = (color: string | null, index?: number) => {
     setBg(color);
     bgRef.current = color;
-    if (canvasRef.current && !intervalRef.current) {
+    if (canvasRef.current && rafRef.current === undefined) {
       drawOnCanvas(canvasRef.current, imagesRef.current, selRef.current, undefined, color, 0);
     }
     if (typeof index === "number" && index >= 0) sfx.play({ kind: "bg", index });
@@ -347,7 +355,7 @@ export function Creator({
   };
 
   const toggleAnimation = () => {
-    if (intervalRef.current) stopAnimation();
+    if (rafRef.current !== undefined) stopAnimation();
     else startAnimation();
   };
 
