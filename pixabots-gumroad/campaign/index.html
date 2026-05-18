@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pixabots Free Pack — Campaign Dashboard</title>
+  <style>
+    :root { color-scheme: light dark; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: #f6f4ee; color: #1a1a1a; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; line-height: 1.55; }
+    @media (prefers-color-scheme: dark) {
+      html, body { background: #14141a; color: #f0eee6; }
+      header { background: #0d0d12; border-color: #2a2a32; }
+      nav a { color: #cfcdc4; }
+      nav a:hover { color: #fff; }
+      .card { background: #1c1c24; border-color: #2a2a32; }
+      .copybox { background: #0d0d12; border-color: #2a2a32; }
+      hr { border-color: #2a2a32; }
+      a { color: #87b7ff; }
+    }
+    header {
+      position: sticky; top: 0; z-index: 50;
+      background: #fffdf6; border-bottom: 1px solid #e7e3d6;
+      padding: 14px 24px;
+    }
+    nav { display: flex; flex-wrap: wrap; gap: 4px 22px; font-size: 14px; max-width: 880px; margin: 0 auto; }
+    nav strong { margin-right: auto; font-weight: 700; }
+    nav a { color: #444; text-decoration: none; }
+    nav a:hover { color: #000; text-decoration: underline; }
+    main { max-width: 880px; margin: 0 auto; padding: 28px 24px 80px; }
+    h1 { font-size: 32px; margin: 12px 0 6px; }
+    h2 { font-size: 22px; margin: 56px 0 12px; padding-top: 12px; border-top: 1px solid #e7e3d6; }
+    h3 { font-size: 16px; margin: 24px 0 8px; }
+    p { margin: 8px 0 14px; }
+    a { color: #1856c4; }
+    .lede { color: #555; font-size: 16px; max-width: 640px; }
+    .card {
+      background: #fff; border: 1px solid #e7e3d6; border-radius: 10px;
+      padding: 18px 20px; margin: 14px 0;
+    }
+    .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+    .thumb { background: #efece2; border: 1px solid #e7e3d6; border-radius: 8px; overflow: hidden; }
+    .thumb img { display: block; width: 100%; height: auto; }
+    .thumb .meta { font-size: 13px; padding: 8px 12px; color: #555; display: flex; justify-content: space-between; }
+    .copybox {
+      background: #faf8f1; border: 1px solid #e7e3d6; border-radius: 8px;
+      padding: 12px 14px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 13px; line-height: 1.5; white-space: pre-wrap; word-break: break-word;
+      position: relative;
+    }
+    .copybox button {
+      position: absolute; top: 8px; right: 8px;
+      background: #1a1a1a; color: #fff; border: 0; border-radius: 5px;
+      font-size: 11px; padding: 4px 10px; cursor: pointer;
+    }
+    .copybox button:hover { background: #333; }
+    ul.checks { padding-left: 0; list-style: none; }
+    ul.checks li { padding: 4px 0; }
+    ul.checks li::before { content: "☐"; margin-right: 8px; opacity: 0.6; }
+    .pill {
+      display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 99px;
+      background: #efece2; color: #444; margin-right: 6px;
+    }
+    .pill.tag { cursor: pointer; transition: background 0.15s, color 0.15s; }
+    .pill.tag:hover { background: #1a1a1a; color: #fff; }
+    .pill.tag.copied { background: #2d7a4a; color: #fff; }
+    iframe { width: 100%; min-height: 520px; border: 1px solid #e7e3d6; border-radius: 8px; background: #fff; }
+  </style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <strong>Pixabots — Free Pack Campaign</strong>
+    <a href="#checklist">Checklist</a>
+    <a href="#gumroad">Gumroad</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#thumbnail">Thumbnail</a>
+    <a href="#variants">Variants</a>
+    <a href="#email">Email</a>
+    <a href="#social">Social</a>
+    <a href="#files">Files</a>
+  </nav>
+</header>
+
+<main>
+
+<h1>Pixabots — Free Pack Campaign</h1>
+<p class="lede">Everything needed to ship the free 2,000-pixabot pack to Gumroad and announce it. Click any code block to copy. All images embedded below live in <code>upload/</code> and <code>campaign/social/</code>.</p>
+
+<!-- ============================  CHECKLIST  ============================ -->
+<h2 id="checklist">Pre-flight checklist</h2>
+
+<div class="card">
+  <ul class="checks">
+    <li>Open the upload folder — drag the ZIP onto Gumroad as the product file</li>
+    <li>Set <strong>Name:</strong> Pixabots — Free Pack of 2,000 Pixel Characters</li>
+    <li>Set <strong>Price:</strong> $0+ (pay what you want), suggested $5</li>
+    <li>Upload <code>upload/thumbnail.gif</code> as the product cover (square 1080×1080 animated)</li>
+    <li>Upload all 6 gifs from <code>upload/gallery/</code> as additional product images</li>
+    <li>Paste <code>gumroad-body.html</code> contents into the Description editor (switch to HTML view)</li>
+    <li>Add tags (click to copy): <span class="pill tag" onclick="copyTag(this)">pixel art</span><span class="pill tag" onclick="copyTag(this)">avatars</span><span class="pill tag" onclick="copyTag(this)">icons</span><span class="pill tag" onclick="copyTag(this)">characters</span><span class="pill tag" onclick="copyTag(this)">free</span><span class="pill tag" onclick="copyTag(this)">design assets</span> <a href="#" onclick="copyAllTags(event)" style="font-size:12px; margin-left:6px;">copy all →</a></li>
+    <li>Publish</li>
+    <li>Send the subscriber email (Gumroad → Emails → New)</li>
+    <li>Post the 5 social variants on schedule</li>
+  </ul>
+</div>
+
+<!-- ============================  GUMROAD  ============================ -->
+<h2 id="gumroad">Gumroad product page</h2>
+
+<h3>Product title</h3>
+<div class="copybox" data-copy>Pixabots — Free Pack of 2,000 Pixel Characters<button onclick="copy(this)">Copy</button></div>
+
+<h3>Tagline / summary (140 chars max)</h3>
+<div class="copybox" data-copy>2,000 unique pixel characters. PNG + animated GIF + WebP. Free for personal and commercial use.<button onclick="copy(this)">Copy</button></div>
+
+<h3>Suggested price</h3>
+<p><strong>$0+</strong> &middot; pay what you want &middot; suggest $5</p>
+
+<h3>Additional details (5 key/value pairs)</h3>
+<p>Gumroad's "Additional details" section. Two inputs per row. Copy each pair below.</p>
+<div class="grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+  <div class="copybox" data-copy>Characters<button onclick="copy(this)">Copy</button></div>
+  <div class="copybox" data-copy>2,000 unique pixel characters<button onclick="copy(this)">Copy</button></div>
+  <div class="copybox" data-copy>Files<button onclick="copy(this)">Copy</button></div>
+  <div class="copybox" data-copy>12,000 (4 PNG sizes + GIF + WebP)<button onclick="copy(this)">Copy</button></div>
+  <div class="copybox" data-copy>PNG sizes<button onclick="copy(this)">Copy</button></div>
+  <div class="copybox" data-copy>240, 480, 960, 1920 px<button onclick="copy(this)">Copy</button></div>
+  <div class="copybox" data-copy>Animations<button onclick="copy(this)">Copy</button></div>
+  <div class="copybox" data-copy>480px GIF + 480px WebP<button onclick="copy(this)">Copy</button></div>
+  <div class="copybox" data-copy>License<button onclick="copy(this)">Copy</button></div>
+  <div class="copybox" data-copy>Personal + commercial use<button onclick="copy(this)">Copy</button></div>
+</div>
+
+<h3>Description body (paste into Gumroad)</h3>
+<p>Open <a href="gumroad-body.html" target="_blank">gumroad-body.html</a> in a tab and copy-paste into the Gumroad rich-text editor (it accepts HTML). Preview rendered below.</p>
+<iframe src="gumroad-body.html"></iframe>
+
+<!-- ============================  GALLERY  ============================ -->
+<h2 id="gallery">Product gallery images</h2>
+<p>Upload all six as additional images on the product. Gumroad displays them as a scroll/carousel.</p>
+
+<div class="grid">
+  <div class="thumb"><img src="../upload/gallery/01-cover.gif" alt=""><div class="meta"><span>01 cover</span><span>1280×720</span></div></div>
+  <div class="thumb"><img src="../upload/gallery/02-grid-4x3.gif" alt=""><div class="meta"><span>02 grid 4×3</span><span>1600×900</span></div></div>
+  <div class="thumb"><img src="../upload/gallery/03-loose.gif" alt=""><div class="meta"><span>03 loose</span><span>1600×900</span></div></div>
+  <div class="thumb"><img src="../upload/gallery/04-dark.gif" alt=""><div class="meta"><span>04 dark</span><span>1600×900</span></div></div>
+  <div class="thumb"><img src="../upload/gallery/05-hero-row.gif" alt=""><div class="meta"><span>05 hero row</span><span>1920×640</span></div></div>
+  <div class="thumb"><img src="../upload/gallery/06-grid-3x2.gif" alt=""><div class="meta"><span>06 grid 3×2</span><span>1600×900</span></div></div>
+</div>
+
+<!-- ============================  THUMB  ============================ -->
+<h2 id="thumbnail">Gumroad cover / thumbnail</h2>
+<p>Square 1080×1080 animated. Eight pixabots rotating around a hole. Use as the main cover.</p>
+<div class="grid" style="grid-template-columns: 1fr 1fr;">
+  <div class="thumb"><img src="../upload/thumbnail.gif" alt=""><div class="meta"><span>thumbnail</span><span>1080×1080</span></div></div>
+  <div></div>
+</div>
+
+<!-- ============================  VARIANTS  ============================ -->
+<h2 id="variants">Format variants — Name / Description pairs</h2>
+<p>If you upload separate downloads per format (Gumroad's "Versions" / multi-file content), use these. Four zips live in <code>upload/zips/</code>. Each one bundles <code>LICENSE.txt</code>, <code>README.txt</code>, and <code>manifest.json</code> alongside its format folder.</p>
+
+<div class="card">
+  <h3 style="margin-top:0;">All formats &middot; 194 MB</h3>
+  <p><span class="pill">upload/zips/pixabots-pack-all-formats.zip</span></p>
+  <div class="grid" style="grid-template-columns: 1fr 2fr; gap:10px;">
+    <div class="copybox" data-copy>All formats (PNG + GIF + WebP)<button onclick="copy(this)">Copy</button></div>
+    <div class="copybox" data-copy>12,000 files. 2,000 characters × PNG (4 sizes) + animated GIF + animated WebP.<button onclick="copy(this)">Copy</button></div>
+  </div>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0;">PNGs only &middot; 51 MB</h3>
+  <p><span class="pill">upload/zips/pixabots-pack-png-only.zip</span></p>
+  <div class="grid" style="grid-template-columns: 1fr 2fr; gap:10px;">
+    <div class="copybox" data-copy>PNGs only — 4 sizes<button onclick="copy(this)">Copy</button></div>
+    <div class="copybox" data-copy>8,000 static PNGs at 240, 480, 960, and 1920 px. Transparent background.<button onclick="copy(this)">Copy</button></div>
+  </div>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0;">Animated GIFs only &middot; 136 MB</h3>
+  <p><span class="pill">upload/zips/pixabots-pack-gif-only.zip</span></p>
+  <div class="grid" style="grid-template-columns: 1fr 2fr; gap:10px;">
+    <div class="copybox" data-copy>Animated GIFs only<button onclick="copy(this)">Copy</button></div>
+    <div class="copybox" data-copy>2,000 animated bounce GIFs at 480px. Works everywhere GIFs work.<button onclick="copy(this)">Copy</button></div>
+  </div>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0;">Animated WebPs only &middot; 6 MB</h3>
+  <p><span class="pill">upload/zips/pixabots-pack-webp-only.zip</span></p>
+  <div class="grid" style="grid-template-columns: 1fr 2fr; gap:10px;">
+    <div class="copybox" data-copy>Animated WebPs only<button onclick="copy(this)">Copy</button></div>
+    <div class="copybox" data-copy>2,000 animated WebPs at 480px. ~20× smaller than GIF, modern format.<button onclick="copy(this)">Copy</button></div>
+  </div>
+</div>
+
+<!-- ============================  EMAIL  ============================ -->
+<h2 id="email">Subscriber email</h2>
+<p>Open <a href="email.html" target="_blank">email.html</a> and copy whatever rendering the email tool prefers (HTML source or rendered text). Includes four subject-line options at the top. Preview rendered below.</p>
+<iframe src="email.html"></iframe>
+
+<!-- ============================  SOCIAL  ============================ -->
+<h2 id="social">Social posts</h2>
+<p>One image per channel, each at the canonical aspect ratio, all animated. Captions below — pick whichever feels right for the platform.</p>
+
+<h3>Twitter / X — 1200×675</h3>
+<div class="thumb"><img src="social/twitter.gif" alt=""></div>
+<div class="copybox" data-copy>2,000 free pixel characters. PNG, GIF, WebP. Personal + commercial use. Pay what you want.
+
+I made these. You should have them.
+
+→ pablostanley.gumroad.com/l/pixabots<button onclick="copy(this)">Copy</button></div>
+
+<h3>Instagram square — 1080×1080</h3>
+<div class="thumb" style="max-width:540px;"><img src="social/instagram-square.gif" alt=""></div>
+<div class="copybox" data-copy>2,000 pixel characters. Free.
+
+PNG in four sizes. Animated GIF + WebP. Personal and commercial use.
+
+Grab them at the link in bio.
+
+#pixelart #design #freebies #avatars #gamedev #ui #icons<button onclick="copy(this)">Copy</button></div>
+
+<h3>Instagram story / Reels cover — 1080×1920</h3>
+<div class="thumb" style="max-width:280px;"><img src="social/instagram-story.gif" alt=""></div>
+<div class="copybox" data-copy>2,000 pixel characters, free. Link in bio.<button onclick="copy(this)">Copy</button></div>
+
+<h3>LinkedIn — 1200×627</h3>
+<div class="thumb"><img src="social/linkedin.gif" alt=""></div>
+<div class="copybox" data-copy>I made a little pixel character generator called Pixabots. It can spin up 10,752 unique combinations.
+
+I packaged 2,000 of them as a free download — PNGs in four sizes, animated GIFs, animated WebPs. Free for personal and commercial use.
+
+Use them as default avatars, placeholder characters, NPCs, channel art, anywhere you need a face.
+
+Grab the pack: pablostanley.gumroad.com/l/pixabots
+Or the live editor: pixabots.com<button onclick="copy(this)">Copy</button></div>
+
+<h3>Facebook — 1200×630</h3>
+<div class="thumb"><img src="social/facebook.gif" alt=""></div>
+<div class="copybox" data-copy>2,000 free pixel characters in one pack. PNG, GIF, WebP, four sizes. Use them in any project — personal or commercial. → pablostanley.gumroad.com/l/pixabots<button onclick="copy(this)">Copy</button></div>
+
+<!-- ============================  FILES  ============================ -->
+<h2 id="files">File map</h2>
+<div class="card">
+<pre style="margin:0; font-size:13px;">
+~/Downloads/pixabots-gumroad/
+├── upload/                       ← What to drag into Gumroad
+│   ├── zips/                        (product files, one per variant)
+│   │   ├── pixabots-pack-all-formats.zip   194 MB
+│   │   ├── pixabots-pack-png-only.zip       51 MB
+│   │   ├── pixabots-pack-gif-only.zip      136 MB
+│   │   └── pixabots-pack-webp-only.zip       6 MB
+│   ├── thumbnail.gif                (square cover)
+│   └── gallery/                     (additional gallery images)
+│       ├── 01-cover.gif
+│       ├── 02-grid-4x3.gif
+│       ├── 03-loose.gif
+│       ├── 04-dark.gif
+│       ├── 05-hero-row.gif
+│       └── 06-grid-3x2.gif
+└── campaign/                     ← Internal — for you
+    ├── index.html                   (this dashboard)
+    ├── gumroad-body.html            (paste body into Gumroad)
+    ├── email.html                   (subscriber email)
+    └── social/
+        ├── twitter.gif
+        ├── instagram-square.gif
+        ├── instagram-story.gif
+        ├── linkedin.gif
+        └── facebook.gif
+</pre>
+</div>
+
+</main>
+
+<script>
+function copy(btn) {
+  const box = btn.parentElement;
+  const text = Array.from(box.childNodes)
+    .filter(n => n.nodeType === 3 || (n.tagName !== 'BUTTON'))
+    .map(n => n.textContent).join('').trim();
+  navigator.clipboard.writeText(text);
+  const orig = btn.textContent;
+  btn.textContent = 'Copied ✓';
+  setTimeout(() => { btn.textContent = orig; }, 1400);
+}
+function copyTag(el) {
+  navigator.clipboard.writeText(el.textContent);
+  el.classList.add('copied');
+  setTimeout(() => el.classList.remove('copied'), 900);
+}
+function copyAllTags(e) {
+  e.preventDefault();
+  const tags = Array.from(document.querySelectorAll('.pill.tag')).map(t => t.textContent).join(', ');
+  navigator.clipboard.writeText(tags);
+  const a = e.target;
+  const orig = a.textContent;
+  a.textContent = 'copied ✓';
+  setTimeout(() => { a.textContent = orig; }, 1400);
+}
+</script>
+
+</body>
+</html>
