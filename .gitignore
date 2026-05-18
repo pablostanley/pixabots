@@ -16,3 +16,10 @@ pnpm-debug.log*
 *.psd
 .source
 .claude/
+
+# Gumroad pack — large binaries, regen via scripts/generate-gumroad-*.mjs
+/pixabots-gumroad/pixabots-pack/
+/pixabots-gumroad/upload/zips/
+/pixabots-gumroad/upload/gallery/
+/pixabots-gumroad/upload/thumbnail.gif
+/pixabots-gumroad/campaign/social/

@@ -11,16 +11,21 @@ import {
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import { useSfx } from "@/lib/use-sfx";
 import { useTheme } from "@/lib/use-theme";
+import { openPackDialog } from "@/components/pack-dialog";
 
-type Item = { href: string; label: string; external?: boolean };
+type Item =
+  | { kind: "internal"; href: string; label: string }
+  | { kind: "external"; href: string; label: string }
+  | { kind: "pack"; label: string };
 
 const ITEMS: readonly Item[] = [
-  { href: "/", label: "Create" },
-  { href: "/browse", label: "Browse" },
-  { href: "/favorites", label: "Stars" },
-  { href: "/docs", label: "Docs" },
-  { href: "/docs/api", label: "API" },
-  { href: "https://github.com/pablostanley/pixabots", label: "GitHub", external: true },
+  { kind: "internal", href: "/", label: "Create" },
+  { kind: "internal", href: "/browse", label: "Browse" },
+  { kind: "internal", href: "/favorites", label: "Stars" },
+  { kind: "internal", href: "/docs", label: "Docs" },
+  { kind: "internal", href: "/docs/api", label: "API" },
+  { kind: "pack", label: "Pack" },
+  { kind: "external", href: "https://github.com/pablostanley/pixabots", label: "GitHub" },
 ];
 
 /**
@@ -49,13 +54,28 @@ export function HeaderMenu() {
         <DialogTitle className="text-sm uppercase tracking-wide text-muted-foreground">Menu</DialogTitle>
         <nav className="flex flex-col mt-3">
           {ITEMS.map((item) => {
-            const active = !item.external && pathname === item.href;
+            const active = item.kind === "internal" && pathname === item.href;
             const base =
               "flex items-center py-3 px-2 border-b border-border text-base transition-colors";
             const color = active
               ? "text-foreground font-medium"
               : "text-muted-foreground hover:text-foreground";
-            if (item.external) {
+            if (item.kind === "pack") {
+              return (
+                <button
+                  key="pack"
+                  type="button"
+                  className={`${base} ${color} text-left cursor-pointer`}
+                  onClick={() => {
+                    setOpen(false);
+                    openPackDialog();
+                  }}
+                >
+                  {item.label}
+                </button>
+              );
+            }
+            if (item.kind === "external") {
               return (
                 <a
                   key={item.href}

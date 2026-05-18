@@ -11,6 +11,7 @@ import { SITE_URL, TOTAL_COMBOS_LABEL } from "@/lib/constants";
 import "./globals.css";
 
 const CommandPalette = dynamic(() => import("@/components/command-palette").then((m) => m.CommandPalette));
+const PackDialog = dynamic(() => import("@/components/pack-dialog").then((m) => m.PackDialog));
 
 const pixelify = Pixelify_Sans({
   subsets: ["latin"],
@@ -105,6 +106,7 @@ export default function RootLayout({
           <SiteFooter />
           <ShortcutsOverlay />
           <CommandPalette />
+          <PackDialog />
         </RootProvider>
         <Analytics />
         <SpeedInsights />

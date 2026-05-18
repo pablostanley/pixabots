@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { PixelIcon } from "@/components/ui/pixel-icon";
 import { HeaderMenu } from "@/components/header-menu";
+import { openPackDialog } from "@/components/pack-dialog";
 import { hasModifier, isTypingTarget, useKeydown } from "@/lib/use-keydown";
 import { useScrollDirection } from "@/lib/use-scroll-direction";
 import { useTheme } from "@/lib/use-theme";
@@ -77,6 +78,13 @@ export function SiteHeader() {
         {navLink("/favorites", "stars")}
         {navLink("/docs", "docs")}
         {navLink("/docs/api", "api")}
+        <button
+          type="button"
+          onClick={() => openPackDialog()}
+          className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+        >
+          pack
+        </button>
         <a href="https://github.com/pablostanley/pixabots" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
           github
         </a>
